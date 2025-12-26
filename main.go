@@ -1,7 +1,20 @@
 package main
 
-import "fmt"
+import (
+	"cbc/parser"
+	"fmt"
+
+	"github.com/antlr4-go/antlr/v4"
+)
 
 func main() {
-	fmt.Println("hello, this is cb compiler!")
+	input := antlr.NewInputStream("3+5*2")
+	lexer := parser.NewcbcLexer(input)
+	for {
+		t := lexer.NextToken()
+		if t.GetTokenType() == antlr.TokenEOF {
+			break
+		}
+		fmt.Printf("%s (%q)\n", lexer.SymbolicNames[t.GetTokenType()], t.GetText())
+	}
 }
