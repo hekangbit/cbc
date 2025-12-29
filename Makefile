@@ -3,4 +3,5 @@ all:
 	go build .
 
 clean:
+	rm -rf cbc
 	$(MAKE) -C parser clean

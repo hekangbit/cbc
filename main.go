@@ -9,7 +9,7 @@ import (
 
 func main() {
 	input := antlr.NewInputStream("3+5*2")
-	lexer := parser.NewcbcLexer(input)
+	lexer := parser.NewCbLexer(input)
 	for {
 		t := lexer.NextToken()
 		if t.GetTokenType() == antlr.TokenEOF {

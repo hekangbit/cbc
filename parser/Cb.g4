@@ -1,4 +1,4 @@
-grammar cbc;
+grammar Cb;
 prog:   expr EOF;
 expr:   expr ('*'|'/') expr
     |   expr ('+'|'-') expr
