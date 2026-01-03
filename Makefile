@@ -1,7 +1,7 @@
 all:
-	$(MAKE) -C parser
+	$(MAKE) -C grammar
 	go build .
 
 clean:
 	rm -rf cbc
-	$(MAKE) -C parser clean
+	rm -rf parser

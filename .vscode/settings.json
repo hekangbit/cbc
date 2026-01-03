@@ -1,0 +1,9 @@
+{
+  "antlr4.generation": {
+    "mode": "internal",
+    "outputDir": "${workspaceFolder}/parser",
+    "language": "Go",
+    "listeners": true,
+    "visitors": false
+  },
+}

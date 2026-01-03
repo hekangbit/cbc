@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "configurations": [
+    {
+      "name": "Debug ANTLR4 Grammar",
+      "type": "antlr-debug",
+      "request": "launch",
+
+      // Core
+      "input": "${workspaceFolder}/hello.cb",
+      "grammar": "${workspaceFolder}/grammar/Cb.g4",
+      "startRule": "prog",
+
+      // Option
+      "printParseTree": true,
+      "visualParseTree": true
+    }
+  ]
+}
