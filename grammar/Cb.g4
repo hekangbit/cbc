@@ -19,8 +19,8 @@ StringLiteral: '"' SChar*? '"';
 IntLiteral: '0' | [1-9][0-9]* ;
 DoubleLiteral: [0-9]+ ;
 
-SIMPLE_COMMENT: '//' .*? '\n' -> skip;
-BLOCK_COMMENT: '/*'  '*/' -> skip;
+LINE_COMMENT: '//' .*? '\n' -> skip;
+BLOCK_COMMENT: '/*' .*? '*/' -> skip;
 
 WS:     [ \t\n\r]+ -> skip;
 

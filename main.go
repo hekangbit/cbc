@@ -21,6 +21,11 @@ func main() {
 		}
 		input := antlr.NewInputStream(string(src))
 		lexer := parser.NewCbLexer(input)
+		tokenStream := antlr.NewCommonTokenStream(lexer, antlr.TokenDefaultChannel)
+		parser := parser.NewCbParser(tokenStream)
+		tree := parser.Prog()
+		fmt.Println(tree.ToStringTree(parser.RuleNames, parser))
+
 		for {
 			t := lexer.NextToken()
 			if t.GetTokenType() == antlr.TokenEOF {
