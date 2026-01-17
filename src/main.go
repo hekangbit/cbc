@@ -21,14 +21,8 @@ func main() {
 		}
 		input := antlr.NewInputStream(string(src))
 		cbLexer := parser.NewCbLexer(input)
-		tokenStream := antlr.NewCommonTokenStream(cbLexer, antlr.TokenDefaultChannel)
-		cbParser := parser.NewCbParser(tokenStream)
-		tree := cbParser.Prog()
-		fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
 
-		visitor := &CbVisitorImpl{BaseCbVisitor: &parser.BaseCbVisitor{}}
-		visitor.Visit(tree) // tree.Accept(visitor)
-
+		// dump all tokens
 		for {
 			t := cbLexer.NextToken()
 			if t.GetTokenType() == antlr.TokenEOF {
@@ -36,5 +30,15 @@ func main() {
 			}
 			fmt.Printf("%s (%q)\n", cbLexer.SymbolicNames[t.GetTokenType()], t.GetText())
 		}
+
+		cbLexer.Reset()
+
+		tokenStream := antlr.NewCommonTokenStream(cbLexer, antlr.TokenDefaultChannel)
+		cbParser := parser.NewCbParser(tokenStream)
+		tree := cbParser.Prog()
+		fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
+
+		visitor := &CbVisitorImpl{BaseCbVisitor: &parser.BaseCbVisitor{}}
+		visitor.Visit(tree) // tree.Accept(visitor)
 	}
 }

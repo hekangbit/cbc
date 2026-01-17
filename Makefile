@@ -9,7 +9,6 @@ PARSER_SRCS := \
 	$(PARSER_DIR)/Cb.tokens \
 	$(PARSER_DIR)/CbLexer.interp \
 	$(PARSER_DIR)/CbLexer.tokens \
-	$(PARSER_DIR)/cb_base_listener.go \
 	$(PARSER_DIR)/cb_base_visitor.go \
 	$(PARSER_DIR)/cb_lexer.go \
 	$(PARSER_DIR)/cb_parser.go \
@@ -31,4 +30,4 @@ ${TARGET_BIN}: ${PARSER_SRCS} ${MAIN_SRCS}
 
 clean:
 	rm -f $(TARGET_BIN)
-	rm -rf $(PARSER_DIR)
+	rm -rf $(PARSER_DIR)/*
