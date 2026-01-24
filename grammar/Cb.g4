@@ -139,11 +139,11 @@ args
     : expr (',' expr)*
     ;
 primary
-    : IntLiteral
-    | Character
-    | StringLiteral
-    | Identifier
-    | '(' expr ')'
+    : IntLiteral #IntConst
+    | Character #CharConst
+    | StringLiteral #StringConst
+    | Identifier #Identifier
+    | '(' expr ')' #SubExpr
     ;
 
 

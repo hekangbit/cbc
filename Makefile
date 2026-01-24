@@ -1,9 +1,10 @@
 PROJECT_NAME := cbc
-SRC_DIR := src
 GRAMMAR_DIR := grammar
 PARSER_DIR := parser
 TARGET_BIN := cbc
-MAIN_SRCS := $(wildcard $(SRC_DIR)/*.go)
+MAIN_SRCS := $(wildcard ./*.go)
+AST_SRCS := $(wildcard ast/*.go)
+IR_SRCS := $(wildcard ir/*.go)
 PARSER_SRCS := \
 	$(PARSER_DIR)/Cb.interp \
 	$(PARSER_DIR)/Cb.tokens \
@@ -19,13 +20,13 @@ PARSER_SRCS := \
 all: ${TARGET_BIN}
 
 ${PARSER_SRCS}: $(GRAMMAR_DIR)/Makefile $(GRAMMAR_DIR)/*.g4
-	@echo "generate parser..."
+	@echo "generate parser ..."
 	$(MAKE) -C $(GRAMMAR_DIR)
 	@echo "generate parser done"
 
-${TARGET_BIN}: ${PARSER_SRCS} ${MAIN_SRCS}
-	@echo "build $(TARGET_BIN)..."
-	go build -o $(TARGET_BIN) ./$(SRC_DIR)
+${TARGET_BIN}: ${MAIN_SRCS} ${PARSER_SRCS} ${AST_SRCS}
+	@echo "build $(TARGET_BIN) ..."
+	go build -o $(TARGET_BIN) .
 	@echo "build done"
 
 clean:
