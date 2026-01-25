@@ -3,6 +3,7 @@ package main
 import (
 	"cbc/loader"
 	"cbc/sysdep"
+	"cbc/types"
 	"fmt"
 	"os"
 	"strings"
@@ -10,6 +11,7 @@ import (
 
 type Options struct {
 	mode           CompilerMode
+	platform       sysdep.Platform
 	outputFileName string
 	verbose        bool
 	loader         loader.LibraryLoader
@@ -22,7 +24,7 @@ type Options struct {
 }
 
 func ParseOptions(args []string) (*Options, error) {
-	opts := &Options{mode: COMPILER_MODE_None, outputFileName: ""}
+	opts := &Options{mode: COMPILER_MODE_None, outputFileName: "", platform: &sysdep.X86Linux{}}
 	err := opts.ParserArgs(args)
 	return opts, err
 }
@@ -32,7 +34,7 @@ func (options *Options) Mode() CompilerMode {
 }
 
 func (options *Options) IsAssembleRequired() bool {
-	return true
+	return options.mode.Requires(COMPILER_MODE_Assemble)
 }
 
 func (options *Options) IsLinkRequired() bool {
@@ -41,6 +43,10 @@ func (options *Options) IsLinkRequired() bool {
 
 func (options *Options) SourceFiles() []SourceFile {
 	return options.sourceFiles
+}
+
+func (options *Options) GetTypeTable() types.TypeTable {
+	return options.platform.GetTypeTable()
 }
 
 func (options *Options) IsGeneratingSharedLibrary() bool {

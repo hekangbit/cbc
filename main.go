@@ -2,7 +2,10 @@ package main
 
 import (
 	"cbc/ast"
+	"cbc/ir"
 	"cbc/parser"
+	"cbc/sysdep/x86"
+	"cbc/types"
 	"fmt"
 	"os"
 
@@ -42,17 +45,44 @@ func GenerateExecutable(opts *Options) {
 func GenerateSharedLibrary(opts *Options) {
 }
 
-func Link(opts *Options) {
-	fmt.Println("Link")
-	if !opts.IsGeneratingSharedLibrary() {
-		GenerateExecutable(opts)
-	} else {
-		GenerateSharedLibrary(opts)
+func ParseFile(path string, opts *Options) ast.AST {
+	src, err := os.ReadFile(path)
+	if err != nil {
+		os.Exit(64)
 	}
+	input := antlr.NewInputStream(string(src))
+	cbLexer := parser.NewCbLexer(input)
+	for {
+		t := cbLexer.NextToken()
+		if t.GetTokenType() == antlr.TokenEOF {
+			break
+		}
+		fmt.Printf("%s (%q)\n", cbLexer.SymbolicNames[t.GetTokenType()], t.GetText())
+	}
+	cbLexer.Reset()
+	tokenStream := antlr.NewCommonTokenStream(cbLexer, antlr.TokenDefaultChannel)
+	cbParser := parser.NewCbParser(tokenStream)
+	tree := cbParser.Prog()
+	fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
+	builder := &ast.ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}}
+	program := tree.Accept(builder) // builder.Visit(tree)
+	fmt.Println(program)
+	return program.(ast.AST)
 }
 
-func Assemble(srcPath string, dstPath string, opts *Options) {
-	fmt.Println("Assemble " + srcPath + " to " + dstPath)
+func SemanticAnalyze(astNode ast.AST, typeTable types.TypeTable, opts *Options) ast.AST {
+	return ast.AST{}
+}
+
+func GenerateIR(astNode ast.AST, typeTable types.TypeTable) ir.IR {
+	return ir.IR{}
+}
+
+func GenerateAssembly(ir ir.IR, opts *Options) x86.AssemblyCode {
+	return x86.AssemblyCode{}
+}
+
+func WriteFile(path string, content string) {
 }
 
 func Compile(srcPath string, dstPath string, opts *Options) {
@@ -63,8 +93,45 @@ func Compile(srcPath string, dstPath string, opts *Options) {
 	// generate asm
 	// write file
 
+	var tree ast.AST
+
+	typeTable := opts.GetTypeTable()
+	tree = ParseFile(srcPath, opts)
+	// if (DumpAST(tree, opts.mode())) {
+	// 	return
+	// }
+	tree = SemanticAnalyze(tree, typeTable, opts)
+	// if (DumpSemant(tree, opts.mode())) {
+	// 	return
+	// }
+	ir := GenerateIR(tree, typeTable)
+	// if (DumpIR(ir, opts.mode())) {
+	// 	return
+	// }
+	asm := GenerateAssembly(ir, opts)
+	// if dumpAsm(asm, opts.mode()) {
+	// 	return
+	// }
+	// if printAsm(asm, opts.mode()) {
+	// 	return
+	// }
+	WriteFile(dstPath, asm.String())
+
 	// test code, dump all tokens, visit tree
 	DebugDump(srcPath)
+}
+
+func Assemble(srcPath string, dstPath string, opts *Options) {
+	fmt.Println("Assemble " + srcPath + " to " + dstPath)
+}
+
+func Link(opts *Options) {
+	fmt.Println("Link")
+	if !opts.IsGeneratingSharedLibrary() {
+		GenerateExecutable(opts)
+	} else {
+		GenerateSharedLibrary(opts)
+	}
 }
 
 func Build(srcs []SourceFile, opts *Options) {

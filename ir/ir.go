@@ -1,6 +1,6 @@
-package ast
+package ir
 
-type IR interface {
+type IR struct {
 }
 
 type IRExpr interface {

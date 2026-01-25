@@ -31,7 +31,7 @@ func (v *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
 	fmt.Println("ASTBuilder VisitProg")
 	ctx.ImportStmts().Accept(v)
 	ctx.TopDefs().Accept(v)
-	return &ASTProgram{name: "cbc program"}
+	return &AST{name: "cbc program"}
 }
 
 func (v *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {

@@ -1,11 +1,5 @@
 package ast
 
-type Node interface {
-}
-
-type ASTProgram struct {
+type AST struct {
 	name string
-}
-
-type IntergerLiteralNode struct {
 }
