@@ -1,6 +1,7 @@
-package ast
+package compiler
 
 import (
+	"cbc/ast"
 	"cbc/loader"
 	"cbc/parser"
 	"fmt"
@@ -31,7 +32,7 @@ func (v *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
 	fmt.Println("ASTBuilder VisitProg")
 	ctx.ImportStmts().Accept(v)
 	ctx.TopDefs().Accept(v)
-	return &AST{name: "cbc program"}
+	return &ast.AST{Name: "cbc program"}
 }
 
 func (v *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {

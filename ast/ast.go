@@ -1,5 +1,5 @@
 package ast
 
 type AST struct {
-	name string
+	Name string
 }
