@@ -10,22 +10,22 @@ importStmt
 topDefs
     : (defVars | defFunc | typedef)*;
 defVars
-    : 'static'? type Identifier ('=' expr)? (',' Identifier ('=' expr)?)* ';';
+    : (priv='static')? cbtype=cbType Identifier ('=' expr)? (',' Identifier ('=' expr)?)* ';';
 defFunc
-    : 'static'? typeref Identifier '(' params ')' block;
+    : (priv='static')? cbTyperef Identifier '(' params ')' block;
 typedef
-    : 'typedef' type Identifier ';';
+    : 'typedef' cbType Identifier ';';
 
 stmt
-    : expr ';'
-    | block
-    | ifStmt
-    | whileStmt
-    | forStmt
-    | breakStmt
-    | continueStmt
-    | gotoStmt
-    | returnStmt
+    : expr ';' #ExprStatement
+    | block    #BlockStatement
+    | ifStmt   #IfStatement
+    | whileStmt #WhileStatement
+    | forStmt #ForStatement
+    | breakStmt #BreakStatement
+    | continueStmt #ContinueStatement
+    | gotoStmt #GotoStatement
+    | returnStmt #ReturnStatement
     ;
 block
     : '{' (defVars)* (stmt)* '}';
@@ -44,9 +44,9 @@ gotoStmt
 returnStmt
     : 'return' (expr)? ';';
 
-type
-    : typeref;
-typeref
+cbType
+    : cbTyperef;
+cbTyperef
     : typerefBase ('['']' | '[' IntLiteral ']' | '*' | '(' paramTyperefs')')*;
 typerefBase
     : 'void'
@@ -65,11 +65,11 @@ params
 fixedParams
     : param (',' param)*;
 param
-    : type Identifier;
+    : cbType Identifier;
 paramTyperefs
     : 'void' | fixedparamTyperefs (',' '...')? ;
 fixedparamTyperefs
-    : typeref (',' typeref)*;
+    : cbTyperef (',' cbTyperef)*;
 
 expr
     : term assignOp expr #AssignExpr
@@ -118,7 +118,7 @@ term
     | unary
     ;
 castExpr
-    : '(' type ')' term;
+    : '(' cbType ')' term;
 unary
     : '++' unary
     | '--' unary
@@ -128,7 +128,7 @@ unary
     | '~' unary
     | '*' unary
     | '&' unary
-    | 'sizeof' '(' type ')'
+    | 'sizeof' '(' cbType ')'
     | 'sizeof' unary
     | postfix
     ;
@@ -145,7 +145,6 @@ primary
     | Identifier #Identifier
     | '(' expr ')' #SubExpr
     ;
-
 
 MUL : '*' ;
 DIV : '/' ;

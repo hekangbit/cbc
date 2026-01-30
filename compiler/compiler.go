@@ -1,8 +1,7 @@
 package compiler
 
 import (
-	"cbc/ast"
-	"cbc/ir"
+	"cbc/models"
 	"cbc/parser"
 	"cbc/sysdep/x86"
 	"cbc/types"
@@ -36,7 +35,7 @@ func DebugDump(path string) {
 	fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
 	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}}
 	program := tree.Accept(builder) // builder.Visit(tree)
-	fmt.Println(program.(*ast.AST))
+	fmt.Println(program.(*models.AST))
 }
 
 func GenerateExecutable(opts *Options) {
@@ -45,7 +44,7 @@ func GenerateExecutable(opts *Options) {
 func GenerateSharedLibrary(opts *Options) {
 }
 
-func ParseFile(path string, opts *Options) ast.AST {
+func ParseFile(path string, opts *Options) *models.AST {
 	src, err := os.ReadFile(path)
 	if err != nil {
 		os.Exit(64)
@@ -66,19 +65,19 @@ func ParseFile(path string, opts *Options) ast.AST {
 	fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
 	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}}
 	program := tree.Accept(builder) // builder.Visit(tree)
-	fmt.Println(program.(*ast.AST))
-	return *(program.(*ast.AST))
+	fmt.Println(program.(*models.AST))
+	return program.(*models.AST)
 }
 
-func SemanticAnalyze(astNode ast.AST, typeTable types.TypeTable, opts *Options) ast.AST {
-	return ast.AST{}
+func SemanticAnalyze(astNode *models.AST, typeTable types.TypeTable, opts *Options) *models.AST {
+	return astNode
 }
 
-func GenerateIR(astNode ast.AST, typeTable types.TypeTable) ir.IR {
-	return ir.IR{}
+func GenerateIR(astNode *models.AST, typeTable types.TypeTable) *models.IR {
+	return &models.IR{}
 }
 
-func GenerateAssembly(ir ir.IR, opts *Options) x86.AssemblyCode {
+func GenerateAssembly(ir *models.IR, opts *Options) x86.AssemblyCode {
 	return x86.AssemblyCode{}
 }
 
@@ -86,7 +85,7 @@ func WriteFile(path string, content string) {
 }
 
 func Compile(srcPath string, dstPath string, opts *Options) {
-	var tree ast.AST
+	var tree *models.AST
 	fmt.Println("Compile " + srcPath + " to " + dstPath)
 	// parse file
 	// semantic analyze

@@ -1,4 +1,4 @@
-package ast
+package models
 
 type BinaryOpNode struct {
 }
