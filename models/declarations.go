@@ -2,6 +2,7 @@ package models
 
 type Declarations struct {
 	defvars map[*DefinedVariable]struct{}
+	deffuns map[*DefinedFunction]struct{}
 }
 
 func NewDeclarations() *Declarations {
@@ -19,4 +20,8 @@ func (decls *Declarations) AddDefvars(vars []*DefinedVariable) {
 	for _, pdv := range vars {
 		decls.defvars[pdv] = struct{}{}
 	}
+}
+
+func (decls *Declarations) AddDefFunc(function *DefinedFunction) {
+	decls.deffuns[function] = struct{}{}
 }

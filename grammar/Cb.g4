@@ -10,7 +10,7 @@ importStmt
 topDefs
     : (defVars | defFunc | typedef)*;
 defVars
-    : (priv='static')? cbtype=cbType Identifier ('=' expr)? (',' Identifier ('=' expr)?)* ';';
+    : (priv='static')? cbtype=cbType Identifier (hasInit='=' initializer=expr)? (',' Identifier (hasInit='=' initializer=expr)?)* ';';
 defFunc
     : (priv='static')? cbTyperef Identifier '(' params ')' block;
 typedef

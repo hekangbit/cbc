@@ -33,8 +33,8 @@ func (v *ASTBuilder) VisitErrorNode(_ antlr.ErrorNode) interface{} {
 func (v *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
 	fmt.Println("ASTBuilder VisitProg")
 	ctx.ImportStmts().Accept(v)
-	ctx.TopDefs().Accept(v)
-	return models.NewAst("cbc program")
+	decls := ctx.TopDefs().Accept(v).(*models.Declarations)
+	return models.NewAst("cbc program", decls)
 }
 
 func (v *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {
@@ -62,22 +62,28 @@ func (v *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 		defvars := defVars.Accept(v)
 		decls.AddDefvars(defvars.([]*models.DefinedVariable))
 	}
-	return v.VisitChildren(ctx)
+	for _, defFun := range ctx.AllDefFunc() {
+		f := defFun.Accept(v)
+		decls.AddDefFunc(f.(*models.DefinedFunction))
+	}
+	return decls
 }
 
 func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
+	var initialize *models.ExprNode = nil
 	var defs []*models.DefinedVariable
-	isStatic := false
-	priv := ctx.GetPriv()
-	if priv != nil {
-		isStatic = true
+	priv := false
+	if ctx.GetPriv() != nil {
+		priv = true
 	}
-	ctx.GetCbtype()
-	cbType := models.TypeNode{}
+	cbType := ctx.GetCbtype().Accept(v).(*models.TypeNode)
 
-	for i, identifier := range ctx.AllIdentifier() {
-		init := ctx.Expr(i).Accept(v)
-		dv := models.NewDefinedVariable(isStatic, cbType, identifier.GetSymbol().GetText(), *(init.(*models.ExprNode)))
+	for _, identifier := range ctx.AllIdentifier() {
+		initialize = nil
+		if ctx.GetHasInit() != nil {
+			initialize = ctx.GetInitializer().Accept(v).(*models.ExprNode)
+		}
+		dv := models.NewDefinedVariable(priv, *cbType, identifier.GetSymbol().GetText(), initialize)
 		defs = append(defs, dv)
 	}
 
@@ -86,4 +92,8 @@ func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
 
 func (v *ASTBuilder) VisitCondExpr(ctx *parser.CondExprContext) interface{} {
 	return &models.ExprNode{}
+}
+
+func (V *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
+	return &models.TypeNode{}
 }

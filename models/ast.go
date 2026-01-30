@@ -1,9 +1,10 @@
 package models
 
 type AST struct {
-	name string
+	name  string
+	decls *Declarations
 }
 
-func NewAst(name string) *AST {
-  return &AST{name: name}
+func NewAst(name string, decls *Declarations) *AST {
+	return &AST{name: name, decls: decls}
 }
