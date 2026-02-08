@@ -1,4 +1,4 @@
 package asm
 
-type Operand struct {
+type IOperand interface {
 }

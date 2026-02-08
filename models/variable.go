@@ -1,5 +1,9 @@
 package models
 
-type Variable struct {
-	Entity
+type IVariable interface {
+	IEntity
+}
+
+type BaseVariable struct {
+	BaseEntity
 }

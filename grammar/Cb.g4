@@ -12,7 +12,7 @@ topDefs
 defVars
     : (priv='static')? cbtype=cbType Identifier (hasInit='=' initializer=expr)? (',' Identifier (hasInit='=' initializer=expr)?)* ';';
 defFunc
-    : (priv='static')? cbTyperef Identifier '(' params ')' block;
+    : (priv='static')? cbtype=cbTyperef Identifier '(' params ')' block;
 typedef
     : 'typedef' cbType Identifier ';';
 

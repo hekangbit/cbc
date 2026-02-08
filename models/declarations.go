@@ -10,9 +10,11 @@ func NewDeclarations() *Declarations {
 }
 
 func (decls *Declarations) Add(new_decls *Declarations) {
-	// merge de
-	for k, _ := range new_decls.defvars {
+	for k := range new_decls.defvars {
 		decls.defvars[k] = struct{}{}
+	}
+	for k := range new_decls.deffuns {
+		decls.deffuns[k] = struct{}{}
 	}
 }
 

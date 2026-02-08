@@ -4,7 +4,6 @@ import (
 	"cbc/models"
 	"cbc/parser"
 	"cbc/sysdep/x86"
-	"cbc/types"
 	"fmt"
 	"os"
 
@@ -69,11 +68,11 @@ func ParseFile(path string, opts *Options) *models.AST {
 	return program.(*models.AST)
 }
 
-func SemanticAnalyze(astNode *models.AST, typeTable types.TypeTable, opts *Options) *models.AST {
+func SemanticAnalyze(astNode *models.AST, typeTable models.TypeTable, opts *Options) *models.AST {
 	return astNode
 }
 
-func GenerateIR(astNode *models.AST, typeTable types.TypeTable) *models.IR {
+func GenerateIR(astNode *models.AST, typeTable models.TypeTable) *models.IR {
 	return &models.IR{}
 }
 

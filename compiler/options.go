@@ -2,8 +2,8 @@ package compiler
 
 import (
 	"cbc/loader"
+	"cbc/models"
 	"cbc/sysdep"
-	"cbc/types"
 	"fmt"
 	"os"
 	"strings"
@@ -45,7 +45,7 @@ func (options *Options) SourceFiles() []SourceFile {
 	return options.sourceFiles
 }
 
-func (options *Options) GetTypeTable() types.TypeTable {
+func (options *Options) GetTypeTable() models.TypeTable {
 	return options.platform.GetTypeTable()
 }
 

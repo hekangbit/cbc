@@ -1,7 +1,7 @@
 package sysdep
 
-import "cbc/types"
+import "cbc/models"
 
 type Platform interface {
-	GetTypeTable() types.TypeTable
+	GetTypeTable() models.TypeTable
 }

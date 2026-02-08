@@ -1,4 +1,4 @@
 package asm
 
-type Symbol interface {
+type ISymbol interface {
 }

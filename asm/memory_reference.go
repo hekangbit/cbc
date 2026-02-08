@@ -1,4 +1,5 @@
 package asm
 
-type MemoryReference struct {
+type IMemoryReference interface {
+	IOperand
 }

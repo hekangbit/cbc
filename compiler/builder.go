@@ -83,11 +83,47 @@ func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
 		if ctx.GetHasInit() != nil {
 			initialize = ctx.GetInitializer().Accept(v).(*models.ExprNode)
 		}
-		dv := models.NewDefinedVariable(priv, *cbType, identifier.GetSymbol().GetText(), initialize)
+		dv := models.NewDefinedVariable(priv, cbType, identifier.GetSymbol().GetText(), initialize)
 		defs = append(defs, dv)
 	}
 
 	return defs
+}
+
+func (v *ASTBuilder) VisitDefFunc(ctx *parser.DefFuncContext) interface{} {
+	priv := false
+	if ctx.GetPriv() != nil {
+		priv = true
+	}
+	retType := ctx.GetCbtype().Accept(v).(*models.TypeNode)
+	name := ctx.Identifier().GetSymbol().GetText()
+	// ps := ctx.Params().Accept(v)
+	// body := ctx.Block().Accept(v)
+
+	// DefinedFunction var7;
+	// try {
+	// 		boolean priv = this.storage();
+	// 		TypeRef ret = this.typeref();
+	// 		String n = this.name();
+	// 		this.jj_consume_token(46);
+	// 		Params ps = this.params();
+	// 		this.jj_consume_token(51);
+	// 		BlockNode body = this.block();
+	// 		TypeRef t = new FunctionTypeRef(ret, ps.parametersTypeRef());
+	// 		if ("" == null) {
+	// 			throw new Error("Missing return statement in function");
+	// 		}
+
+	// 		var7 = new DefinedFunction(priv, new TypeNode(t), n, ps, body);
+	// } finally {
+	// 		this.trace_return("defun");
+	// }
+
+	return models.NewDefinedFunction(priv, retType, name)
+}
+
+func (v *ASTBuilder) VisitBlock() interface{} {
+	return nil
 }
 
 func (v *ASTBuilder) VisitCondExpr(ctx *parser.CondExprContext) interface{} {
