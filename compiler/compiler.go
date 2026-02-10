@@ -62,7 +62,7 @@ func ParseFile(path string, opts *Options) *models.AST {
 	cbParser := parser.NewCbParser(tokenStream)
 	tree := cbParser.Prog()
 	fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
-	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}}
+	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}, sourcePath: path}
 	program := tree.Accept(builder) // builder.Visit(tree)
 	fmt.Println(program.(*models.AST))
 	return program.(*models.AST)

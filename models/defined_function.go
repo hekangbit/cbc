@@ -1,13 +1,17 @@
 package models
 
 type DefinedFunction struct {
-	body   ASTBlockNode
+	*BaseFunction
+	params *Params
+	body   *ASTBlockNode
 	scope  LocalScope
-	params Params
 	ir     []IRStmt
 }
 
-func NewDefinedFunction(prov bool, typeNode *TypeNode, name string) *DefinedFunction {
+func NewDefinedFunction(priv bool, typeNode *TypeNode, name string, params *Params, body *ASTBlockNode) *DefinedFunction {
 	var p = new(DefinedFunction)
+	p.isPrivate = priv
+	p.params = params
+	p.body = body
 	return p
 }

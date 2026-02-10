@@ -15,6 +15,11 @@ type BaseTypeRef struct {
 	location *Location
 }
 
+func NewBaseTypeRef(loc *Location) *BaseTypeRef {
+	return &BaseTypeRef{location: loc}
+
+}
+
 func (p *BaseTypeRef) Location() *Location {
 	return p.location
 }

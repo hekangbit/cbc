@@ -12,7 +12,7 @@ topDefs
 defVars
     : (priv='static')? cbtype=cbType Identifier (hasInit='=' initializer=expr)? (',' Identifier (hasInit='=' initializer=expr)?)* ';';
 defFunc
-    : (priv='static')? cbtype=cbTyperef Identifier '(' params ')' block;
+    : (priv='static')? retCbtype=cbTypeRef Identifier '(' params ')' block;
 typedef
     : 'typedef' cbType Identifier ';';
 
@@ -45,31 +45,42 @@ returnStmt
     : 'return' (expr)? ';';
 
 cbType
-    : cbTyperef;
-cbTyperef
-    : typerefBase ('['']' | '[' IntLiteral ']' | '*' | '(' paramTyperefs')')*;
-typerefBase
-    : 'void'
-    | 'char'
-    | 'short'
-    | 'int'
-    | 'long'
-    | 'unsigned char'
-    | 'unsigned short'
-    | 'unsigned' 'int'
-    | 'unsigned' 'long'
-    | 'struct' Identifier
+    : cbTypeRef;
+cbTypeRef
+    : cbTypeRefBase (typeModifier)*;
+cbTypeRefBase
+    : 'void'                           # voidTypeRef
+    | 'char'                           # charTypeRef
+    | 'short'                          # shortTypeRef
+    | 'int'                            # intTypeRef
+    | 'long'                           # longTypeRef
+    | 'unsigned' 'char'                # unsignedCharTypeRef
+    | 'unsigned' 'short'               # unsignedShortTypeRef
+    | 'unsigned' 'int'                 # unsignedIntTypeRef
+    | 'unsigned' 'long'                # unsignedLongTypeRef
+    | 'struct' Identifier              # structTypeRef
     ;
+typeModifier
+    : '[' ']'                          # arrayModifier
+    | '[' length=IntLiteral ']'        # sizedArrayModifier
+    | '*'                              # pointerModifier
+    | '(' paramTypeRefs ')'            # functionModifier
+    ;
+
 params
-    : 'void' | fixedParams (',' '...')? ;
+    : void='void'
+    | fixedParams (hasVararg=',' '...')?
+    ;
 fixedParams
     : param (',' param)*;
 param
     : cbType Identifier;
-paramTyperefs
-    : 'void' | fixedparamTyperefs (',' '...')? ;
-fixedparamTyperefs
-    : cbTyperef (',' cbTyperef)*;
+paramTypeRefs
+    : 'void'
+    | fixedparamTypeRefs (hasVararg=',' '...')?
+    ;
+fixedparamTypeRefs
+    : cbTypeRef (',' cbTypeRef)*;
 
 expr
     : term assignOp expr #AssignExpr

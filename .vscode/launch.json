@@ -7,7 +7,7 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}/",
-      "args": ["${workspaceFolder}/testcases/print.cb"]
+      "args": ["${workspaceFolder}/testcases/hello.cb"]
     },
     {
       "name": "Debug ANTLR4 Grammar",
