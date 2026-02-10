@@ -95,35 +95,14 @@ func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
 }
 
 func (v *ASTBuilder) VisitDefFunc(ctx *parser.DefFuncContext) interface{} {
-	priv := false
-	if ctx.GetPriv() != nil {
-		priv = true
-	}
-	retType := ctx.GetRetCbtype().Accept(v).(*models.TypeNode)
+	priv := ctx.GetPriv() != nil
+	retTypeRef := ctx.GetRetCbtype().Accept(v).(models.ITypeRef)
 	name := ctx.Identifier().GetSymbol().GetText()
 	params := ctx.Params().Accept(v).(*models.Params)
 	body := ctx.Block().Accept(v).(*models.ASTBlockNode)
-
-	// DefinedFunction var7;
-	// try {
-	// 		boolean priv = this.storage();
-	// 		TypeRef ret = this.typeref();
-	// 		String n = this.name();
-	// 		this.jj_consume_token(46);
-	// 		Params ps = this.params();
-	// 		this.jj_consume_token(51);
-	// 		BlockNode body = this.block();
-	// 		TypeRef t = new FunctionTypeRef(ret, ps.parametersTypeRef());
-	// 		if ("" == null) {
-	// 			throw new Error("Missing return statement in function");
-	// 		}
-
-	// 		var7 = new DefinedFunction(priv, new TypeNode(t), n, ps, body);
-	// } finally {
-	// 		this.trace_return("defun");
-	// }
-
-	return models.NewDefinedFunction(priv, retType, name, params, body)
+	funcTypeRef := models.NewFunctionTypeRef(retTypeRef, params.ParametersTypeRef())
+	funcTypeNode := models.NewTypeNodeFromRef(funcTypeRef)
+	return models.NewDefinedFunction(priv, funcTypeNode, name, params, body)
 }
 
 func (v *ASTBuilder) VisitParams(ctx *parser.ParamsContext) interface{} {

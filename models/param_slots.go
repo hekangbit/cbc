@@ -23,20 +23,21 @@ func NewBaseParamSlots[T any](loc *Location, paramDescs []T, vararg bool) *BaseP
 	}
 }
 
-// public ParamSlots(List<T> paramDescs) {
-// 	this(null, paramDescs);
-// }
+func NewBaseParamSlotsNoVararg[T any](loc *Location, paramDescs []T) *BaseParamSlots[T] {
+	return &BaseParamSlots[T]{
+		location:         loc,
+		paramDescriptors: paramDescs,
+		vararg:           false,
+	}
+}
 
-// public ParamSlots(Location loc, List<T> paramDescs) {
-// 	this(loc, paramDescs, false);
-// }
-
-// protected ParamSlots(Location loc, List<T> paramDescs, boolean vararg) {
-// 	super();
-// 	this.location = loc;
-// 	this.paramDescriptors = paramDescs;
-// 	this.vararg = vararg;
-// }
+func NewBaseParamSlotsNoLocation[T any](loc *Location, paramDescs []T) *BaseParamSlots[T] {
+	return &BaseParamSlots[T]{
+		location:         nil,
+		paramDescriptors: paramDescs,
+		vararg:           false,
+	}
+}
 
 func (p *BaseParamSlots[T]) Argc() int {
 	if p.vararg {
