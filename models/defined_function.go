@@ -9,9 +9,9 @@ type DefinedFunction struct {
 }
 
 func NewDefinedFunction(priv bool, typeNode *TypeNode, name string, params *Params, body *ASTBlockNode) *DefinedFunction {
-	var p = new(DefinedFunction)
-	p.isPrivate = priv
-	p.params = params
-	p.body = body
-	return p
+	return &DefinedFunction{
+		BaseFunction: NewBaseFunction(priv, typeNode, name),
+		params:       params,
+		body:         body,
+	}
 }

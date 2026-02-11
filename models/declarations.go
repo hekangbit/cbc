@@ -6,7 +6,10 @@ type Declarations struct {
 }
 
 func NewDeclarations() *Declarations {
-	return &Declarations{defvars: make(map[*DefinedVariable]struct{})}
+	return &Declarations{
+		defvars: make(map[*DefinedVariable]struct{}),
+		deffuns: make(map[*DefinedFunction]struct{}),
+	}
 }
 
 func (decls *Declarations) Add(new_decls *Declarations) {

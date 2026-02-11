@@ -5,7 +5,13 @@ type Function interface {
 }
 
 type BaseFunction struct {
-	BaseEntity
+	*BaseEntity
 	// callingSymbol Symbol
 	// label         Label
+}
+
+func NewBaseFunction(isPriv bool, typeNode *TypeNode, name string) *BaseFunction {
+	return &BaseFunction{
+		BaseEntity: NewBaseEntity(isPriv, typeNode, name),
+	}
 }
