@@ -2,18 +2,18 @@ package models
 
 // BlockNode 表示代码块节点
 type ASTBlockNode struct {
-	*BaseStmtNode
+	*BaseASTStmtNode
 	variables []*DefinedVariable
-	stmts     []IStmtNode
+	stmts     []IASTStmtNode
 	scope     *LocalScope
 }
 
 // NewBlockNode 创建新的代码块节点
-func NewASTBlockNode(loc *Location, vars []*DefinedVariable, stmts []IStmtNode) *ASTBlockNode {
+func NewASTBlockNode(loc *Location, vars []*DefinedVariable, stmts []IASTStmtNode) *ASTBlockNode {
 	return &ASTBlockNode{
-		BaseStmtNode: NewBaseStmtNode(loc),
-		variables:    vars,
-		stmts:        stmts,
+		BaseASTStmtNode: NewBaseASTStmtNode(loc),
+		variables:       vars,
+		stmts:           stmts,
 	}
 }
 
@@ -23,12 +23,12 @@ func (this *ASTBlockNode) Variables() []*DefinedVariable {
 }
 
 // Stmts 返回语句列表
-func (this *ASTBlockNode) Stmts() []IStmtNode {
+func (this *ASTBlockNode) Stmts() []IASTStmtNode {
 	return this.stmts
 }
 
 // TailStmt 返回最后一个语句
-func (this *ASTBlockNode) TailStmt() IStmtNode {
+func (this *ASTBlockNode) TailStmt() IASTStmtNode {
 	if len(this.stmts) == 0 {
 		return nil
 	}
@@ -51,5 +51,5 @@ func (this *ASTBlockNode) Dump(d *Dumper) {
 
 // Accept 实现访问者模式
 func (this *ASTBlockNode) Accept(visitor ASTVisitor) interface{} {
-	return visitor.Visit(this)
+	return visitor.VisitBlock(this)
 }

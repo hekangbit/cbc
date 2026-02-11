@@ -6,13 +6,13 @@ import (
 
 type DefinedVariable struct {
 	BaseVariable
-	initializer *ExprNode
+	initializer IASTExprNode
 	irobj       IRExpr
 	sequence    int64
 	symbol      asm.ISymbol
 }
 
-func NewDefinedVariable(priv bool, typeNode *TypeNode, name string, init *ExprNode) *DefinedVariable {
+func NewDefinedVariable(priv bool, typeNode *TypeNode, name string, init IASTExprNode) *DefinedVariable {
 	var p = new(DefinedVariable)
 	p.isPrivate = priv
 	p.name = name

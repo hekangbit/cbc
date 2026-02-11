@@ -17,15 +17,15 @@ typedef
     : 'typedef' cbType Identifier ';';
 
 stmt
-    : expr ';' #ExprStatement
-    | block    #BlockStatement
-    | ifStmt   #IfStatement
-    | whileStmt #WhileStatement
-    | forStmt #ForStatement
-    | breakStmt #BreakStatement
-    | continueStmt #ContinueStatement
-    | gotoStmt #GotoStatement
-    | returnStmt #ReturnStatement
+    : expr ';'                         #ExprStatement
+    | block                            #BlockStatement
+    | ifStmt                           #IfStatement
+    | whileStmt                        #WhileStatement
+    | forStmt                          #ForStatement
+    | breakStmt                        #BreakStatement
+    | continueStmt                     #ContinueStatement
+    | gotoStmt                         #GotoStatement
+    | returnStmt                       #ReturnStatement
     ;
 block
     : '{' (defVars)* (stmt)* '}';
@@ -83,8 +83,8 @@ fixedparamTypeRefs
     : cbTypeRef (',' cbTypeRef)*;
 
 expr
-    : term assignOp expr #AssignExpr
-    | expr10 #CondExpr
+    : term assignOp expr               #AssignExpr
+    | expr10                           #CondExpr
     ;
 assignOp
     : '='

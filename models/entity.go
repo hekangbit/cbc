@@ -11,7 +11,7 @@ type IEntity interface {
 	IsDefined() bool
 	IsInitialized() bool
 	IsConstant() bool
-	Value() ExprNode
+	Value() IASTExprNode
 	IsParameter() bool
 	IsPrivate() bool
 	TypeNode() *TypeNode
@@ -93,7 +93,7 @@ func (e *BaseEntity) IsConstant() bool {
 }
 
 // Value 默认抛出错误（panic）
-func (e *BaseEntity) Value() ExprNode {
+func (e *BaseEntity) Value() IASTExprNode {
 	panic("Entity#value")
 }
 

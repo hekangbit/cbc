@@ -74,7 +74,7 @@ func (v *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 }
 
 func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
-	var initialize *models.ExprNode = nil
+	var initialize models.IASTExprNode = nil
 	var defs []*models.DefinedVariable
 	priv := false
 	if ctx.GetPriv() != nil {
@@ -85,7 +85,7 @@ func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
 	for _, identifier := range ctx.AllIdentifier() {
 		initialize = nil
 		if ctx.GetHasInit() != nil {
-			initialize = ctx.GetInitializer().Accept(v).(*models.ExprNode)
+			initialize = ctx.GetInitializer().Accept(v).(models.IASTExprNode)
 		}
 		dv := models.NewDefinedVariable(priv, cbType, identifier.GetSymbol().GetText(), initialize)
 		defs = append(defs, dv)
@@ -125,9 +125,9 @@ func (v *ASTBuilder) VisitBlock(ctx *parser.BlockContext) interface{} {
 		defLocalVars = append(defLocalVars, vars...)
 	}
 
-	stmts := make([]models.IStmtNode, 0)
+	stmts := make([]models.IASTStmtNode, 0)
 	for _, stmtsCtx := range ctx.AllStmt() {
-		stmt := stmtsCtx.Accept(v).(models.IStmtNode)
+		stmt := stmtsCtx.Accept(v).(models.IASTStmtNode)
 		stmts = append(stmts, stmt)
 	}
 
@@ -167,11 +167,20 @@ func (v *ASTBuilder) VisitGotoStatement(ctx *parser.GotoStatementContext) interf
 }
 
 func (v *ASTBuilder) VisitReturnStatement(ctx *parser.ReturnStatementContext) interface{} {
-	return nil
+	return ctx.ReturnStmt().Accept(v)
+}
+
+func (v *ASTBuilder) VisitReturnStmt(ctx *parser.ReturnStmtContext) interface{} {
+	var exprNode models.IASTExprNode = nil
+	if ctx.Expr() != nil {
+		exprNode = ctx.Expr().Accept(v).(models.IASTExprNode)
+
+	}
+	return models.NewASTReturnNode(models.NewLocation(v.sourcePath, ctx.GetStart()), exprNode)
 }
 
 func (v *ASTBuilder) VisitCondExpr(ctx *parser.CondExprContext) interface{} {
-	return &models.ExprNode{}
+	return nil
 }
 
 func (v *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
