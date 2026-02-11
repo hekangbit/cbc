@@ -119,6 +119,54 @@ func (v *ASTBuilder) VisitParams(ctx *parser.ParamsContext) interface{} {
 }
 
 func (v *ASTBuilder) VisitBlock(ctx *parser.BlockContext) interface{} {
+	defLocalVars := make([]*models.DefinedVariable, 0)
+	for _, defVarsCtx := range ctx.AllDefVars() {
+		vars := defVarsCtx.Accept(v).([]*models.DefinedVariable)
+		defLocalVars = append(defLocalVars, vars...)
+	}
+
+	stmts := make([]models.IStmtNode, 0)
+	for _, stmtsCtx := range ctx.AllStmt() {
+		stmt := stmtsCtx.Accept(v).(models.IStmtNode)
+		stmts = append(stmts, stmt)
+	}
+
+	return models.NewASTBlockNode(models.NewLocation(v.sourcePath, ctx.GetStart()), defLocalVars, stmts)
+}
+
+func (v *ASTBuilder) VisitExprStatement(ctx *parser.ExprStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitBlockStatement(ctx *parser.BlockStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitIfStatement(ctx *parser.IfStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitWhileStatement(ctx *parser.WhileStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitForStatement(ctx *parser.ForStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitBreakStatement(ctx *parser.BreakStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitContinueStatement(ctx *parser.ContinueStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitGotoStatement(ctx *parser.GotoStatementContext) interface{} {
+	return nil
+}
+
+func (v *ASTBuilder) VisitReturnStatement(ctx *parser.ReturnStatementContext) interface{} {
 	return nil
 }
 
