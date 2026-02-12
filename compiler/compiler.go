@@ -37,6 +37,12 @@ func DebugDump(path string) {
 	fmt.Println(program.(*models.AST))
 }
 
+func DumpAST(ast *models.AST, mode CompilerMode) bool {
+	dumper := models.NewDumper(os.Stdout)
+	ast.Dump(dumper)
+	return false
+}
+
 func GenerateExecutable(opts *Options) {
 }
 
@@ -94,9 +100,9 @@ func Compile(srcPath string, dstPath string, opts *Options) {
 
 	typeTable := opts.GetTypeTable()
 	tree = ParseFile(srcPath, opts)
-	// if (DumpAST(tree, opts.mode())) {
-	// 	return
-	// }
+	if DumpAST(tree, opts.Mode()) {
+		return
+	}
 	tree = SemanticAnalyze(tree, typeTable, opts)
 	// if (DumpSemant(tree, opts.mode())) {
 	// 	return

@@ -1,6 +1,7 @@
 package models
 
 type AST struct {
+	*BaseNode
 	name  string
 	decls *Declarations
 }

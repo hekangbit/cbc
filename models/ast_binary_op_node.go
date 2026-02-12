@@ -1,7 +1,7 @@
 package models
 
 type ASTBinaryOpNode struct {
-	*BaseASTExprNode
+	*ASTBaseExprNode
 	operator string
 	left     IASTExprNode
 	right    IASTExprNode
@@ -12,7 +12,7 @@ var _ IASTExprNode = (*ASTBinaryOpNode)(nil)
 
 func NewASTBinaryOpNode(left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
 	return &ASTBinaryOpNode{
-		BaseASTExprNode: NewBaseExprNode(),
+		ASTBaseExprNode: NewBaseExprNode(),
 		operator:        op,
 		left:            left,
 		right:           right,
@@ -22,7 +22,7 @@ func NewASTBinaryOpNode(left IASTExprNode, op string, right IASTExprNode) *ASTBi
 
 func NewASTBinaryOpNodeWithType(ty IType, left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
 	return &ASTBinaryOpNode{
-		BaseASTExprNode: NewBaseExprNode(),
+		ASTBaseExprNode: NewBaseExprNode(),
 		operator:        op,
 		left:            left,
 		right:           right,

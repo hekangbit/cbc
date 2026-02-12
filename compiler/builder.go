@@ -190,34 +190,59 @@ func (v *ASTBuilder) VisitBlock(ctx *parser.BlockContext) interface{} {
 }
 
 func (v *ASTBuilder) VisitExprStatement(ctx *parser.ExprStatementContext) interface{} {
-	return nil
+	expr := ctx.Expr().Accept(v).(models.IASTExprNode)
+	return models.NewASTExprStmtNode(models.NewLocation(v.sourcePath, ctx.GetStart()), expr)
 }
 
 func (v *ASTBuilder) VisitBlockStatement(ctx *parser.BlockStatementContext) interface{} {
-	return nil
+	return ctx.Block().Accept(v)
 }
 
 func (v *ASTBuilder) VisitIfStatement(ctx *parser.IfStatementContext) interface{} {
+	return ctx.IfStmt().Accept(v)
+}
+
+func (v *ASTBuilder) VisitIfStmt(ctx *parser.IfStmtContext) interface{} {
 	return nil
 }
 
 func (v *ASTBuilder) VisitWhileStatement(ctx *parser.WhileStatementContext) interface{} {
+	return ctx.WhileStmt().Accept(v)
+}
+
+func (v *ASTBuilder) VisitWhileStmt(cgtx *parser.WhileStmtContext) interface{} {
 	return nil
 }
 
 func (v *ASTBuilder) VisitForStatement(ctx *parser.ForStatementContext) interface{} {
+	return ctx.ForStmt().Accept(v)
+}
+
+func (v *ASTBuilder) VisitForStmt(ctx *parser.ForStmtContext) interface{} {
 	return nil
 }
 
 func (v *ASTBuilder) VisitBreakStatement(ctx *parser.BreakStatementContext) interface{} {
+	return ctx.BreakStmt().Accept(v)
+}
+
+func (v *ASTBuilder) VisitBreakStmt(ctx *parser.BreakStmtContext) interface{} {
 	return nil
 }
 
 func (v *ASTBuilder) VisitContinueStatement(ctx *parser.ContinueStatementContext) interface{} {
+	return ctx.ContinueStmt().Accept(v)
+}
+
+func (v *ASTBuilder) VisitContinueStmt(ctx *parser.ContinueStmtContext) interface{} {
 	return nil
 }
 
 func (v *ASTBuilder) VisitGotoStatement(ctx *parser.GotoStatementContext) interface{} {
+	return ctx.GotoStmt().Accept(v)
+}
+
+func (v *ASTBuilder) VisitGotoStmt(ctx *parser.GotoStmtContext) interface{} {
 	return nil
 }
 
@@ -231,6 +256,10 @@ func (v *ASTBuilder) VisitReturnStmt(ctx *parser.ReturnStmtContext) interface{} 
 		exprNode = ctx.Expr().Accept(v).(models.IASTExprNode)
 	}
 	return models.NewASTReturnNode(models.NewLocation(v.sourcePath, ctx.GetStart()), exprNode)
+}
+
+func (v *ASTBuilder) VisitExpr(ctx *parser.ExprContext) interface{} {
+	return &models.ASTBaseExprNode{}
 }
 
 func (v *ASTBuilder) VisitCondExpr(ctx *parser.CondExprContext) interface{} {

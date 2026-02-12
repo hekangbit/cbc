@@ -27,6 +27,7 @@ stmt
     | gotoStmt                         #GotoStatement
     | returnStmt                       #ReturnStatement
     ;
+
 block
     : '{' (defVars)* (stmt)* '}';
 ifStmt
@@ -42,7 +43,8 @@ continueStmt
 gotoStmt
     : 'goto' Identifier ';';
 returnStmt
-    : 'return' (expr)? ';';
+    : 'return' expr? ';'
+    ;
 
 cbType
     : cbTypeRef;
@@ -82,10 +84,6 @@ paramTypeRefs
 fixedparamTypeRefs
     : cbTypeRef (',' cbTypeRef)*;
 
-expr
-    : term assignOp expr               #AssignExpr
-    | expr10                           #CondExpr
-    ;
 assignOp
     : '='
     | '+='
@@ -93,8 +91,12 @@ assignOp
     | '*='
     | '/='
     ;
+expr
+    : term assignOp expr
+    | expr10
+    ;
 expr10
-    : expr9 ('?' expr ':' expr10)?
+    : expr9 ('?' expr ':' expr10)?     #CondExpr
     ;
 expr9
     : expr8 ('||' expr8)*
@@ -150,11 +152,11 @@ args
     : expr (',' expr)*
     ;
 primary
-    : IntLiteral #IntConst
-    | Character #CharConst
-    | StringLiteral #StringConst
-    | Identifier #Identifier
-    | '(' expr ')' #SubExpr
+    : IntLiteral                       #IntConst
+    | Character                        #CharConst
+    | StringLiteral                    #StringConst
+    | Identifier                       #Identifier
+    | '(' expr ')'                     #SubExpr
     ;
 
 MUL : '*' ;
