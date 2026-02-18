@@ -1,63 +1,62 @@
 package models
 
-type ParamSlots interface {
+type IParamSlots interface {
 	Argc() int
 	MinArgc() int
 	AcceptVarargs()
 	IsVararg() bool
-	Location() Location
+	Location() *Location
 }
 
-type BaseParamSlots[T any] struct {
+type ParamSlots[T any] struct {
 	location         *Location
 	paramDescriptors []T
 	vararg           bool
 }
 
-// 构造函数
-func NewBaseParamSlots[T any](loc *Location, paramDescs []T, vararg bool) *BaseParamSlots[T] {
-	return &BaseParamSlots[T]{
-		location:         loc,
-		paramDescriptors: paramDescs,
-		vararg:           vararg,
-	}
-}
-
-func NewBaseParamSlotsNoVararg[T any](loc *Location, paramDescs []T) *BaseParamSlots[T] {
-	return &BaseParamSlots[T]{
-		location:         loc,
-		paramDescriptors: paramDescs,
-		vararg:           false,
-	}
-}
-
-func NewBaseParamSlotsNoLocation[T any](loc *Location, paramDescs []T) *BaseParamSlots[T] {
-	return &BaseParamSlots[T]{
+func NewParamSlots[T any](paramDescs []T) *ParamSlots[T] {
+	return &ParamSlots[T]{
 		location:         nil,
 		paramDescriptors: paramDescs,
 		vararg:           false,
 	}
 }
 
-func (p *BaseParamSlots[T]) Argc() int {
+func NewParamSlotsWithLoc[T any](loc *Location, paramDescs []T) *ParamSlots[T] {
+	return &ParamSlots[T]{
+		location:         loc,
+		paramDescriptors: paramDescs,
+		vararg:           false,
+	}
+}
+
+func NewParamSlotsFull[T any](loc *Location, paramDescs []T, vararg bool) *ParamSlots[T] {
+	return &ParamSlots[T]{
+		location:         loc,
+		paramDescriptors: paramDescs,
+		vararg:           vararg,
+	}
+}
+
+func (p *ParamSlots[T]) Argc() int {
 	if p.vararg {
 		//  throw new Error("must not happen: Param#argc for vararg");
 	}
 	return len(p.paramDescriptors)
 }
 
-func (p *BaseParamSlots[T]) MinArgc() int {
+func (p *ParamSlots[T]) MinArgc() int {
 	return len(p.paramDescriptors)
 }
 
-func (p *BaseParamSlots[T]) AcceptVarargs() {
+func (p *ParamSlots[T]) AcceptVarargs() {
 	p.vararg = true
 }
 
-func (p *BaseParamSlots[T]) IsVararg() bool {
+func (p *ParamSlots[T]) IsVararg() bool {
 	return p.vararg
 }
 
-func (p *BaseParamSlots[T]) Location() *Location {
+func (p *ParamSlots[T]) Location() *Location {
 	return p.location
 }

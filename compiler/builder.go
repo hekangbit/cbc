@@ -38,7 +38,7 @@ func (v *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
 	fmt.Println("ASTBuilder VisitProg")
 	ctx.ImportStmts().Accept(v)
 	decls := ctx.TopDefs().Accept(v).(*models.Declarations)
-	return models.NewAst("cbc program", decls)
+	return models.NewAST(models.NewLocation(v.sourcePath, ctx.GetStart()), decls)
 }
 
 func (v *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {
@@ -68,7 +68,7 @@ func (v *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 	}
 	for _, defFun := range ctx.AllDefFunc() {
 		f := defFun.Accept(v)
-		decls.AddDefFunc(f.(*models.DefinedFunction))
+		decls.AddDeffun(f.(*models.DefinedFunction))
 	}
 	return decls
 }

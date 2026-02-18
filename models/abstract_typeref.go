@@ -22,14 +22,14 @@ func NewBaseTypeRef(loc *Location) *BaseTypeRef {
 
 }
 
-func (p *BaseTypeRef) Location() *Location {
-	return p.location
+func (this *BaseTypeRef) Location() *Location {
+	return this.location
 }
 
-func (p *BaseTypeRef) HashCode() int32 {
-	return util.HashCode(util.ToString(p))
+func (this *BaseTypeRef) HashCode() int32 {
+	return util.HashCode(util.ToString(this))
 }
 
-func (p *BaseTypeRef) String() string {
+func (this *BaseTypeRef) String() string {
 	panic("String method must be implemented by concrete type")
 }

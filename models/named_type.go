@@ -1,28 +1,28 @@
 package models
 
-type NamedType interface {
+type INamedType interface {
 	IType
 	Name() string
 	Location() Location
 }
 
-type BaseNamedType struct {
+type NamedType struct {
 	BaseType
 	name     string
 	location Location
 }
 
-func NewBaseNamedType(name string, location Location) *BaseNamedType {
-	return &BaseNamedType{
+func NewNamedType(name string, location Location) *NamedType {
+	return &NamedType{
 		name:     name,
 		location: location,
 	}
 }
 
-func (t *BaseNamedType) Name() string {
-	return t.name
+func (this *NamedType) Name() string {
+	return this.name
 }
 
-func (t *BaseNamedType) Location() Location {
-	return t.location
+func (this *NamedType) Location() Location {
+	return this.location
 }

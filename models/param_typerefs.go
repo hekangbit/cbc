@@ -3,13 +3,13 @@ package models
 import "reflect"
 
 type ParamTypeRefs struct {
-	*BaseParamSlots[ITypeRef]
+	*ParamSlots[ITypeRef]
 }
 
 // NewParams 构造函数
 func NewParamTypeRefs(location *Location, paramDescs []ITypeRef, vararg bool) *ParamTypeRefs {
 	return &ParamTypeRefs{
-		BaseParamSlots: NewBaseParamSlots(location, paramDescs, vararg),
+		ParamSlots: NewParamSlotsFull(location, paramDescs, vararg),
 	}
 }
 

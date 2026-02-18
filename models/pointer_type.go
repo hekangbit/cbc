@@ -15,83 +15,77 @@ func NewPointerType(size int64, elemType IType) *PointerType {
 	}
 }
 
-func (t *PointerType) Size() int64 {
-	return t.size
+func (this *PointerType) Size() int64 {
+	return this.size
 }
 
-func (t *PointerType) AllocSize() int64 {
-	return t.size
+func (this *PointerType) AllocSize() int64 {
+	return this.size
 }
 
-func (t *PointerType) Alignment() int64 {
-	return t.size
+func (this *PointerType) Alignment() int64 {
+	return this.size
 }
 
-func (t *PointerType) IsPointer() bool {
+func (this *PointerType) IsPointer() bool {
 	return true
 }
 
-func (t *PointerType) IsScalar() bool {
+func (this *PointerType) IsScalar() bool {
 	return true
 }
 
-func (t *PointerType) IsSigned() bool {
+func (this *PointerType) IsSigned() bool {
 	return false
 }
 
-func (t *PointerType) IsCallable() bool {
+func (this *PointerType) IsCallable() bool {
 	return false
 }
 
-func (t *PointerType) ElemType() IType {
-	return t.elemType
+func (this *PointerType) ElemType() IType {
+	return this.elemType
 }
 
-func (t *PointerType) Equals(other interface{}) bool {
+func (this *PointerType) Equals(other interface{}) bool {
 	otherPtr, ok := other.(*PointerType)
 	if !ok {
 		return false
 	}
-
-	// 比较基类型是否相等
-	return t.elemType.IsSameType(otherPtr.elemType)
+	// compare elem type
+	return this.elemType.IsSameType(otherPtr.elemType)
 }
 
-// IsSameType 检查类型是否相同
-func (t *PointerType) IsSameType(other IType) bool {
+func (this *PointerType) IsSameType(other IType) bool {
 	if !other.IsPointer() {
 		return false
 	}
 	otherElemType := other.ElemType()
-	return t.elemType.IsSameType(otherElemType)
+	return this.elemType.IsSameType(otherElemType)
 }
 
-// IsCompatible 检查类型是否兼容
-func (t *PointerType) IsCompatible(other IType) bool {
+func (this *PointerType) IsCompatible(other IType) bool {
 	if !other.IsPointer() {
 		return false
 	}
 
 	otherElemType := other.ElemType()
 
-	// 如果当前指针指向void，或者目标指针指向void，都兼容
-	if t.elemType.IsVoid() || otherElemType.IsVoid() {
+	if this.elemType.IsVoid() || otherElemType.IsVoid() {
 		return true
 	}
 
-	return t.elemType.IsCompatible(otherElemType)
+	return this.elemType.IsCompatible(otherElemType)
 }
 
-func (t *PointerType) GetPointerType() *PointerType {
-	return t
+func (this *PointerType) GetPointerType() *PointerType {
+	return this
 }
 
-// IsCastableTo 检查是否可以强制转换到目标类型
-func (t *PointerType) IsCastableTo(target IType) bool {
+func (this *PointerType) IsCastableTo(target IType) bool {
 	return target.IsPointer() || target.IsInteger()
 }
 
-// String 返回字符串表示
-func (t *PointerType) String() string {
-	return fmt.Sprintf("%s*", t.elemType)
+func (this *PointerType) String() string {
+	return fmt.Sprintf("%s*", this.elemType)
 }

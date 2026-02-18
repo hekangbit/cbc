@@ -5,6 +5,9 @@ TARGET_BIN := cbc
 MAIN_SRC := $(wildcard ./main.go)
 COMPILER_SRCS := $(wildcard compiler/*.go)
 MODELS_SRCS := $(wildcard models/*.go)
+ASM_SRCS := $(wildcard asm/*.go)
+UTIL_SRCS := $(wildcard util/*.go)
+SYSDEP_SRCS := $(wildcard util/*.go util/x86/*.go)
 PARSER_SRCS := \
 	$(PARSER_DIR)/Cb.interp \
 	$(PARSER_DIR)/Cb.tokens \
@@ -24,7 +27,7 @@ ${PARSER_SRCS}: $(GRAMMAR_DIR)/Makefile $(GRAMMAR_DIR)/*.g4
 	$(MAKE) -C $(GRAMMAR_DIR)
 	@echo "generate parser done"
 
-${TARGET_BIN}: ${MAIN_SRC} ${PARSER_SRCS} ${COMPILER_SRCS} ${MODELS_SRCS}
+${TARGET_BIN}: ${MAIN_SRC} ${PARSER_SRCS} ${COMPILER_SRCS} ${MODELS_SRCS} ${ASM_SRCS} ${UTIL_SRCS} ${SYSDEP_SRCS}
 	@echo "build $(TARGET_BIN) ..."
 	go build -o $(TARGET_BIN) .
 	@echo "build done"

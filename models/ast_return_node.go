@@ -1,7 +1,7 @@
 package models
 
 type ASTReturnNode struct {
-	*BaseASTStmtNode
+	*ASTStmtNode
 	expr IASTExprNode
 }
 
@@ -9,8 +9,8 @@ var _ IASTStmtNode = (*ASTReturnNode)(nil)
 
 func NewASTReturnNode(loc *Location, expr IASTExprNode) *ASTReturnNode {
 	return &ASTReturnNode{
-		BaseASTStmtNode: NewBaseASTStmtNode(loc),
-		expr:            expr,
+		ASTStmtNode: NewASTStmtNode(loc),
+		expr:        expr,
 	}
 }
 

@@ -4,6 +4,6 @@ type IVariable interface {
 	IEntity
 }
 
-type BaseVariable struct {
-	BaseEntity
+type Variable struct {
+	Entity
 }

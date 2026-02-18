@@ -74,7 +74,6 @@ func (this *ASTBinaryOpNode) Dump(d *Dumper) {
 	d.PrintMemberDumpable("right", this.right)
 }
 
-// Accept 实现访问者模式
 func (this *ASTBinaryOpNode) Accept(visitor ASTVisitor) interface{} {
 	return visitor.VisitBinaryOp(this)
 }

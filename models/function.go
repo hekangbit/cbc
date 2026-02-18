@@ -1,17 +1,70 @@
 package models
 
-type Function interface {
+import "cbc/asm"
+
+type IFunction interface {
 	IEntity
+	Parameters() []*CBCParameter
+	ReturnType() IType
+	IsVoid() bool
+	SetCallingSymbol(asm.ISymbol)
+	CallingSymbol() asm.ISymbol
+	Label() *asm.Label
 }
 
-type BaseFunction struct {
-	*BaseEntity
-	// callingSymbol Symbol
-	// label         Label
+type Function struct {
+	Entity
+	callingSymbol asm.ISymbol
+	label         *asm.Label
 }
 
-func NewBaseFunction(isPriv bool, typeNode *TypeNode, name string) *BaseFunction {
-	return &BaseFunction{
-		BaseEntity: NewBaseEntity(isPriv, typeNode, name),
+var _ IFunction = (*Function)(nil)
+
+func NewFunction(isPriv bool, typeNode *TypeNode, name string) *Function {
+	return &Function{
+		Entity: Entity{
+			isPrivate: isPriv,
+			typeNode:  typeNode,
+			name:      name,
+		},
 	}
+}
+
+func (this *Function) IsInitialized() bool {
+	return true
+}
+
+func (this *Function) Parameters() []*CBCParameter {
+	panic("Function::Parameters abstract method")
+}
+
+func (this *Function) ReturnType() IType {
+	return this.Type().GetFunctionType().ReturnType()
+}
+
+func (this *Function) IsVoid() bool {
+	return this.ReturnType().IsVoid()
+}
+
+func (this *Function) SetCallingSymbol(sym asm.ISymbol) {
+	if this.callingSymbol != nil {
+		//TODO: java use throw new Error
+		panic("must not happen: Function#callingSymbol was set again")
+	}
+	this.callingSymbol = sym
+}
+
+func (this *Function) CallingSymbol() asm.ISymbol {
+	if this.callingSymbol == nil {
+		//TODO: java use throw new Error
+		panic("must not happen: Function#callingSymbol called but null")
+	}
+	return this.callingSymbol
+}
+
+func (this *Function) Label() *asm.Label {
+	if this.label != nil {
+		return this.label
+	}
+	return asm.NewLabel(this.CallingSymbol())
 }

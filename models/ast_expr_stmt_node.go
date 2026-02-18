@@ -1,14 +1,14 @@
 package models
 
 type ASTExprStmtNode struct {
-	*BaseASTStmtNode
+	*ASTStmtNode
 	expr IASTExprNode
 }
 
 func NewASTExprStmtNode(loc *Location, expr IASTExprNode) *ASTExprStmtNode {
 	return &ASTExprStmtNode{
-		BaseASTStmtNode: NewBaseASTStmtNode(loc),
-		expr:            expr,
+		ASTStmtNode: NewASTStmtNode(loc),
+		expr:        expr,
 	}
 
 }

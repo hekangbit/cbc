@@ -40,7 +40,18 @@ func DebugDump(path string) {
 func DumpAST(ast *models.AST, mode CompilerMode) bool {
 	dumper := models.NewDumper(os.Stdout)
 	ast.Dump(dumper)
-	return false
+	switch mode {
+	case COMPILER_MODE_DumpTokens:
+		return true
+	case COMPILER_MODE_DumpAST:
+		return true
+	case COMPILER_MODE_DumpStmt:
+		return true
+	case COMPILER_MODE_DumpExpr:
+		return true
+	default:
+		return false
+	}
 }
 
 func GenerateExecutable(opts *Options) {
@@ -69,9 +80,10 @@ func ParseFile(path string, opts *Options) *models.AST {
 	tree := cbParser.Prog()
 	fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
 	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}, sourcePath: path}
-	program := tree.Accept(builder) // builder.Visit(tree)
-	fmt.Println(program.(*models.AST))
-	return program.(*models.AST)
+	program := tree.Accept(builder)
+	cbAST := program.(*models.AST)
+	cbAST.SetStream(cbLexer, tokenStream)
+	return cbAST
 }
 
 func SemanticAnalyze(astNode *models.AST, typeTable models.TypeTable, opts *Options) *models.AST {
