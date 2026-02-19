@@ -162,7 +162,9 @@ func (this *AST) SetStream(cbLexer *parser.CbLexer, stream *antlr.CommonTokenStr
 
 func (this *AST) DumpTokens(w io.Writer) {
 	for _, t := range this.stream.GetAllTokens() {
-		this.PrintPair(this.cbLexer.SymbolicNames[t.GetTokenType()], t.GetText(), w)
+		if t.GetTokenType() != antlr.TokenEOF {
+			this.PrintPair(this.cbLexer.SymbolicNames[t.GetTokenType()], t.GetText(), w)
+		}
 	}
 }
 

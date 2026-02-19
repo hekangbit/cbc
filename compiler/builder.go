@@ -4,7 +4,6 @@ import (
 	"cbc/loader"
 	"cbc/models"
 	"cbc/parser"
-	"fmt"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -35,14 +34,12 @@ func (v *ASTBuilder) VisitErrorNode(_ antlr.ErrorNode) interface{} {
 }
 
 func (v *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
-	fmt.Println("ASTBuilder VisitProg")
 	ctx.ImportStmts().Accept(v)
 	decls := ctx.TopDefs().Accept(v).(*models.Declarations)
 	return models.NewAST(models.NewLocation(v.sourcePath, ctx.GetStart()), decls)
 }
 
 func (v *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {
-	fmt.Println("ASTBuilder VisitImportStmts")
 	for _, importStmt := range ctx.AllImportStmt() {
 		importStmt.Accept(v)
 	}
@@ -50,7 +47,6 @@ func (v *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{
 }
 
 func (v *ASTBuilder) VisitImportStmt(ctx *parser.ImportStmtContext) interface{} {
-	fmt.Println("ASTBuilder VisitImportStmt")
 	path := ctx.Identifier(0).GetText()
 	for i := 1; i < len(ctx.AllIdentifier()); i++ {
 		path = path + "." + ctx.Identifier(i).GetText()
@@ -60,7 +56,6 @@ func (v *ASTBuilder) VisitImportStmt(ctx *parser.ImportStmtContext) interface{} 
 }
 
 func (v *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
-	fmt.Println("ASTBuilder VisitTopDefs")
 	decls := models.NewDeclarations()
 	for _, defVars := range ctx.AllDefVars() {
 		defvars := defVars.Accept(v)

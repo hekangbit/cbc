@@ -39,11 +39,12 @@ func DebugDump(path string) {
 
 func DumpAST(ast *models.AST, mode CompilerMode) bool {
 	dumper := models.NewDumper(os.Stdout)
-	ast.Dump(dumper)
 	switch mode {
 	case COMPILER_MODE_DumpTokens:
+		ast.DumpTokens(os.Stdout)
 		return true
 	case COMPILER_MODE_DumpAST:
+		ast.Dump(dumper)
 		return true
 	case COMPILER_MODE_DumpStmt:
 		return true
@@ -67,18 +68,9 @@ func ParseFile(path string, opts *Options) *models.AST {
 	}
 	input := antlr.NewInputStream(string(src))
 	cbLexer := parser.NewCbLexer(input)
-	for {
-		t := cbLexer.NextToken()
-		if t.GetTokenType() == antlr.TokenEOF {
-			break
-		}
-		fmt.Printf("%s (%q)\n", cbLexer.SymbolicNames[t.GetTokenType()], t.GetText())
-	}
-	cbLexer.Reset()
 	tokenStream := antlr.NewCommonTokenStream(cbLexer, antlr.TokenDefaultChannel)
 	cbParser := parser.NewCbParser(tokenStream)
 	tree := cbParser.Prog()
-	fmt.Println(tree.ToStringTree(cbParser.RuleNames, cbParser))
 	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}, sourcePath: path}
 	program := tree.Accept(builder)
 	cbAST := program.(*models.AST)
