@@ -42,6 +42,6 @@ func (this *ASTBlockNode) Dump(d *Dumper) {
 	d.PrintClass(this, this.Location())
 }
 
-func (this *ASTBlockNode) Accept(visitor ASTVisitor) interface{} {
+func (this *ASTBlockNode) Accept(visitor IASTVisitor) interface{} {
 	return visitor.VisitBlock(this)
 }

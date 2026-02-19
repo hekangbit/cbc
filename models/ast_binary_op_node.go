@@ -1,7 +1,7 @@
 package models
 
 type ASTBinaryOpNode struct {
-	*ASTBaseExprNode
+	*ASTExprNode
 	operator string
 	left     IASTExprNode
 	right    IASTExprNode
@@ -12,21 +12,21 @@ var _ IASTExprNode = (*ASTBinaryOpNode)(nil)
 
 func NewASTBinaryOpNode(left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
 	return &ASTBinaryOpNode{
-		ASTBaseExprNode: NewBaseExprNode(),
-		operator:        op,
-		left:            left,
-		right:           right,
-		type_:           nil,
+		ASTExprNode: NewBaseExprNode(),
+		operator:    op,
+		left:        left,
+		right:       right,
+		type_:       nil,
 	}
 }
 
 func NewASTBinaryOpNodeWithType(ty IType, left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
 	return &ASTBinaryOpNode{
-		ASTBaseExprNode: NewBaseExprNode(),
-		operator:        op,
-		left:            left,
-		right:           right,
-		type_:           ty,
+		ASTExprNode: NewBaseExprNode(),
+		operator:    op,
+		left:        left,
+		right:       right,
+		type_:       ty,
 	}
 }
 
@@ -74,6 +74,6 @@ func (this *ASTBinaryOpNode) Dump(d *Dumper) {
 	d.PrintMemberDumpable("right", this.right)
 }
 
-func (this *ASTBinaryOpNode) Accept(visitor ASTVisitor) interface{} {
+func (this *ASTBinaryOpNode) Accept(visitor IASTVisitor) interface{} {
 	return visitor.VisitBinaryOp(this)
 }

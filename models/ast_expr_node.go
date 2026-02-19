@@ -12,61 +12,61 @@ type IASTExprNode interface {
 	IsLoadable() bool
 	IsCallable() bool
 	IsPointer() bool
-	Accept(visitor ASTVisitor) interface{}
+	Accept(visitor IASTVisitor) interface{}
 }
 
-type ASTBaseExprNode struct {
+type ASTExprNode struct {
 	*Node
 }
 
-var _ IASTExprNode = (*ASTBaseExprNode)(nil)
+var _ IASTExprNode = (*ASTExprNode)(nil)
 
-func NewBaseExprNode() *ASTBaseExprNode {
-	return &ASTBaseExprNode{
+func NewBaseExprNode() *ASTExprNode {
+	return &ASTExprNode{
 		Node: &Node{},
 	}
 }
 
-func (n *ASTBaseExprNode) Type() IType {
+func (n *ASTExprNode) Type() IType {
 	panic("Type() must be implemented by concrete type")
 }
 
-func (n *ASTBaseExprNode) OrigType() IType {
+func (n *ASTExprNode) OrigType() IType {
 	panic("OrigType() must be implemented by concrete type")
 }
 
-func (n *ASTBaseExprNode) AllocSize() int64 {
+func (n *ASTExprNode) AllocSize() int64 {
 	panic("AllocSize() must be implemented by concrete type")
 }
 
-func (n *ASTBaseExprNode) IsConstant() bool {
+func (n *ASTExprNode) IsConstant() bool {
 	return false
 }
 
-func (n *ASTBaseExprNode) IsParameter() bool {
+func (n *ASTExprNode) IsParameter() bool {
 	return false
 }
 
-func (n *ASTBaseExprNode) IsLvalue() bool {
+func (n *ASTExprNode) IsLvalue() bool {
 	return false
 }
 
-func (n *ASTBaseExprNode) IsAssignable() bool {
+func (n *ASTExprNode) IsAssignable() bool {
 	return false
 }
 
-func (n *ASTBaseExprNode) IsLoadable() bool {
+func (n *ASTExprNode) IsLoadable() bool {
 	return false
 }
 
-func (n *ASTBaseExprNode) IsCallable() bool {
+func (n *ASTExprNode) IsCallable() bool {
 	return false
 }
 
-func (n *ASTBaseExprNode) IsPointer() bool {
+func (n *ASTExprNode) IsPointer() bool {
 	return false
 }
 
-func (n *ASTBaseExprNode) Accept(visitor ASTVisitor) interface{} {
+func (n *ASTExprNode) Accept(visitor IASTVisitor) interface{} {
 	panic("Accept() must be implemented by concrete type")
 }

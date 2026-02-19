@@ -92,11 +92,11 @@ assignOp
     | '/='
     ;
 expr
-    : term assignOp expr
-    | expr10
+    : term assignOp expr               #AssignExpr
+    | expr10                           #NoneAssignExpr
     ;
 expr10
-    : expr9 ('?' expr ':' expr10)?     #CondExpr
+    : expr9 ('?' expr ':' expr10)?
     ;
 expr9
     : expr8 ('||' expr8)*

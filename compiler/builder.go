@@ -17,70 +17,70 @@ type ASTBuilder struct {
 
 var _ parser.CbVisitor = (*ASTBuilder)(nil)
 
-func (v *ASTBuilder) Visit(tree antlr.ParseTree) interface{} {
-	return tree.Accept(v)
+func (this *ASTBuilder) Visit(tree antlr.ParseTree) interface{} {
+	return tree.Accept(this)
 }
 
-func (v *ASTBuilder) VisitChildren(_ antlr.RuleNode) interface{} {
+func (this *ASTBuilder) VisitChildren(_ antlr.RuleNode) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitTerminal(_ antlr.TerminalNode) interface{} {
+func (this *ASTBuilder) VisitTerminal(_ antlr.TerminalNode) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitErrorNode(_ antlr.ErrorNode) interface{} {
+func (this *ASTBuilder) VisitErrorNode(_ antlr.ErrorNode) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
-	ctx.ImportStmts().Accept(v)
-	decls := ctx.TopDefs().Accept(v).(*models.Declarations)
-	return models.NewAST(models.NewLocation(v.sourcePath, ctx.GetStart()), decls)
+func (this *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
+	ctx.ImportStmts().Accept(this)
+	decls := ctx.TopDefs().Accept(this).(*models.Declarations)
+	return models.NewAST(models.NewLocation(this.sourcePath, ctx.GetStart()), decls)
 }
 
-func (v *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {
+func (this *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {
 	for _, importStmt := range ctx.AllImportStmt() {
-		importStmt.Accept(v)
+		importStmt.Accept(this)
 	}
-	return v.VisitChildren(ctx)
+	return this.VisitChildren(ctx)
 }
 
-func (v *ASTBuilder) VisitImportStmt(ctx *parser.ImportStmtContext) interface{} {
+func (this *ASTBuilder) VisitImportStmt(ctx *parser.ImportStmtContext) interface{} {
 	path := ctx.Identifier(0).GetText()
 	for i := 1; i < len(ctx.AllIdentifier()); i++ {
 		path = path + "." + ctx.Identifier(i).GetText()
 	}
 	loader.LoadLibrary(path)
-	return v.VisitChildren(ctx)
+	return this.VisitChildren(ctx)
 }
 
-func (v *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
+func (this *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 	decls := models.NewDeclarations()
 	for _, defVars := range ctx.AllDefVars() {
-		defvars := defVars.Accept(v)
+		defvars := defVars.Accept(this)
 		decls.AddDefvars(defvars.([]*models.DefinedVariable))
 	}
 	for _, defFun := range ctx.AllDefFunc() {
-		f := defFun.Accept(v)
+		f := defFun.Accept(this)
 		decls.AddDeffun(f.(*models.DefinedFunction))
 	}
 	return decls
 }
 
-func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
+func (this *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
 	var initialize models.IASTExprNode = nil
 	var defs []*models.DefinedVariable
 	priv := false
 	if ctx.GetPriv() != nil {
 		priv = true
 	}
-	cbType := ctx.GetCbtype().Accept(v).(*models.TypeNode)
+	cbType := ctx.GetCbtype().Accept(this).(*models.TypeNode)
 
 	for _, identifier := range ctx.AllIdentifier() {
 		initialize = nil
 		if ctx.GetHasInit() != nil {
-			initialize = ctx.GetInitializer().Accept(v).(models.IASTExprNode)
+			initialize = ctx.GetInitializer().Accept(this).(models.IASTExprNode)
 		}
 		dv := models.NewDefinedVariable(priv, cbType, identifier.GetSymbol().GetText(), initialize)
 		defs = append(defs, dv)
@@ -89,46 +89,46 @@ func (v *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
 	return defs
 }
 
-func (v *ASTBuilder) VisitDefFunc(ctx *parser.DefFuncContext) interface{} {
+func (this *ASTBuilder) VisitDefFunc(ctx *parser.DefFuncContext) interface{} {
 	priv := ctx.GetPriv() != nil
-	retTypeRef := ctx.GetRetCbtype().Accept(v).(models.ITypeRef)
+	retTypeRef := ctx.GetRetCbtype().Accept(this).(models.ITypeRef)
 	name := ctx.Identifier().GetSymbol().GetText()
-	params := ctx.Params().Accept(v).(*models.Params)
-	body := ctx.Block().Accept(v).(*models.ASTBlockNode)
+	params := ctx.Params().Accept(this).(*models.Params)
+	body := ctx.Block().Accept(this).(*models.ASTBlockNode)
 	funcTypeRef := models.NewFunctionTypeRef(retTypeRef, params.ParametersTypeRef())
 	funcTypeNode := models.NewTypeNodeFromRef(funcTypeRef)
 	return models.NewDefinedFunction(priv, funcTypeNode, name, params, body)
 }
 
-func (v *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
-	typeRef := ctx.CbTypeRef().Accept(v).(models.ITypeRef)
+func (this *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
+	typeRef := ctx.CbTypeRef().Accept(this).(models.ITypeRef)
 	return models.NewTypeNodeFromRef(typeRef)
 }
 
-func (v *ASTBuilder) VisitCbTypeRef(ctx *parser.CbTypeRefContext) interface{} {
-	v.curBaseType = ctx.CbTypeRefBase().Accept(v).(models.ITypeRef)
+func (this *ASTBuilder) VisitCbTypeRef(ctx *parser.CbTypeRefContext) interface{} {
+	this.curBaseType = ctx.CbTypeRefBase().Accept(this).(models.ITypeRef)
 	modifiers := ctx.AllTypeModifier()
 	// TODO: add more modifier (sizedArray, FunctionType)
 	for i := len(modifiers) - 1; i >= 0; i-- {
-		v.curBaseType = modifiers[i].Accept(v).(models.ITypeRef)
+		this.curBaseType = modifiers[i].Accept(this).(models.ITypeRef)
 	}
-	return v.curBaseType
+	return this.curBaseType
 }
 
-func (v *ASTBuilder) VisitVoidTypeRef(ctx *parser.VoidTypeRefContext) interface{} {
-	return models.NewVoidTypeRefWithLocation(models.NewLocation(v.sourcePath, ctx.GetStart()))
+func (this *ASTBuilder) VisitVoidTypeRef(ctx *parser.VoidTypeRefContext) interface{} {
+	return models.NewVoidTypeRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
 }
 
-func (v *ASTBuilder) VisitCharTypeRef(ctx *parser.CharTypeRefContext) interface{} {
-	return models.NewCharRefWithLocation(models.NewLocation(v.sourcePath, ctx.GetStart()))
+func (this *ASTBuilder) VisitCharTypeRef(ctx *parser.CharTypeRefContext) interface{} {
+	return models.NewCharRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
 }
 
-func (v *ASTBuilder) VisitShortTypeRef(ctx *parser.ShortTypeRefContext) interface{} {
-	return models.NewShortRefWithLocation(models.NewLocation(v.sourcePath, ctx.GetStart()))
+func (this *ASTBuilder) VisitShortTypeRef(ctx *parser.ShortTypeRefContext) interface{} {
+	return models.NewShortRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
 }
 
-func (v *ASTBuilder) VisitIntTypeRef(ctx *parser.IntTypeRefContext) interface{} {
-	return models.NewIntRefWithLocation(models.NewLocation(v.sourcePath, ctx.GetStart()))
+func (this *ASTBuilder) VisitIntTypeRef(ctx *parser.IntTypeRefContext) interface{} {
+	return models.NewIntRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitArrayModifier(ctx *parser.ArrayModifierContext) interface{} {
@@ -139,124 +139,178 @@ func (this *ASTBuilder) VisitPointerModifier(ctx *parser.PointerModifierContext)
 	return models.NewPointerTypeRef(this.curBaseType)
 }
 
-func (v *ASTBuilder) VisitParams(ctx *parser.ParamsContext) interface{} {
+func (this *ASTBuilder) VisitParams(ctx *parser.ParamsContext) interface{} {
 	voidToken := ctx.GetVoid()
 	if voidToken != nil {
 		paramDescs := make([]*models.CBCParameter, 0)
-		return models.NewParams(models.NewLocation(v.sourcePath, voidToken), paramDescs)
+		return models.NewParams(models.NewLocation(this.sourcePath, voidToken), paramDescs)
 	}
-	fixedParams := ctx.FixedParams().Accept(v).([]*models.CBCParameter)
-	fullParams := models.NewParams(models.NewLocation(v.sourcePath, ctx.GetStart()), fixedParams)
+	fixedParams := ctx.FixedParams().Accept(this).([]*models.CBCParameter)
+	fullParams := models.NewParams(models.NewLocation(this.sourcePath, ctx.GetStart()), fixedParams)
 	if ctx.GetHasVararg() != nil {
 		fullParams.AcceptVarargs()
 	}
 	return fullParams
 }
 
-func (v *ASTBuilder) VisitFixedParams(ctx *parser.FixedParamsContext) interface{} {
+func (this *ASTBuilder) VisitFixedParams(ctx *parser.FixedParamsContext) interface{} {
 	params := make([]*models.CBCParameter, 0)
 	for _, paramCtx := range ctx.AllParam() {
-		param := paramCtx.Accept(v).(*models.CBCParameter)
+		param := paramCtx.Accept(this).(*models.CBCParameter)
 		params = append(params, param)
 	}
 	return params
 }
 
-func (v *ASTBuilder) VisitParam(ctx *parser.ParamContext) interface{} {
-	typeNode := ctx.CbType().Accept(v).(*models.TypeNode)
+func (this *ASTBuilder) VisitParam(ctx *parser.ParamContext) interface{} {
+	typeNode := ctx.CbType().Accept(this).(*models.TypeNode)
 	name := ctx.Identifier().GetSymbol().GetText()
 	return models.NewCBCParameter(typeNode, name)
 }
 
-func (v *ASTBuilder) VisitBlock(ctx *parser.BlockContext) interface{} {
+func (this *ASTBuilder) VisitBlock(ctx *parser.BlockContext) interface{} {
 	defLocalVars := make([]*models.DefinedVariable, 0)
 	for _, defVarsCtx := range ctx.AllDefVars() {
-		vars := defVarsCtx.Accept(v).([]*models.DefinedVariable)
+		vars := defVarsCtx.Accept(this).([]*models.DefinedVariable)
 		defLocalVars = append(defLocalVars, vars...)
 	}
 
 	stmts := make([]models.IASTStmtNode, 0)
 	for _, stmtsCtx := range ctx.AllStmt() {
-		stmt := stmtsCtx.Accept(v).(models.IASTStmtNode)
+		stmt := stmtsCtx.Accept(this).(models.IASTStmtNode)
 		stmts = append(stmts, stmt)
 	}
 
-	return models.NewASTBlockNode(models.NewLocation(v.sourcePath, ctx.GetStart()), defLocalVars, stmts)
+	return models.NewASTBlockNode(models.NewLocation(this.sourcePath, ctx.GetStart()), defLocalVars, stmts)
 }
 
-func (v *ASTBuilder) VisitExprStatement(ctx *parser.ExprStatementContext) interface{} {
-	expr := ctx.Expr().Accept(v).(models.IASTExprNode)
-	return models.NewASTExprStmtNode(models.NewLocation(v.sourcePath, ctx.GetStart()), expr)
+func (this *ASTBuilder) VisitExprStatement(ctx *parser.ExprStatementContext) interface{} {
+	expr := ctx.Expr().Accept(this).(models.IASTExprNode)
+	return models.NewASTExprStmtNode(models.NewLocation(this.sourcePath, ctx.GetStart()), expr)
 }
 
-func (v *ASTBuilder) VisitBlockStatement(ctx *parser.BlockStatementContext) interface{} {
-	return ctx.Block().Accept(v)
+func (this *ASTBuilder) VisitBlockStatement(ctx *parser.BlockStatementContext) interface{} {
+	return ctx.Block().Accept(this)
 }
 
-func (v *ASTBuilder) VisitIfStatement(ctx *parser.IfStatementContext) interface{} {
-	return ctx.IfStmt().Accept(v)
+func (this *ASTBuilder) VisitIfStatement(ctx *parser.IfStatementContext) interface{} {
+	return ctx.IfStmt().Accept(this)
 }
 
-func (v *ASTBuilder) VisitIfStmt(ctx *parser.IfStmtContext) interface{} {
+func (this *ASTBuilder) VisitIfStmt(ctx *parser.IfStmtContext) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitWhileStatement(ctx *parser.WhileStatementContext) interface{} {
-	return ctx.WhileStmt().Accept(v)
+func (this *ASTBuilder) VisitWhileStatement(ctx *parser.WhileStatementContext) interface{} {
+	return ctx.WhileStmt().Accept(this)
 }
 
-func (v *ASTBuilder) VisitWhileStmt(cgtx *parser.WhileStmtContext) interface{} {
+func (this *ASTBuilder) VisitWhileStmt(cgtx *parser.WhileStmtContext) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitForStatement(ctx *parser.ForStatementContext) interface{} {
-	return ctx.ForStmt().Accept(v)
+func (this *ASTBuilder) VisitForStatement(ctx *parser.ForStatementContext) interface{} {
+	return ctx.ForStmt().Accept(this)
 }
 
-func (v *ASTBuilder) VisitForStmt(ctx *parser.ForStmtContext) interface{} {
+func (this *ASTBuilder) VisitForStmt(ctx *parser.ForStmtContext) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitBreakStatement(ctx *parser.BreakStatementContext) interface{} {
-	return ctx.BreakStmt().Accept(v)
+func (this *ASTBuilder) VisitBreakStatement(ctx *parser.BreakStatementContext) interface{} {
+	return ctx.BreakStmt().Accept(this)
 }
 
-func (v *ASTBuilder) VisitBreakStmt(ctx *parser.BreakStmtContext) interface{} {
+func (this *ASTBuilder) VisitBreakStmt(ctx *parser.BreakStmtContext) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitContinueStatement(ctx *parser.ContinueStatementContext) interface{} {
-	return ctx.ContinueStmt().Accept(v)
+func (this *ASTBuilder) VisitContinueStatement(ctx *parser.ContinueStatementContext) interface{} {
+	return ctx.ContinueStmt().Accept(this)
 }
 
-func (v *ASTBuilder) VisitContinueStmt(ctx *parser.ContinueStmtContext) interface{} {
+func (this *ASTBuilder) VisitContinueStmt(ctx *parser.ContinueStmtContext) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitGotoStatement(ctx *parser.GotoStatementContext) interface{} {
-	return ctx.GotoStmt().Accept(v)
+func (this *ASTBuilder) VisitGotoStatement(ctx *parser.GotoStatementContext) interface{} {
+	return ctx.GotoStmt().Accept(this)
 }
 
-func (v *ASTBuilder) VisitGotoStmt(ctx *parser.GotoStmtContext) interface{} {
+func (this *ASTBuilder) VisitGotoStmt(ctx *parser.GotoStmtContext) interface{} {
 	return nil
 }
 
-func (v *ASTBuilder) VisitReturnStatement(ctx *parser.ReturnStatementContext) interface{} {
-	return ctx.ReturnStmt().Accept(v)
+func (this *ASTBuilder) VisitReturnStatement(ctx *parser.ReturnStatementContext) interface{} {
+	return ctx.ReturnStmt().Accept(this)
 }
 
-func (v *ASTBuilder) VisitReturnStmt(ctx *parser.ReturnStmtContext) interface{} {
+func (this *ASTBuilder) VisitReturnStmt(ctx *parser.ReturnStmtContext) interface{} {
 	var exprNode models.IASTExprNode = nil
 	if ctx.Expr() != nil {
-		exprNode = ctx.Expr().Accept(v).(models.IASTExprNode)
+		exprNode = ctx.Expr().Accept(this).(models.IASTExprNode)
 	}
-	return models.NewASTReturnNode(models.NewLocation(v.sourcePath, ctx.GetStart()), exprNode)
+	return models.NewASTReturnNode(models.NewLocation(this.sourcePath, ctx.GetStart()), exprNode)
 }
 
-func (v *ASTBuilder) VisitExpr(ctx *parser.ExprContext) interface{} {
-	return &models.ASTBaseExprNode{}
+func (this *ASTBuilder) VisitAssignOp(ctx *parser.AssignOpContext) interface{} {
+	return ctx.GetText()
 }
 
-func (v *ASTBuilder) VisitCondExpr(ctx *parser.CondExprContext) interface{} {
-	return nil
+func (this *ASTBuilder) VisitAssignExpr(ctx *parser.AssignExprContext) interface{} {
+	lhs := ctx.Term().Accept(this).(models.IASTExprNode)
+	op := ctx.AssignOp().Accept(this).(string)
+	rhs := ctx.Expr().Accept(this).(models.IASTExprNode)
+	if op == "=" {
+		return models.NewASTAssignNode(lhs, rhs)
+	}
+	return models.NewASTOpAssignNode(lhs, op, rhs)
+}
+
+func (this *ASTBuilder) VisitNoneAssignExpr(ctx *parser.NoneAssignExprContext) interface{} {
+	return ctx.Expr10().Accept(this)
+}
+
+func (this *ASTBuilder) VisitExpr10(ctx *parser.Expr10Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr9(ctx *parser.Expr9Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr8(ctx *parser.Expr8Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr7(ctx *parser.Expr7Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr6(ctx *parser.Expr6Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr5(ctx *parser.Expr5Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr4(ctx *parser.Expr4Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr3(ctx *parser.Expr3Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr2(ctx *parser.Expr2Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitExpr1(ctx *parser.Expr1Context) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+func (this *ASTBuilder) VisitTerm(ctx *parser.TermContext) interface{} {
+	return this.VisitChildren(ctx)
 }

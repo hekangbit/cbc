@@ -3,7 +3,7 @@ package models
 type IASTStmtNode interface {
 	INode
 	Location() *Location
-	Accept(visitor ASTVisitor) interface{}
+	Accept(visitor IASTVisitor) interface{}
 }
 
 type ASTStmtNode struct {
