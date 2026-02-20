@@ -8,4 +8,6 @@ type IASTVisitor interface {
 	VisitAssignNode(*ASTAssignNode) interface{}
 	VisitOpAssignNode(*ASTOpAssignNode) interface{}
 	VisitCondExprNode(*ASTCondExprNode) interface{}
+	VisitLogicalOrNode(*ASTLogicalOrNode) interface{}
+	VisitLogicalAndNode(*ASTLogicalAndNode) interface{}
 }

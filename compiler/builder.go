@@ -283,11 +283,21 @@ func (this *ASTBuilder) VisitExpr10(ctx *parser.Expr10Context) interface{} {
 }
 
 func (this *ASTBuilder) VisitExpr9(ctx *parser.Expr9Context) interface{} {
-	return &models.ASTExprNode{}
+	l := ctx.Expr8(0).Accept(this).(models.IASTExprNode)
+	for i := 1; i < len(ctx.AllExpr8()); i++ {
+		r := ctx.Expr8(i).Accept(this).(models.IASTExprNode)
+		l = models.NewASTLogicalOrNode(l, r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr8(ctx *parser.Expr8Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Expr7(0).Accept(this).(models.IASTExprNode)
+	for i := 1; i < len(ctx.AllExpr7()); i++ {
+		r := ctx.Expr7(i).Accept(this).(models.IASTExprNode)
+		l = models.NewASTLogicalAndNode(l, r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr7(ctx *parser.Expr7Context) interface{} {
