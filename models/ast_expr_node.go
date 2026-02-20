@@ -16,15 +16,13 @@ type IASTExprNode interface {
 }
 
 type ASTExprNode struct {
-	*Node
+	Node
 }
 
 var _ IASTExprNode = (*ASTExprNode)(nil)
 
 func NewBaseExprNode() *ASTExprNode {
-	return &ASTExprNode{
-		Node: &Node{},
-	}
+	return &ASTExprNode{}
 }
 
 func (n *ASTExprNode) Type() IType {

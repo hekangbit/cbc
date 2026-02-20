@@ -272,11 +272,18 @@ func (this *ASTBuilder) VisitNoneAssignExpr(ctx *parser.NoneAssignExprContext) i
 }
 
 func (this *ASTBuilder) VisitExpr10(ctx *parser.Expr10Context) interface{} {
-	return this.VisitChildren(ctx)
+	c := ctx.Expr9().Accept(this).(models.IASTExprNode)
+	condThenExprCtx := ctx.Expr()
+	if condThenExprCtx != nil {
+		t := condThenExprCtx.Accept(this).(models.IASTExprNode)
+		e := ctx.Expr10().Accept(this).(models.IASTExprNode)
+		return models.NewASTCondExprNode(c, t, e)
+	}
+	return c
 }
 
 func (this *ASTBuilder) VisitExpr9(ctx *parser.Expr9Context) interface{} {
-	return this.VisitChildren(ctx)
+	return &models.ASTExprNode{}
 }
 
 func (this *ASTBuilder) VisitExpr8(ctx *parser.Expr8Context) interface{} {
