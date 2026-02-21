@@ -10,4 +10,6 @@ type IASTVisitor interface {
 	VisitCondExprNode(*ASTCondExprNode) interface{}
 	VisitLogicalOrNode(*ASTLogicalOrNode) interface{}
 	VisitLogicalAndNode(*ASTLogicalAndNode) interface{}
+	VisitUnaryOpNode(*ASTUnaryOpNode) interface{}
+	VisitPrefixOpNode(*ASTPrefixOpNode) interface{}
 }

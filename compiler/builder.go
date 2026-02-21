@@ -13,6 +13,7 @@ type ASTBuilder struct {
 	name        string
 	sourcePath  string
 	curBaseType models.ITypeRef
+	curPrimary  models.IASTExprNode
 }
 
 var _ parser.CbVisitor = (*ASTBuilder)(nil)
@@ -301,33 +302,165 @@ func (this *ASTBuilder) VisitExpr8(ctx *parser.Expr8Context) interface{} {
 }
 
 func (this *ASTBuilder) VisitExpr7(ctx *parser.Expr7Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Expr6(0).Accept(this).(models.IASTExprNode)
+	children := ctx.GetChildren()
+	for i := 1; i < len(ctx.AllExpr6()); i++ {
+		r := ctx.Expr6(i).Accept(this).(models.IASTExprNode)
+		opIndex := 2*i - 1
+		opNode := children[opIndex].(antlr.TerminalNode)
+		opText := opNode.GetText()
+		l = models.NewASTBinaryOpNode(l, opText, r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr6(ctx *parser.Expr6Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Expr5(0).Accept(this).(models.IASTExprNode)
+	for i := 1; i < len(ctx.AllExpr5()); i++ {
+		r := ctx.Expr5(i).Accept(this).(models.IASTExprNode)
+		l = models.NewASTBinaryOpNode(l, "|", r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr5(ctx *parser.Expr5Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Expr4(0).Accept(this).(models.IASTExprNode)
+	for i := 1; i < len(ctx.AllExpr4()); i++ {
+		r := ctx.Expr4(i).Accept(this).(models.IASTExprNode)
+		l = models.NewASTBinaryOpNode(l, "^", r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr4(ctx *parser.Expr4Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Expr3(0).Accept(this).(models.IASTExprNode)
+	for i := 1; i < len(ctx.AllExpr3()); i++ {
+		r := ctx.Expr3(i).Accept(this).(models.IASTExprNode)
+		l = models.NewASTBinaryOpNode(l, "&", r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr3(ctx *parser.Expr3Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Expr2(0).Accept(this).(models.IASTExprNode)
+	children := ctx.GetChildren()
+	for i := 1; i < len(ctx.AllExpr2()); i++ {
+		r := ctx.Expr2(i).Accept(this).(models.IASTExprNode)
+		opIndex := 2*i - 1
+		opNode := children[opIndex].(antlr.TerminalNode)
+		opText := opNode.GetText()
+		l = models.NewASTBinaryOpNode(l, opText, r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr2(ctx *parser.Expr2Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Expr1(0).Accept(this).(models.IASTExprNode)
+	children := ctx.GetChildren()
+	for i := 1; i < len(ctx.AllExpr1()); i++ {
+		r := ctx.Expr1(i).Accept(this).(models.IASTExprNode)
+		opIndex := 2*i - 1
+		opNode := children[opIndex].(antlr.TerminalNode)
+		opText := opNode.GetText()
+		l = models.NewASTBinaryOpNode(l, opText, r)
+	}
+	return l
 }
 
 func (this *ASTBuilder) VisitExpr1(ctx *parser.Expr1Context) interface{} {
-	return this.VisitChildren(ctx)
+	l := ctx.Term(0).Accept(this).(models.IASTExprNode)
+	children := ctx.GetChildren()
+	for i := 1; i < len(ctx.AllTerm()); i++ {
+		r := ctx.Term(i).Accept(this).(models.IASTExprNode)
+		opIndex := 2*i - 1
+		opNode := children[opIndex].(antlr.TerminalNode)
+		opText := opNode.GetText()
+		l = models.NewASTBinaryOpNode(l, opText, r)
+	}
+	return l
 }
 
-func (this *ASTBuilder) VisitTerm(ctx *parser.TermContext) interface{} {
-	return this.VisitChildren(ctx)
+func (this *ASTBuilder) VisitTermCast(ctx *parser.TermCastContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitTermUnary(ctx *parser.TermUnaryContext) interface{} {
+	return ctx.Unary().Accept(this)
+}
+
+func (this *ASTBuilder) VisitCastExpr(ctx *parser.CastExprContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixIncrement(ctx *parser.UnaryPrefixIncrementContext) interface{} {
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTPrefixOpNode("++", n)
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixDecrement(ctx *parser.UnaryPrefixDecrementContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixPlus(ctx *parser.UnaryPrefixPlusContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixMinus(ctx *parser.UnaryPrefixMinusContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixLogicalNot(ctx *parser.UnaryPrefixLogicalNotContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixfixBitwiseNode(ctx *parser.UnaryPrefixfixBitwiseNodeContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixDereference(ctx *parser.UnaryPrefixDereferenceContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixAddress(ctx *parser.UnaryPrefixAddressContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixSizeofType(ctx *parser.UnaryPrefixSizeofTypeContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPrefixSizeof(ctx *parser.UnaryPrefixSizeofContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitUnaryPostfix(ctx *parser.UnaryPostfixContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitPostfix(ctx *parser.PostfixContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitPostInc(ctx *parser.PostIncContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitPostDec(ctx *parser.PostDecContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitPosArrayIndex(ctx *parser.PosArrayIndexContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitPosMember(ctx *parser.PosMemberContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitPosPtrMember(ctx *parser.PosPtrMemberContext) interface{} {
+	return nil
+}
+
+func (this *ASTBuilder) VisitFuncCall(ctx *parser.FuncCallContext) interface{} {
+	return nil
 }

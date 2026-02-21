@@ -105,7 +105,7 @@ expr8
     : expr7 ('&&' expr7)*
     ;
 expr7
-    : expr6 ('>' expr6 | '<' expr6 | '>=' expr6 | '<=' expr6 | '==' expr6 | '!=' expr6)*
+    : expr6 (('>' | '<' | '>=' | '<=' | '==' | '!=') expr6)*
     ;
 expr6
     : expr5 ('|' expr5)*
@@ -117,36 +117,44 @@ expr4
     : expr3 ('&' expr3)*
     ;
 expr3
-    : expr2 ('>>' expr2 | '<<' expr2)*
+    : expr2 (('>>' | '<<') expr2)*
     ;
 expr2
-    : expr1 ('+' expr1 | '-' expr1)*
+    : expr1 (('+'  | '-') expr1)*
     ;
 expr1
-    : term ('*' term | '/' term | '%' term)*
+    : term (('*' | '/' | '%') term)*
     ;
 
 term
-    : castExpr
-    | unary
+    : castExpr                         #TermCast
+    | unary                            #TermUnary
     ;
 castExpr
     : '(' cbType ')' term;
 unary
-    : '++' unary
-    | '--' unary
-    | '+' unary
-    | '-' unary
-    | '!' unary
-    | '~' unary
-    | '*' unary
-    | '&' unary
-    | 'sizeof' '(' cbType ')'
-    | 'sizeof' unary
-    | postfix
+    : '++' unary                       #UnaryPrefixIncrement
+    | '--' unary                       #UnaryPrefixDecrement
+    | '+' unary                        #UnaryPrefixPlus
+    | '-' unary                        #UnaryPrefixMinus
+    | '!' unary                        #UnaryPrefixLogicalNot
+    | '~' unary                        #UnaryPrefixfixBitwiseNode
+    | '*' unary                        #UnaryPrefixDereference
+    | '&' unary                        #UnaryPrefixAddress
+    | 'sizeof' '(' cbType ')'          #UnaryPrefixSizeofType
+    | 'sizeof' unary                   #UnaryPrefixSizeof
+    | postfix                          #UnaryPostfix
     ;
 postfix
-    : primary ('++' | '--' | '[' expr ']' | '.' Identifier | '->' Identifier | '(' args ')')*
+    : primary (postfixOp)*
+    ;
+postfixOp
+    : '++'                             #PostInc
+    | '--'                             #PostDec
+    | '[' expr ']'                     #PosArrayIndex
+    | '.' Identifier                   #PosMember
+    | '->' Identifier                  #PosPtrMember
+    | '(' args ')'                     #FuncCall
     ;
 args
     : expr (',' expr)*
