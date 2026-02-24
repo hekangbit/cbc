@@ -136,9 +136,13 @@ func (this *ASTBuilder) VisitArrayModifier(ctx *parser.ArrayModifierContext) int
 	return models.NewArrayTypeRef(this.curBaseType)
 }
 
+// TODO: convert string to int64, now to int32
 func (this *ASTBuilder) VisitSizedArrayModifier(ctx *parser.SizedArrayModifierContext) interface{} {
-	length := ctx.IntLiteral().Accept(this).(int64)
-	return models.NewArrayTypeRefWithLen(this.curBaseType, length)
+	length, err := strconv.Atoi(ctx.IntLiteral().GetText())
+	if err != nil {
+		panic("AST Builder::VisitSizedArrayModifier GetIntConst Fail")
+	}
+	return models.NewArrayTypeRefWithLen(this.curBaseType, int64(length))
 }
 
 func (this *ASTBuilder) VisitFunctionModifier(ctx *parser.FunctionModifierContext) interface{} {
