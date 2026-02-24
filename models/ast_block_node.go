@@ -1,15 +1,17 @@
 package models
 
 type ASTBlockNode struct {
-	*ASTStmtNode
+	ASTStmtNode
 	variables []*DefinedVariable
 	stmts     []IASTStmtNode
 	scope     *LocalScope
 }
 
+var _ IASTStmtNode = &ASTBlockNode{}
+
 func NewASTBlockNode(loc *Location, vars []*DefinedVariable, stmts []IASTStmtNode) *ASTBlockNode {
 	return &ASTBlockNode{
-		ASTStmtNode: NewASTStmtNode(loc),
+		ASTStmtNode: ASTStmtNode{location: loc},
 		variables:   vars,
 		stmts:       stmts,
 	}

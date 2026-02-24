@@ -64,7 +64,7 @@ cbTypeRefBase
     ;
 typeModifier
     : '[' ']'                          # arrayModifier
-    | '[' length=IntLiteral ']'        # sizedArrayModifier
+    | '[' IntLiteral ']'               # sizedArrayModifier
     | '*'                              # pointerModifier
     | '(' paramTypeRefs ')'            # functionModifier
     ;
@@ -138,7 +138,7 @@ unary
     | '+' unary                        #UnaryPrefixPlus
     | '-' unary                        #UnaryPrefixMinus
     | '!' unary                        #UnaryPrefixLogicalNot
-    | '~' unary                        #UnaryPrefixfixBitwiseNode
+    | '~' unary                        #UnaryPrefixfixBitwiseNot
     | '*' unary                        #UnaryPrefixDereference
     | '&' unary                        #UnaryPrefixAddress
     | 'sizeof' '(' cbType ')'          #UnaryPrefixSizeofType
@@ -151,9 +151,9 @@ postfix
 postfixOp
     : '++'                             #PostInc
     | '--'                             #PostDec
-    | '[' expr ']'                     #PosArrayIndex
-    | '.' Identifier                   #PosMember
-    | '->' Identifier                  #PosPtrMember
+    | '[' expr ']'                     #PostArrayIndex
+    | '.' Identifier                   #PostMember
+    | '->' Identifier                  #PostPtrMember
     | '(' args ')'                     #FuncCall
     ;
 args
@@ -164,7 +164,7 @@ primary
     | Character                        #CharConst
     | StringLiteral                    #StringConst
     | Identifier                       #Identifier
-    | '(' expr ')'                     #SubExpr
+    | '(' expr ')'                     #ParenExpr
     ;
 
 MUL : '*' ;

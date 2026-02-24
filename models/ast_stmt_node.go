@@ -2,7 +2,6 @@ package models
 
 type IASTStmtNode interface {
 	INode
-	Location() *Location
 	Accept(visitor IASTVisitor) interface{}
 }
 

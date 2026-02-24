@@ -9,7 +9,7 @@ type IASTExprNode interface {
 	IsParameter() bool
 	IsLvalue() bool
 	IsAssignable() bool
-	IsLoadable() bool
+	IsLoadable() bool // TODO: make this method as global function
 	IsCallable() bool
 	IsPointer() bool
 	Accept(visitor IASTVisitor) interface{}
@@ -19,11 +19,9 @@ type ASTExprNode struct {
 	Node
 }
 
+// TODO: remove this, cause base struct is abstract class,
+// no need implement all interface methods
 var _ IASTExprNode = (*ASTExprNode)(nil)
-
-func NewBaseExprNode() *ASTExprNode {
-	return &ASTExprNode{}
-}
 
 func (n *ASTExprNode) Type() IType {
 	panic("Type() must be implemented by concrete type")

@@ -6,7 +6,6 @@ type ParamTypeRefs struct {
 	*ParamSlots[ITypeRef]
 }
 
-// NewParams 构造函数
 func NewParamTypeRefs(location *Location, paramDescs []ITypeRef, vararg bool) *ParamTypeRefs {
 	return &ParamTypeRefs{
 		ParamSlots: NewParamSlotsFull(location, paramDescs, vararg),

@@ -12,4 +12,12 @@ type IASTVisitor interface {
 	VisitLogicalAndNode(*ASTLogicalAndNode) interface{}
 	VisitUnaryOpNode(*ASTUnaryOpNode) interface{}
 	VisitPrefixOpNode(*ASTPrefixOpNode) interface{}
+	VisitDereferenceNode(*ASTDereferenceNode) interface{}
+	VisitAddressNode(*ASTAddressNode) interface{}
+	VisitSizeofTypeNode(*ASTSizeofTypeNode) interface{}
+	VisitSizeofExprNode(*ASTSizeofExprNode) interface{}
+	VisitSuffixOpNode(*ASTSuffixOpNode) interface{}
+	VisitArrayIdxRefNode(*ASTArrayIdxRefNode) interface{}
+	VisitFunctionCallNode(*ASTFunctionCallNode) interface{}
+	VisitMemberNodeNode(*ASTMemberNode) interface{}
 }

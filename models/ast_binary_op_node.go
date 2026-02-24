@@ -1,32 +1,30 @@
 package models
 
 type ASTBinaryOpNode struct {
-	*ASTExprNode
+	ASTExprNode
 	operator string
 	left     IASTExprNode
 	right    IASTExprNode
 	type_    IType
 }
 
-var _ IASTExprNode = (*ASTBinaryOpNode)(nil)
+var _ IASTExprNode = &ASTBinaryOpNode{}
 
 func NewASTBinaryOpNode(left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
 	return &ASTBinaryOpNode{
-		ASTExprNode: NewBaseExprNode(),
-		operator:    op,
-		left:        left,
-		right:       right,
-		type_:       nil,
+		operator: op,
+		left:     left,
+		right:    right,
+		type_:    nil,
 	}
 }
 
 func NewASTBinaryOpNodeWithType(ty IType, left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
 	return &ASTBinaryOpNode{
-		ASTExprNode: NewBaseExprNode(),
-		operator:    op,
-		left:        left,
-		right:       right,
-		type_:       ty,
+		operator: op,
+		left:     left,
+		right:    right,
+		type_:    ty,
 	}
 }
 

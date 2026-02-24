@@ -3,7 +3,6 @@ package models
 type IASTTypeDefinition interface {
 	INode
 	Name() string
-	Location() *Location
 	TypeNode() *TypeNode
 	TypeRef() ITypeRef
 	Type() IType
@@ -17,6 +16,9 @@ type ASTTypeDefinition struct {
 	location *Location
 	typeNode *TypeNode
 }
+
+// TODO: remove interface check, ASTTypeDefinition is abstract klass, no need panic method
+var _ IASTTypeDefinition = &ASTTypeDefinition{}
 
 func NewASTTypeDefinition(loc *Location, ref ITypeRef, name string) *ASTTypeDefinition {
 	return &ASTTypeDefinition{

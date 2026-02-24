@@ -13,7 +13,7 @@ type ASTAbstractAssignNode struct {
 	rhs IASTExprNode
 }
 
-var _ IASTAbstractAssignNode = (*ASTAbstractAssignNode)(nil)
+var _ IASTAbstractAssignNode = &ASTAbstractAssignNode{}
 
 func (this *ASTAbstractAssignNode) Type() IType {
 	return this.lhs.Type()

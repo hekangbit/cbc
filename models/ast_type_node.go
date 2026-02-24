@@ -1,14 +1,14 @@
 package models
 
 type TypeNode struct {
-	*Node
 	typeRef ITypeRef
 	typ     IType
 }
 
+var _ INode = &TypeNode{}
+
 func NewTypeNodeFromRef(ref ITypeRef) *TypeNode {
 	return &TypeNode{
-		Node:    &Node{},
 		typeRef: ref,
 		typ:     nil,
 	}
@@ -16,7 +16,6 @@ func NewTypeNodeFromRef(ref ITypeRef) *TypeNode {
 
 func NewTypeNodeFromType(typ IType) *TypeNode {
 	return &TypeNode{
-		Node:    &Node{},
 		typeRef: nil,
 		typ:     typ,
 	}

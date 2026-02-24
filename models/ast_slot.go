@@ -3,15 +3,16 @@ package models
 import "fmt"
 
 type Slot struct {
-	*Node
+	Node
 	typeNode *TypeNode
 	name     string
 	offset   int64
 }
 
+var _ INode = &Slot{}
+
 func NewSlot(typeNode *TypeNode, name string) *Slot {
 	return &Slot{
-		Node:     &Node{},
 		typeNode: typeNode,
 		name:     name,
 		offset:   SizeUnknown,

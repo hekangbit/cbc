@@ -4,6 +4,7 @@ import (
 	"cbc/loader"
 	"cbc/models"
 	"cbc/parser"
+	"strconv"
 
 	"github.com/antlr4-go/antlr/v4"
 )
@@ -16,7 +17,7 @@ type ASTBuilder struct {
 	curPrimary  models.IASTExprNode
 }
 
-var _ parser.CbVisitor = (*ASTBuilder)(nil)
+var _ parser.CbVisitor = &ASTBuilder{}
 
 func (this *ASTBuilder) Visit(tree antlr.ParseTree) interface{} {
 	return tree.Accept(this)
@@ -109,8 +110,7 @@ func (this *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
 func (this *ASTBuilder) VisitCbTypeRef(ctx *parser.CbTypeRefContext) interface{} {
 	this.curBaseType = ctx.CbTypeRefBase().Accept(this).(models.ITypeRef)
 	modifiers := ctx.AllTypeModifier()
-	// TODO: add more modifier (sizedArray, FunctionType)
-	for i := len(modifiers) - 1; i >= 0; i-- {
+	for i := 0; i < len(modifiers); i++ {
 		this.curBaseType = modifiers[i].Accept(this).(models.ITypeRef)
 	}
 	return this.curBaseType
@@ -134,6 +134,16 @@ func (this *ASTBuilder) VisitIntTypeRef(ctx *parser.IntTypeRefContext) interface
 
 func (this *ASTBuilder) VisitArrayModifier(ctx *parser.ArrayModifierContext) interface{} {
 	return models.NewArrayTypeRef(this.curBaseType)
+}
+
+func (this *ASTBuilder) VisitSizedArrayModifier(ctx *parser.SizedArrayModifierContext) interface{} {
+	length := ctx.IntLiteral().Accept(this).(int64)
+	return models.NewArrayTypeRefWithLen(this.curBaseType, length)
+}
+
+func (this *ASTBuilder) VisitFunctionModifier(ctx *parser.FunctionModifierContext) interface{} {
+	params := ctx.ParamTypeRefs().Accept(this).(*models.ParamTypeRefs)
+	return models.NewFunctionTypeRef(this.curBaseType, params)
 }
 
 func (this *ASTBuilder) VisitPointerModifier(ctx *parser.PointerModifierContext) interface{} {
@@ -167,6 +177,16 @@ func (this *ASTBuilder) VisitParam(ctx *parser.ParamContext) interface{} {
 	typeNode := ctx.CbType().Accept(this).(*models.TypeNode)
 	name := ctx.Identifier().GetSymbol().GetText()
 	return models.NewCBCParameter(typeNode, name)
+}
+
+// TODO
+func (this *ASTBuilder) VisitParamTypeRefs(ctx *parser.ParamTypeRefsContext) interface{} {
+	return this.VisitChildren(ctx)
+}
+
+// TODO
+func (this *ASTBuilder) VisitFixedparamTypeRefs(ctx *parser.FixedparamTypeRefsContext) interface{} {
+	return this.VisitChildren(ctx)
 }
 
 func (this *ASTBuilder) VisitBlock(ctx *parser.BlockContext) interface{} {
@@ -398,69 +418,116 @@ func (this *ASTBuilder) VisitUnaryPrefixIncrement(ctx *parser.UnaryPrefixIncreme
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixDecrement(ctx *parser.UnaryPrefixDecrementContext) interface{} {
-	return nil
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTPrefixOpNode("--", n)
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixPlus(ctx *parser.UnaryPrefixPlusContext) interface{} {
-	return nil
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTUnaryOpNode("+", n)
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixMinus(ctx *parser.UnaryPrefixMinusContext) interface{} {
-	return nil
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTUnaryOpNode("-", n)
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixLogicalNot(ctx *parser.UnaryPrefixLogicalNotContext) interface{} {
-	return nil
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTUnaryOpNode("!", n)
 }
 
-func (this *ASTBuilder) VisitUnaryPrefixfixBitwiseNode(ctx *parser.UnaryPrefixfixBitwiseNodeContext) interface{} {
-	return nil
+func (this *ASTBuilder) VisitUnaryPrefixfixBitwiseNot(ctx *parser.UnaryPrefixfixBitwiseNotContext) interface{} {
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTUnaryOpNode("~", n)
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixDereference(ctx *parser.UnaryPrefixDereferenceContext) interface{} {
-	return nil
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTDereferenceNode(n)
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixAddress(ctx *parser.UnaryPrefixAddressContext) interface{} {
-	return nil
+	n := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTAddressNode(n)
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixSizeofType(ctx *parser.UnaryPrefixSizeofTypeContext) interface{} {
-	return nil
+	t := ctx.CbType().Accept(this).(*models.TypeNode)
+	return models.NewASTSizeofTypeNode(t, models.NewUlongRef())
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixSizeof(ctx *parser.UnaryPrefixSizeofContext) interface{} {
-	return nil
+	e := ctx.Unary().Accept(this).(models.IASTExprNode)
+	return models.NewASTSizeofExprNode(e, models.NewUlongRef())
 }
 
 func (this *ASTBuilder) VisitUnaryPostfix(ctx *parser.UnaryPostfixContext) interface{} {
-	return nil
+	return ctx.Postfix().Accept(this)
 }
 
 func (this *ASTBuilder) VisitPostfix(ctx *parser.PostfixContext) interface{} {
-	return nil
+	this.curPrimary = ctx.Primary().Accept(this).(models.IASTExprNode)
+	for _, tmpCtx := range ctx.AllPostfixOp() {
+		this.curPrimary = tmpCtx.Accept(this).(models.IASTExprNode)
+	}
+	return this.curPrimary
 }
 
 func (this *ASTBuilder) VisitPostInc(ctx *parser.PostIncContext) interface{} {
-	return nil
+	return models.NewASTSuffixOpNode("++", this.curPrimary)
 }
 
 func (this *ASTBuilder) VisitPostDec(ctx *parser.PostDecContext) interface{} {
-	return nil
+	return models.NewASTSuffixOpNode("--", this.curPrimary)
 }
 
-func (this *ASTBuilder) VisitPosArrayIndex(ctx *parser.PosArrayIndexContext) interface{} {
-	return nil
+func (this *ASTBuilder) VisitPostArrayIndex(ctx *parser.PostArrayIndexContext) interface{} {
+	idx := ctx.Expr().Accept(this).(models.IASTExprNode)
+	return models.NewASTArrayIdxRefNode(this.curPrimary, idx)
 }
 
-func (this *ASTBuilder) VisitPosMember(ctx *parser.PosMemberContext) interface{} {
-	return nil
+func (this *ASTBuilder) VisitPostMember(ctx *parser.PostMemberContext) interface{} {
+	memb := ctx.Identifier().Accept(this).(string)
+	return models.NewASTMemberNode(this.curPrimary, memb)
 }
 
-func (this *ASTBuilder) VisitPosPtrMember(ctx *parser.PosPtrMemberContext) interface{} {
-	return nil
+func (this *ASTBuilder) VisitPostPtrMember(ctx *parser.PostPtrMemberContext) interface{} {
+	memb := ctx.Identifier().Accept(this).(string)
+	return models.NewASTPtrMemberNode(this.curPrimary, memb)
 }
 
 func (this *ASTBuilder) VisitFuncCall(ctx *parser.FuncCallContext) interface{} {
-	return nil
+	args := ctx.Args().Accept(this).([]models.IASTExprNode)
+	return models.NewASTFunctionCallNode(this.curPrimary, args)
+}
+
+// TODO
+func (v *ASTBuilder) VisitArgs(ctx *parser.ArgsContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+// TODO: How to get int64 const value
+func (v *ASTBuilder) VisitIntConst(ctx *parser.IntConstContext) interface{} {
+	val, err := strconv.Atoi(ctx.IntLiteral().GetText())
+	if err != nil {
+		panic("AST Builder: GetIntConst Fail")
+	}
+	return val
+}
+
+func (v *ASTBuilder) VisitCharConst(ctx *parser.CharConstContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *ASTBuilder) VisitStringConst(ctx *parser.StringConstContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *ASTBuilder) VisitIdentifier(ctx *parser.IdentifierContext) interface{} {
+	return v.VisitChildren(ctx)
+}
+
+func (v *ASTBuilder) VisitParenExpr(ctx *parser.ParenExprContext) interface{} {
+	return v.VisitChildren(ctx)
 }

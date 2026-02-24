@@ -5,11 +5,13 @@ import (
 )
 
 type IntegerType struct {
-	*BaseType
+	BaseType
 	size     int64
 	isSigned bool
 	name     string
 }
+
+var _ IType = &IntegerType{}
 
 func NewIntegerType(size int64, isSigned bool, name string) *IntegerType {
 	return &IntegerType{
@@ -23,8 +25,8 @@ func (i *IntegerType) IsInteger() bool {
 	return true
 }
 
-func (i *IntegerType) IsSigned() (bool, error) {
-	return i.isSigned, nil
+func (i *IntegerType) IsSigned() bool {
+	return i.isSigned
 }
 
 func (i *IntegerType) IsScalar() bool {
@@ -49,12 +51,14 @@ func (i *IntegerType) IsInDomain(value int64) bool {
 	return i.MinValue() <= value && value <= i.MaxValue()
 }
 
+// TODO: Cast may return error? IsSame means Ptr same
+// use typeTable, same type always points to same object, singleton mode
 func (i *IntegerType) IsSameType(other IType) bool {
 	if !other.IsInteger() {
 		return false
 	}
-	otherInt := other.GetIntegerType()
-	return i.Equals(otherInt)
+	t := GetIntegerType(other)
+	return i == t
 }
 
 func (i *IntegerType) Equals(other interface{}) bool {
@@ -89,10 +93,6 @@ func (i *IntegerType) AllocSize() int64 {
 
 func (i *IntegerType) Alignment() int64 {
 	return i.size
-}
-
-func (i *IntegerType) GetIntegerType() *IntegerType {
-	return i
 }
 
 func (i *IntegerType) String() string {

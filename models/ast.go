@@ -8,7 +8,6 @@ import (
 )
 
 type AST struct {
-	Node
 	source        *Location
 	decls         *Declarations
 	scope         *ToplevelScope
@@ -16,6 +15,8 @@ type AST struct {
 	stream        *antlr.CommonTokenStream
 	cbLexer       *parser.CbLexer
 }
+
+var _ INode = &AST{}
 
 func NewAST(source *Location, declarations *Declarations) *AST {
 	return &AST{

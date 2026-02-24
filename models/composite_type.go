@@ -10,9 +10,14 @@ type ICompositeType interface {
 	Members() []*Slot
 	MemberTypes() []IType
 	HasMember(name string) bool
-	MemberType(name string) (IType, error)
-	MemberOffset(name string) (int64, error)
-	GetMember(name string) (*Slot, error)
+
+	// TODO: may need return error?
+	MemberType(name string) IType
+	MemberOffset(name string) int64
+	GetMember(name string) *Slot
+	// MemberType(name string) (IType, error)
+	// MemberOffset(name string) (int64, error)
+	// GetMember(name string) (*Slot, error)
 }
 
 type CompositeType struct {
@@ -57,7 +62,7 @@ func (this *CompositeType) CompareMemberTypes(other IType, cmpType string) bool 
 		return false
 	}
 
-	otherComposite := other.GetCompositeType()
+	otherComposite := GetCompositeType(other)
 
 	otherMembers := otherComposite.Members()
 

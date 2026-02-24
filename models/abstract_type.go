@@ -1,8 +1,6 @@
 package models
 
-import (
-	"fmt"
-)
+import "fmt"
 
 const SizeUnknown int64 = -1
 
@@ -30,36 +28,94 @@ type IType interface {
 	IsCompatible(other IType) bool
 	IsCastableTo(target IType) bool
 	ElemType() IType
-	GetIntegerType() *IntegerType
-	GetPointerType() *PointerType
-	GetFunctionType() *FunctionType
-	GetCompositeType() ICompositeType
-	// GetIntegerType() (*IntegerType, error)
-	// GetPointerType() (*PointerType, error)
-	// GetFunctionType() (*FunctionType, error)
-	// GetCompositeType() (*CompositeType, error)
+
+	// TODO: remove below, cause move them to static global method
+	// GetIntegerType() *IntegerType
+	// GetPointerType() *PointerType
+	// GetFunctionType() *FunctionType
+	// GetCompositeType() ICompositeType
 	// GetStructType() (*StructType, error)
 	// GetUnionType() (*UnionType, error)
 	// GetArrayType() (*ArrayType, error)
 }
 
-type BaseType struct{
+// TODO: these cast method, may need return error, cause java cast can throw exception
+func GetIntegerType(t IType) *IntegerType {
+	target, ok := t.(*IntegerType)
+	if !ok {
+		panic("Cast IType to *IntegerType fail")
+	}
+	return target
 }
 
+func GetPointerType(t IType) *PointerType {
+	target, ok := t.(*PointerType)
+	if !ok {
+		panic("Cast IType to *PointerType fail")
+	}
+	return target
+}
+
+func GetCompositeType(t IType) ICompositeType {
+	target, ok := t.(ICompositeType)
+	if !ok {
+		panic("Cast IType to ICompositeType fail")
+	}
+	return target
+}
+
+func GetFunctionType(t IType) *FunctionType {
+	target, ok := t.(*FunctionType)
+	if !ok {
+		panic("Cast IType to *FunctionType fail")
+	}
+	return target
+}
+
+func GetArrayType(t IType) *ArrayType {
+	target, ok := t.(*ArrayType)
+	if !ok {
+		panic("Cast IType to *ArrayType fail")
+	}
+	return target
+}
+
+// func GetStructType(t IType) *StructType {
+// 	target, ok := t.(*StructType)
+// 	if !ok {
+// 		panic("Cast IType to *StructType fail")
+// 	}
+// 	return target
+// }
+
+// func GetUnionType(t IType) *UnionType {
+// 	target, ok := t.(*UnionType)
+// 	if !ok {
+// 		panic("Cast IType to *UnionType fail")
+// 	}
+// 	return target
+// }
+
+type BaseType struct {
+}
+
+// TODO: remove in future, cause BaseType implement part IType method for shared use
+var _ IType = &BaseType{}
+
 func (this *BaseType) Size() int64 {
-	panic("Size method must be implemented by concrete type")
+	panic("Type::Size method must be implemented by concrete type")
 }
 
 func (this *BaseType) AllocSize() int64 {
-	panic("AllocSize method must be implemented by concrete type")
+	panic("Type::AllocSize method must be implemented by concrete type")
 }
 
 func (this *BaseType) Alignment() int64 {
-	panic("Alignment method must be implemented by concrete type")
+	panic("Type::Alignment method must be implemented by concrete type")
 }
 
 func (this *BaseType) IsSameType(other IType) bool {
-	panic("IsSameType method must be implemented by concrete type")
+	panic("Type::IsSameType method must be implemented by concrete type")
 }
 
 func (this *BaseType) IsVoid() bool {
@@ -122,22 +178,18 @@ func (this *BaseType) IsCallable() bool {
 	return false
 }
 
+func (this *BaseType) IsCompatible(other IType) bool {
+	panic("Type::IsCompatible is abstract method")
+}
+
+func (this *BaseType) IsCastableTo(target IType) bool {
+	panic("Type::IsCastableTo is abstract method")
+}
+
 func (this *BaseType) ElemType() IType {
-	panic("#baseType called for undereferable type")
+	panic("Type::ElemType called for undereferable type")
 }
 
-func (this *BaseType) GetIntegerType() *IntegerType {
-	panic("#not an integer type")
-}
-
-func (this *BaseType) GetPointerType() *PointerType {
-	panic("not a pointer type")
-}
-
-func (this *BaseType) GetCompositeType() ICompositeType {
-	panic("not a pointer type")
-}
-
-func (this *BaseType) GetFunctionType() *FunctionType {
-	panic("not a function type")
+func (this *BaseType) String() string {
+	panic("Type::String is abstract method")
 }

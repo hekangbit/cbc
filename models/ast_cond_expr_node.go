@@ -7,6 +7,8 @@ type ASTCondExprNode struct {
 	elseExpr IASTExprNode
 }
 
+var _ IASTExprNode = &ASTCondExprNode{}
+
 func NewASTCondExprNode(c IASTExprNode, t IASTExprNode, e IASTExprNode) *ASTCondExprNode {
 	return &ASTCondExprNode{cond: c, thenExpr: t, elseExpr: e}
 }

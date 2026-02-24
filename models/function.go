@@ -38,8 +38,10 @@ func (this *Function) Parameters() []*CBCParameter {
 	panic("Function::Parameters abstract method")
 }
 
+// TODO: GetFunctionType may return error, like java throw cast exception
 func (this *Function) ReturnType() IType {
-	return this.Type().GetFunctionType().ReturnType()
+	t := GetFunctionType(this.Type())
+	return t.ReturnType()
 }
 
 func (this *Function) IsVoid() bool {
