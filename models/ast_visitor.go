@@ -20,4 +20,6 @@ type IASTVisitor interface {
 	VisitArrayIdxRefNode(*ASTArrayIdxRefNode) interface{}
 	VisitFunctionCallNode(*ASTFunctionCallNode) interface{}
 	VisitMemberNodeNode(*ASTMemberNode) interface{}
+	VisitPtrMemberNode(*ASTPtrMemberNode) interface{}
+	VisitIntegerLiteralNode(*ASTIntegerLiteralNode) interface{}
 }

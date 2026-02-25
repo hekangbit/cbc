@@ -3,18 +3,18 @@ package models
 import "fmt"
 
 type ArrayTypeRef struct {
-	*BaseTypeRef
+	BaseTypeRef
 	elemTypeRef ITypeRef
 	length      int64
 }
 
 const undefined = -1
 
-var _ ITypeRef = (*ArrayTypeRef)(nil)
+var _ ITypeRef = &ArrayTypeRef{}
 
 func NewArrayTypeRef(elemTypeRef ITypeRef) *ArrayTypeRef {
 	return &ArrayTypeRef{
-		BaseTypeRef: NewBaseTypeRef(elemTypeRef.Location()),
+		BaseTypeRef: BaseTypeRef{location: elemTypeRef.Location()},
 		elemTypeRef: elemTypeRef,
 		length:      undefined,
 	}
@@ -25,7 +25,7 @@ func NewArrayTypeRefWithLen(elemTypeRef ITypeRef, length int64) *ArrayTypeRef {
 		panic("negative array length")
 	}
 	return &ArrayTypeRef{
-		BaseTypeRef: NewBaseTypeRef(elemTypeRef.Location()),
+		BaseTypeRef: BaseTypeRef{location: elemTypeRef.Location()},
 		elemTypeRef: elemTypeRef,
 		length:      length,
 	}
@@ -33,7 +33,7 @@ func NewArrayTypeRefWithLen(elemTypeRef ITypeRef, length int64) *ArrayTypeRef {
 
 func NewArrayTypeRefEmptyElem() *ArrayTypeRef {
 	return &ArrayTypeRef{
-		BaseTypeRef: NewBaseTypeRef(nil),
+		BaseTypeRef: BaseTypeRef{location: nil},
 		elemTypeRef: nil,
 		length:      undefined,
 	}

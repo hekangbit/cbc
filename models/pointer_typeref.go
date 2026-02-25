@@ -1,7 +1,7 @@
 package models
 
 type PointerTypeRef struct {
-	*BaseTypeRef
+	BaseTypeRef
 	elemTypeRef ITypeRef
 }
 
@@ -9,14 +9,14 @@ var _ ITypeRef = (*PointerTypeRef)(nil)
 
 func NewPointerTypeRef(elemTypeRef ITypeRef) *PointerTypeRef {
 	return &PointerTypeRef{
-		BaseTypeRef: NewBaseTypeRef(elemTypeRef.Location()),
+		BaseTypeRef: BaseTypeRef{location: elemTypeRef.Location()},
 		elemTypeRef: elemTypeRef,
 	}
 }
 
 func NewPointerTypeRefEmptyElem() *PointerTypeRef {
 	return &PointerTypeRef{
-		BaseTypeRef: NewBaseTypeRef(nil),
+		BaseTypeRef: BaseTypeRef{location: nil},
 		elemTypeRef: nil,
 	}
 }

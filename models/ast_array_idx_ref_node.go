@@ -6,8 +6,13 @@ type ASTArrayIdxRefNode struct {
 	index IASTExprNode
 }
 
+var _ IASTLHSNode = &ASTArrayIdxRefNode{}
+
 func NewASTArrayIdxRefNode(expr IASTExprNode, index IASTExprNode) *ASTArrayIdxRefNode {
-	return &ASTArrayIdxRefNode{expr: expr, index: index}
+	p := &ASTArrayIdxRefNode{expr: expr, index: index}
+	p.ASTLHSNode.ASTExprNode._impl = p
+	p.ASTLHSNode.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTArrayIdxRefNode) Expr() IASTExprNode {
@@ -22,19 +27,19 @@ func (this *ASTArrayIdxRefNode) Index() IASTExprNode {
 // isMultiDimension a[x][y] = true.
 // isMultiDimension a[x] = false.
 func (this *ASTArrayIdxRefNode) IsMultiDimension() bool {
-	node, ok := this.expr.(*ASTArrayIdxRefNode)
+	p, ok := this.expr.(*ASTArrayIdxRefNode)
 	if !ok {
 		return false
 	}
-	return !(node.OrigType().IsPointer())
+	return !(p.OrigType().IsPointer())
 }
 
 // Returns base expression of (multi-dimension) array.
 // e.g.  baseExpr of a[x][y][z] is a.
 func (this *ASTArrayIdxRefNode) BaseExpr() IASTExprNode {
 	if this.IsMultiDimension() {
-		node := this.expr.(*ASTArrayIdxRefNode)
-		return node.BaseExpr()
+		p := this.expr.(*ASTArrayIdxRefNode)
+		return p.BaseExpr()
 	}
 	return this.expr
 }
@@ -57,7 +62,7 @@ func (this *ASTArrayIdxRefNode) Location() *Location {
 	return this.expr.Location()
 }
 
-func (this *ASTArrayIdxRefNode) Dump(d *Dumper) {
+func (this *ASTArrayIdxRefNode) _Dump(d *Dumper) {
 	if this.ty != nil {
 		d.PrintMemberType("type", this.ty)
 	}

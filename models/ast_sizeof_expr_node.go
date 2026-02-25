@@ -3,13 +3,16 @@ package models
 type ASTSizeofExprNode struct {
 	ASTExprNode
 	expr IASTExprNode
-	ty   *TypeNode
+	ty   *ASTTypeNode
 }
 
 var _ IASTExprNode = &ASTSizeofExprNode{}
 
 func NewASTSizeofExprNode(expr IASTExprNode, tyRef ITypeRef) *ASTSizeofExprNode {
-	return &ASTSizeofExprNode{expr: expr, ty: NewTypeNodeFromRef(tyRef)}
+	p := &ASTSizeofExprNode{expr: expr, ty: NewTypeNodeFromRef(tyRef)}
+	p.ASTExprNode._impl = p
+	p.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTSizeofExprNode) Expr() IASTExprNode {
@@ -24,7 +27,7 @@ func (this *ASTSizeofExprNode) Type() IType {
 	return this.ty.Type()
 }
 
-func (this *ASTSizeofExprNode) TypeNode() *TypeNode {
+func (this *ASTSizeofExprNode) TypeNode() *ASTTypeNode {
 	return this.ty
 }
 
@@ -32,7 +35,7 @@ func (this *ASTSizeofExprNode) Location() *Location {
 	return this.expr.Location()
 }
 
-func (this *ASTSizeofExprNode) Dump(d *Dumper) {
+func (this *ASTSizeofExprNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("expr", this.expr)
 }
 

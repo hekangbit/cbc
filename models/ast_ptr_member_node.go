@@ -1,85 +1,65 @@
 package models
 
+// TODO: finish this node
 type ASTPtrMemberNode struct {
 	ASTLHSNode
 	expr   IASTExprNode
 	member string
 }
 
+var _ IASTLHSNode = &ASTPtrMemberNode{}
+
 func NewASTPtrMemberNode(expr IASTExprNode, member string) *ASTPtrMemberNode {
-	return &ASTPtrMemberNode{
+	p := &ASTPtrMemberNode{
 		expr:   expr,
 		member: member,
 	}
+	p.ASTLHSNode.ASTExprNode._impl = p
+	p.ASTLHSNode.ASTExprNode.Node._impl = p
+	return p
 }
 
-/*
-package net.loveruby.cflat.ast;
-import net.loveruby.cflat.type.Type;
-import net.loveruby.cflat.type.CompositeType;
-import net.loveruby.cflat.type.PointerType;
-import net.loveruby.cflat.exception.*;
-
-public class PtrMemberNode extends LHSNode {
-    public ExprNode expr;
-    public String member;
-
-    public PtrMemberNode(ExprNode expr, String member) {
-        this.expr = expr;
-        this.member = member;
-    }
-
-    public CompositeType dereferedCompositeType() {
-        try {
-            PointerType pt = expr.type().getPointerType();
-            return pt.baseType().getCompositeType();
-        }
-        catch (ClassCastException err) {
-            throw new SemanticError(err.getMessage());
-        }
-    }
-
-    public Type dereferedType() {
-        try {
-            PointerType pt = expr.type().getPointerType();
-            return pt.baseType();
-        }
-        catch (ClassCastException err) {
-            throw new SemanticError(err.getMessage());
-        }
-    }
-
-    public ExprNode expr() {
-        return expr;
-    }
-
-    public String member() {
-        return member;
-    }
-
-    public long offset() {
-        return dereferedCompositeType().memberOffset(member);
-    }
-
-    protected Type origType() {
-        return dereferedCompositeType().memberType(member);
-    }
-
-    public Location location() {
-        return expr.location();
-    }
-
-    protected void _dump(Dumper d) {
-        if (type != null) {
-            d.printMember("type", type);
-        }
-        d.printMember("expr", expr);
-        d.printMember("member", member);
-    }
-
-    public <S,E> E accept(ASTVisitor<S,E> visitor) {
-        return visitor.visit(this);
-    }
+// TODO: cast may need return error
+func (this *ASTPtrMemberNode) DereferedCompositeType() ICompositeType {
+	pt := GetPointerType(this.expr.Type())
+	return GetCompositeType(pt.ElemType()) // catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
 }
 
-*/
+func (this *ASTPtrMemberNode) DereferedType() IType {
+	pt := GetPointerType(this.expr.Type())
+	return pt.ElemType() // catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
+}
+
+func (this *ASTPtrMemberNode) Expr() IASTExprNode {
+	return this.expr
+}
+
+func (this *ASTPtrMemberNode) Member() string {
+	return this.member
+}
+
+// TODO: MemberOffset may return error when not found member
+func (this *ASTPtrMemberNode) Offset() int64 {
+	return this.DereferedCompositeType().MemberOffset(this.member)
+}
+
+// TODO: MemberOffset may return error when not found member
+func (this *ASTPtrMemberNode) OrigType() IType {
+	return this.DereferedCompositeType().MemberType(this.member)
+}
+
+func (this *ASTPtrMemberNode) Location() *Location {
+	return this.expr.Location()
+}
+
+func (this *ASTPtrMemberNode) _Dump(d *Dumper) {
+	if this.ty != nil {
+		d.PrintMemberType("type", this.ty)
+	}
+	d.PrintMemberDumpable("expr", this.expr)
+	d.PrintMemberStringNotResolved("member", this.member)
+}
+
+func (this *ASTPtrMemberNode) Accept(visitor IASTVisitor) interface{} {
+	return visitor.VisitPtrMemberNode(this)
+}

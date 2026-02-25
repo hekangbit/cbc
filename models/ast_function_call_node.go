@@ -6,11 +6,13 @@ type ASTFunctionCallNode struct {
 	args []IASTExprNode
 }
 
+var _ IASTExprNode = &ASTFunctionCallNode{}
+
 func NewASTFunctionCallNode(expr IASTExprNode, args []IASTExprNode) *ASTFunctionCallNode {
-	return &ASTFunctionCallNode{
-		expr: expr,
-		args: args,
-	}
+	p := &ASTFunctionCallNode{expr: expr, args: args}
+	p.ASTExprNode._impl = p
+	p.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTFunctionCallNode) Expr() IASTExprNode {
@@ -53,7 +55,7 @@ func (this *ASTFunctionCallNode) Location() *Location {
 	return this.expr.Location()
 }
 
-func (this *ASTFunctionCallNode) Dump(d *Dumper) {
+func (this *ASTFunctionCallNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("expr", this.expr)
 	dumpables := make([]Dumpable, len(this.args))
 	for i, tmp := range this.args {

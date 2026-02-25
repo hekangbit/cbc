@@ -1,5 +1,6 @@
 package models
 
+// TODO:
 type TypeTable struct {
 }
 

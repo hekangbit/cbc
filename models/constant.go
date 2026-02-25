@@ -1,15 +1,19 @@
 package models
 
 type Constant struct {
-	*Entity
+	Entity
 	value IASTExprNode
 }
 
-func NewConstant(typeNode *TypeNode, name string, value IASTExprNode) *Constant {
-	return &Constant{
-		Entity: NewEntity(true, typeNode, name),
+var _ IEntity = &Constant{}
+
+func NewConstant(typeNode *ASTTypeNode, name string, value IASTExprNode) *Constant {
+	p := &Constant{
+		Entity: Entity{name: name, isPrivate: true, typeNode: typeNode, nRefered: 0},
 		value:  value,
 	}
+	p._impl = p
+	return p
 }
 
 func (this *Constant) IsAssignable() bool {
@@ -32,8 +36,7 @@ func (this *Constant) Value() IASTExprNode {
 	return this.value
 }
 
-func (this *Constant) Dump(d *Dumper) {
-	d.PrintClass(this, this.Location())
+func (this *Constant) _Dump(d *Dumper) {
 	d.PrintMemberString("name", this.name, false)
 	d.PrintMemberTypeNode("typeNode", this.typeNode)
 	d.PrintMemberDumpable("value", this.value)

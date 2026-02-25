@@ -9,10 +9,10 @@ type ASTMemberNode struct {
 var _ IASTLHSNode = &ASTMemberNode{}
 
 func NewASTMemberNode(expr IASTExprNode, member string) *ASTMemberNode {
-	return &ASTMemberNode{
-		expr:   expr,
-		member: member,
-	}
+	p := &ASTMemberNode{expr: expr, member: member}
+	p.ASTLHSNode.ASTExprNode._impl = p
+	p.ASTLHSNode.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTMemberNode) ElemType() ICompositeType {
@@ -44,7 +44,7 @@ func (this *ASTMemberNode) Location() *Location {
 	return this.expr.Location()
 }
 
-func (this *ASTMemberNode) Dump(d *Dumper) {
+func (this *ASTMemberNode) _Dump(d *Dumper) {
 	if this.ty != nil {
 		d.PrintMemberType("type", this.ty)
 	}

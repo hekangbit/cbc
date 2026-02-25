@@ -8,11 +8,9 @@ type ASTExprStmtNode struct {
 var _ IASTStmtNode = &ASTExprStmtNode{}
 
 func NewASTExprStmtNode(loc *Location, expr IASTExprNode) *ASTExprStmtNode {
-	return &ASTExprStmtNode{
-		ASTStmtNode: ASTStmtNode{location: loc},
-		expr:        expr,
-	}
-
+	p := &ASTExprStmtNode{ASTStmtNode: ASTStmtNode{location: loc}, expr: expr}
+	p._impl = p
+	return p
 }
 
 func (this *ASTExprStmtNode) Expr() IASTExprNode {
@@ -23,7 +21,7 @@ func (this *ASTExprStmtNode) SetExpr(expr IASTExprNode) {
 	this.expr = expr
 }
 
-func (this *ASTExprStmtNode) Dump(d *Dumper) {
+func (this *ASTExprStmtNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("expr", this.expr)
 }
 

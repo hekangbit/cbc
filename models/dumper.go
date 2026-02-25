@@ -77,7 +77,7 @@ func (this *Dumper) printPair(name, value string) {
 	fmt.Fprintf(this.stream, "%s: %s\n", name, value)
 }
 
-func (this *Dumper) PrintMemberTypeNode(name string, n *TypeNode) {
+func (this *Dumper) PrintMemberTypeNode(name string, n *ASTTypeNode) {
 	this.printIndent()
 	resolved := ""
 	if n.IsResolved() {

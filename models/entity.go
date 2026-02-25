@@ -14,39 +14,31 @@ type IEntity interface {
 	Value() IASTExprNode
 	IsParameter() bool
 	IsPrivate() bool
-	TypeNode() *TypeNode
+	TypeNode() *ASTTypeNode
 	Type() IType
 	AllocSize() int64
 	Alignment() int64
 	Refered()
 	IsRefered() bool
-	SetMemref(mem asm.IMemoryReference)
+	SetMemref(asm.IMemoryReference)
 	Memref() asm.IMemoryReference
-	SetAddressMem(mem asm.IMemoryReference)
-	SetAddressImm(imm asm.IImmediateValue)
+	SetAddressMem(asm.IMemoryReference)
+	SetAddressImm(asm.IImmediateValue)
 	Address() asm.IOperand
 	CheckAddress()
 	Location() *Location
-	Accept(visitor IEntityVisitor) interface{}
-	Dump(*Dumper)
+	Accept(IEntityVisitor) interface{}
+	_Dump(*Dumper)
 }
 
 type Entity struct {
+	_impl     IEntity
 	name      string
 	isPrivate bool
-	typeNode  *TypeNode
+	typeNode  *ASTTypeNode
 	nRefered  int64
 	memref    asm.IMemoryReference
 	address   asm.IOperand
-}
-
-func NewEntity(priv bool, typ *TypeNode, name string) *Entity {
-	return &Entity{
-		name:      name,
-		isPrivate: priv,
-		typeNode:  typ,
-		nRefered:  0,
-	}
 }
 
 func (e *Entity) Name() string {
@@ -55,14 +47,6 @@ func (e *Entity) Name() string {
 
 func (e *Entity) SymbolString() string {
 	return e.Name()
-}
-
-func (e *Entity) IsDefined() bool {
-	panic("abstract method: IsDefined")
-}
-
-func (e *Entity) IsInitialized() bool {
-	panic("abstract method: IsInitialized")
 }
 
 func (e *Entity) IsConstant() bool {
@@ -81,7 +65,7 @@ func (e *Entity) IsPrivate() bool {
 	return e.isPrivate
 }
 
-func (e *Entity) TypeNode() *TypeNode {
+func (e *Entity) TypeNode() *ASTTypeNode {
 	return e.typeNode
 }
 
@@ -138,8 +122,6 @@ func (e *Entity) Location() *Location {
 }
 
 func (e *Entity) Dump(d *Dumper) {
-}
-
-func (e *Entity) Accept(visitor IEntityVisitor) interface{} {
-	panic("Entity::Accept need implemented by concreate struct")
+	d.PrintClass(e._impl, e.Location())
+	e._impl._Dump(d)
 }

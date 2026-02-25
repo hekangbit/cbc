@@ -8,9 +8,10 @@ type ASTDereferenceNode struct {
 var _ IASTLHSNode = &ASTDereferenceNode{}
 
 func NewASTDereferenceNode(expr IASTExprNode) *ASTDereferenceNode {
-	return &ASTDereferenceNode{
-		expr: expr,
-	}
+	p := &ASTDereferenceNode{expr: expr}
+	p.ASTLHSNode.ASTExprNode._impl = p
+	p.ASTLHSNode.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTDereferenceNode) Type() IType {
@@ -49,7 +50,7 @@ func (this *ASTDereferenceNode) Location() *Location {
 	return this.expr.Location()
 }
 
-func (this *ASTDereferenceNode) Dump(d *Dumper) {
+func (this *ASTDereferenceNode) _Dump(d *Dumper) {
 	if this.ty != nil {
 		d.PrintMemberType("type", this.ty)
 	}

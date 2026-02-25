@@ -5,11 +5,16 @@ type UndefinedFunction struct {
 	params *Params
 }
 
-func NewUndefinedFunction(t *TypeNode, name string, params *Params) *UndefinedFunction {
-	return &UndefinedFunction{
-		Function: Function{Entity: Entity{isPrivate: false, typeNode: t, name: name}},
-		params:   params,
-	}
+var _ IFunction = &UndefinedFunction{}
+
+func NewUndefinedFunction(t *ASTTypeNode, name string, params *Params) *UndefinedFunction {
+	var p = new(UndefinedFunction)
+	p._impl = p
+	p.isPrivate = false
+	p.name = name
+	p.typeNode = t
+	p.params = params
+	return p
 }
 
 func (this *UndefinedFunction) Parameters() []*CBCParameter {
@@ -20,7 +25,7 @@ func (this *UndefinedFunction) IsDefined() bool {
 	return false
 }
 
-func (this *UndefinedFunction) Dump(d *Dumper) {
+func (this *UndefinedFunction) _Dump(d *Dumper) {
 	d.PrintMemberStringNotResolved("name", this.name)
 	d.PrintMemberBool("isPrivate", this.IsPrivate())
 	d.PrintMemberDumpable("typeNode", this.typeNode)

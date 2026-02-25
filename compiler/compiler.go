@@ -38,13 +38,12 @@ func DebugDump(path string) {
 }
 
 func DumpAST(ast *models.AST, mode CompilerMode) bool {
-	dumper := models.NewDumper(os.Stdout)
 	switch mode {
 	case COMPILER_MODE_DumpTokens:
 		ast.DumpTokens(os.Stdout)
 		return true
 	case COMPILER_MODE_DumpAST:
-		ast.Dump(dumper)
+		ast.DumpNode()
 		return true
 	case COMPILER_MODE_DumpStmt:
 		return true

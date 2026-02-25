@@ -77,7 +77,7 @@ func (this *ASTBuilder) VisitDefVars(ctx *parser.DefVarsContext) interface{} {
 	if ctx.GetPriv() != nil {
 		priv = true
 	}
-	cbType := ctx.GetCbtype().Accept(this).(*models.TypeNode)
+	cbType := ctx.GetCbtype().Accept(this).(*models.ASTTypeNode)
 
 	for _, identifier := range ctx.AllIdentifier() {
 		initialize = nil
@@ -178,7 +178,7 @@ func (this *ASTBuilder) VisitFixedParams(ctx *parser.FixedParamsContext) interfa
 }
 
 func (this *ASTBuilder) VisitParam(ctx *parser.ParamContext) interface{} {
-	typeNode := ctx.CbType().Accept(this).(*models.TypeNode)
+	typeNode := ctx.CbType().Accept(this).(*models.ASTTypeNode)
 	name := ctx.Identifier().GetSymbol().GetText()
 	return models.NewCBCParameter(typeNode, name)
 }
@@ -457,7 +457,7 @@ func (this *ASTBuilder) VisitUnaryPrefixAddress(ctx *parser.UnaryPrefixAddressCo
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixSizeofType(ctx *parser.UnaryPrefixSizeofTypeContext) interface{} {
-	t := ctx.CbType().Accept(this).(*models.TypeNode)
+	t := ctx.CbType().Accept(this).(*models.ASTTypeNode)
 	return models.NewASTSizeofTypeNode(t, models.NewUlongRef())
 }
 
@@ -512,26 +512,29 @@ func (v *ASTBuilder) VisitArgs(ctx *parser.ArgsContext) interface{} {
 }
 
 // TODO: How to get int64 const value
-func (v *ASTBuilder) VisitIntConst(ctx *parser.IntConstContext) interface{} {
+// TODO: java IntegerLiteralNode integerNode(Location loc, String image)
+// can handle UL, L, U suffix
+func (this *ASTBuilder) VisitIntConst(ctx *parser.IntConstContext) interface{} {
 	val, err := strconv.Atoi(ctx.IntLiteral().GetText())
 	if err != nil {
 		panic("AST Builder: GetIntConst Fail")
 	}
-	return val
+	p := models.NewASTIntegerLiteralNode(models.NewLocation(this.sourcePath, ctx.GetStart()), models.NewLongRef(), int64(val))
+	return p
 }
 
-func (v *ASTBuilder) VisitCharConst(ctx *parser.CharConstContext) interface{} {
-	return v.VisitChildren(ctx)
+func (this *ASTBuilder) VisitCharConst(ctx *parser.CharConstContext) interface{} {
+	return this.VisitChildren(ctx)
 }
 
-func (v *ASTBuilder) VisitStringConst(ctx *parser.StringConstContext) interface{} {
-	return v.VisitChildren(ctx)
+func (this *ASTBuilder) VisitStringConst(ctx *parser.StringConstContext) interface{} {
+	return this.VisitChildren(ctx)
 }
 
-func (v *ASTBuilder) VisitIdentifier(ctx *parser.IdentifierContext) interface{} {
-	return v.VisitChildren(ctx)
+func (this *ASTBuilder) VisitIdentifier(ctx *parser.IdentifierContext) interface{} {
+	return this.VisitChildren(ctx)
 }
 
-func (v *ASTBuilder) VisitParenExpr(ctx *parser.ParenExprContext) interface{} {
-	return v.VisitChildren(ctx)
+func (this *ASTBuilder) VisitParenExpr(ctx *parser.ParenExprContext) interface{} {
+	return this.VisitChildren(ctx)
 }

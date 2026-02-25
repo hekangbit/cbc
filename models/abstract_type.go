@@ -9,7 +9,7 @@ type IType interface {
 	Size() int64
 	AllocSize() int64
 	Alignment() int64
-	IsSameType(other IType) bool
+	IsSameType(IType) bool
 	IsVoid() bool
 	IsInt() bool
 	IsInteger() bool
@@ -25,18 +25,9 @@ type IType interface {
 	IsIncompleteArray() bool
 	IsScalar() bool
 	IsCallable() bool
-	IsCompatible(other IType) bool
-	IsCastableTo(target IType) bool
+	IsCompatible(IType) bool
+	IsCastableTo(IType) bool
 	ElemType() IType
-
-	// TODO: remove below, cause move them to static global method
-	// GetIntegerType() *IntegerType
-	// GetPointerType() *PointerType
-	// GetFunctionType() *FunctionType
-	// GetCompositeType() ICompositeType
-	// GetStructType() (*StructType, error)
-	// GetUnionType() (*UnionType, error)
-	// GetArrayType() (*ArrayType, error)
 }
 
 // TODO: these cast method, may need return error, cause java cast can throw exception
@@ -80,42 +71,29 @@ func GetArrayType(t IType) *ArrayType {
 	return target
 }
 
-// func GetStructType(t IType) *StructType {
-// 	target, ok := t.(*StructType)
-// 	if !ok {
-// 		panic("Cast IType to *StructType fail")
-// 	}
-// 	return target
-// }
+// TODO
+/*
+func GetStructType(t IType) *StructType {
+	target, ok := t.(*StructType)
+	if !ok {
+		panic("Cast IType to *StructType fail")
+	}
+	return target
+}
+*/
 
-// func GetUnionType(t IType) *UnionType {
-// 	target, ok := t.(*UnionType)
-// 	if !ok {
-// 		panic("Cast IType to *UnionType fail")
-// 	}
-// 	return target
-// }
+// TODO
+/*
+func GetUnionType(t IType) *UnionType {
+	target, ok := t.(*UnionType)
+	if !ok {
+		panic("Cast IType to *UnionType fail")
+	}
+	return target
+}
+*/
 
 type BaseType struct {
-}
-
-// TODO: remove in future, cause BaseType implement part IType method for shared use
-var _ IType = &BaseType{}
-
-func (this *BaseType) Size() int64 {
-	panic("Type::Size method must be implemented by concrete type")
-}
-
-func (this *BaseType) AllocSize() int64 {
-	panic("Type::AllocSize method must be implemented by concrete type")
-}
-
-func (this *BaseType) Alignment() int64 {
-	panic("Type::Alignment method must be implemented by concrete type")
-}
-
-func (this *BaseType) IsSameType(other IType) bool {
-	panic("Type::IsSameType method must be implemented by concrete type")
 }
 
 func (this *BaseType) IsVoid() bool {
@@ -131,7 +109,7 @@ func (this *BaseType) IsInteger() bool {
 }
 
 func (this *BaseType) IsSigned() bool {
-	panic("#isSigned for non-integer type")
+	panic("Type#isSigned for non-integer type")
 }
 
 func (this *BaseType) IsPointer() bool {
@@ -178,18 +156,6 @@ func (this *BaseType) IsCallable() bool {
 	return false
 }
 
-func (this *BaseType) IsCompatible(other IType) bool {
-	panic("Type::IsCompatible is abstract method")
-}
-
-func (this *BaseType) IsCastableTo(target IType) bool {
-	panic("Type::IsCastableTo is abstract method")
-}
-
 func (this *BaseType) ElemType() IType {
-	panic("Type::ElemType called for undereferable type")
-}
-
-func (this *BaseType) String() string {
-	panic("Type::String is abstract method")
+	panic("Type#ElemType called for undereferable type")
 }

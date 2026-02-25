@@ -17,52 +17,43 @@ type IASTExprNode interface {
 
 type ASTExprNode struct {
 	Node
+	_impl IASTExprNode
 }
 
-// TODO: remove this, cause base struct is abstract class,
-// no need implement all interface methods
-var _ IASTExprNode = (*ASTExprNode)(nil)
-
-func (n *ASTExprNode) Type() IType {
-	panic("Type() must be implemented by concrete type")
+func (this *ASTExprNode) OrigType() IType {
+	return this._impl.Type()
 }
 
-func (n *ASTExprNode) OrigType() IType {
-	panic("OrigType() must be implemented by concrete type")
+func (this *ASTExprNode) AllocSize() int64 {
+	return this._impl.Type().AllocSize()
 }
 
-func (n *ASTExprNode) AllocSize() int64 {
-	panic("AllocSize() must be implemented by concrete type")
-}
-
-func (n *ASTExprNode) IsConstant() bool {
+func (this *ASTExprNode) IsConstant() bool {
 	return false
 }
 
-func (n *ASTExprNode) IsParameter() bool {
+func (this *ASTExprNode) IsParameter() bool {
 	return false
 }
 
-func (n *ASTExprNode) IsLvalue() bool {
+func (this *ASTExprNode) IsLvalue() bool {
 	return false
 }
 
-func (n *ASTExprNode) IsAssignable() bool {
+func (this *ASTExprNode) IsAssignable() bool {
 	return false
 }
 
-func (n *ASTExprNode) IsLoadable() bool {
+func (this *ASTExprNode) IsLoadable() bool {
 	return false
 }
 
-func (n *ASTExprNode) IsCallable() bool {
-	return false
+// TODO: Java use try catch, when SemanticError return false
+func (this *ASTExprNode) IsCallable() bool {
+	return this._impl.Type().IsCallable()
 }
 
-func (n *ASTExprNode) IsPointer() bool {
-	return false
-}
-
-func (n *ASTExprNode) Accept(visitor IASTVisitor) interface{} {
-	panic("Accept() must be implemented by concrete type")
+// TODO: Java use try catch, when SemanticError return false
+func (this *ASTExprNode) IsPointer() bool {
+	return this._impl.Type().IsPointer()
 }

@@ -6,14 +6,16 @@ import (
 )
 
 type FunctionTypeRef struct {
-	*BaseTypeRef
+	BaseTypeRef
 	retTypeRef ITypeRef
 	params     *ParamTypeRefs
 }
 
+var _ ITypeRef = &FunctionTypeRef{}
+
 func NewFunctionTypeRef(retTypeRef ITypeRef, params *ParamTypeRefs) *FunctionTypeRef {
 	return &FunctionTypeRef{
-		BaseTypeRef: NewBaseTypeRef(retTypeRef.Location()),
+		BaseTypeRef: BaseTypeRef{location: retTypeRef.Location()},
 		retTypeRef:  retTypeRef,
 		params:      params,
 	}

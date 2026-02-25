@@ -4,10 +4,13 @@ type UndefinedVariable struct {
 	Variable
 }
 
-func NewUndefinedVariable(t *TypeNode, name string) *UndefinedVariable {
-	return &UndefinedVariable{
-		Variable: Variable{Entity: Entity{isPrivate: false, typeNode: t, name: name}},
-	}
+func NewUndefinedVariable(t *ASTTypeNode, name string) *UndefinedVariable {
+	var p = new(UndefinedVariable)
+	p._impl = p
+	p.isPrivate = false
+	p.name = name
+	p.typeNode = t
+	return p
 }
 
 func (this *UndefinedVariable) IsDefined() bool {
@@ -22,8 +25,7 @@ func (this *UndefinedVariable) IsInitialized() bool {
 	return false
 }
 
-func (this *UndefinedVariable) Dump(d *Dumper) {
-	d.PrintClass(this, this.Location())
+func (this *UndefinedVariable) _Dump(d *Dumper) {
 	d.PrintMemberString("name", this.name, false)
 	d.PrintMemberBool("isPrivate", this.IsPrivate())
 	d.PrintMemberDumpable("typeNode", this.typeNode)

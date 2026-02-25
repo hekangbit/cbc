@@ -10,12 +10,6 @@ type ASTStmtNode struct {
 	location *Location
 }
 
-func NewASTStmtNode(loc *Location) *ASTStmtNode {
-	return &ASTStmtNode{
-		location: loc,
-	}
-}
-
 func (this *ASTStmtNode) Location() *Location {
 	return this.location
 }

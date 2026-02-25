@@ -8,6 +8,7 @@ import (
 )
 
 type AST struct {
+	Node
 	source        *Location
 	decls         *Declarations
 	scope         *ToplevelScope
@@ -19,10 +20,9 @@ type AST struct {
 var _ INode = &AST{}
 
 func NewAST(source *Location, declarations *Declarations) *AST {
-	return &AST{
-		source: source,
-		decls:  declarations,
-	}
+	p := &AST{source: source, decls: declarations}
+	p._impl = p
+	return p
 }
 
 func (this *AST) Location() *Location {
@@ -31,15 +31,16 @@ func (this *AST) Location() *Location {
 
 func (this *AST) Types() []IASTTypeDefinition {
 	result := []IASTTypeDefinition{}
-	for _, t := range this.decls.Defstructs() {
-		result = append(result, t)
-	}
-	for _, t := range this.decls.Defunions() {
-		result = append(result, t)
-	}
-	for _, t := range this.decls.Typedefs() {
-		result = append(result, t)
-	}
+	// TODO: open this after implement struct, union, typedef
+	// for _, t := range this.decls.Defstructs() {
+	// 	result = append(result, t)
+	// }
+	// for _, t := range this.decls.Defunions() {
+	// 	result = append(result, t)
+	// }
+	// for _, t := range this.decls.Typedefs() {
+	// 	result = append(result, t)
+	// }
 	return result
 }
 
@@ -148,8 +149,7 @@ func (this *AST) DumpDefinedFunctions(d *Dumper, buf []*DefinedFunction) {
 	d.PrintNodeList("functions", dumpables)
 }
 
-func (this *AST) Dump(d *Dumper) {
-	d.PrintClass(this, this.Location())
+func (this *AST) _Dump(d *Dumper) {
 	this.DumpDefinedVariables(d, this.DefinedVariables())
 	this.DumpDefinedFunctions(d, this.DefinedFunctions())
 }

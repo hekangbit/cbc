@@ -9,7 +9,10 @@ type ASTAddressNode struct {
 var _ IASTExprNode = &ASTAddressNode{}
 
 func NewASTAddressNode(expr IASTExprNode) *ASTAddressNode {
-	return &ASTAddressNode{expr: expr}
+	p := &ASTAddressNode{expr: expr}
+	p.ASTExprNode._impl = p
+	p.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTAddressNode) Expr() IASTExprNode {
@@ -34,7 +37,7 @@ func (this *ASTAddressNode) Location() *Location {
 	return this.expr.Location()
 }
 
-func (this *ASTAddressNode) Dump(d *Dumper) {
+func (this *ASTAddressNode) _Dump(d *Dumper) {
 	if this.ty != nil {
 		d.PrintMemberType("type", this.ty)
 	}

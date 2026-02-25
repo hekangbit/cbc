@@ -4,22 +4,20 @@ import "fmt"
 
 type Slot struct {
 	Node
-	typeNode *TypeNode
+	typeNode *ASTTypeNode
 	name     string
 	offset   int64
 }
 
 var _ INode = &Slot{}
 
-func NewSlot(typeNode *TypeNode, name string) *Slot {
-	return &Slot{
-		typeNode: typeNode,
-		name:     name,
-		offset:   SizeUnknown,
-	}
+func NewSlot(typeNode *ASTTypeNode, name string) *Slot {
+	p := &Slot{typeNode: typeNode, name: name, offset: SizeUnknown}
+	p._impl = p
+	return p
 }
 
-func (s *Slot) TypeNode() *TypeNode {
+func (s *Slot) TypeNode() *ASTTypeNode {
 	return s.typeNode
 }
 
@@ -59,7 +57,7 @@ func (s *Slot) Location() *Location {
 	return s.typeNode.Location()
 }
 
-func (s *Slot) Dump(d *Dumper) {
+func (s *Slot) _Dump(d *Dumper) {
 	d.PrintMemberStringNotResolved("name", s.name)
 	d.PrintMemberDumpable("typeNode", s.typeNode)
 }

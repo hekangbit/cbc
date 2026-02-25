@@ -10,7 +10,10 @@ type ASTCondExprNode struct {
 var _ IASTExprNode = &ASTCondExprNode{}
 
 func NewASTCondExprNode(c IASTExprNode, t IASTExprNode, e IASTExprNode) *ASTCondExprNode {
-	return &ASTCondExprNode{cond: c, thenExpr: t, elseExpr: e}
+	p := &ASTCondExprNode{cond: c, thenExpr: t, elseExpr: e}
+	p.ASTExprNode._impl = p
+	p.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTCondExprNode) Type() IType {
@@ -41,7 +44,7 @@ func (this *ASTCondExprNode) Location() *Location {
 	return this.cond.Location()
 }
 
-func (this *ASTCondExprNode) Dump(d *Dumper) {
+func (this *ASTCondExprNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("cond", this.cond)
 	d.PrintMemberDumpable("thenExpr", this.thenExpr)
 	d.PrintMemberDumpable("elseExpr", this.elseExpr)

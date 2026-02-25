@@ -18,18 +18,6 @@ type Function struct {
 	label         *asm.Label
 }
 
-var _ IFunction = (*Function)(nil)
-
-func NewFunction(isPriv bool, typeNode *TypeNode, name string) *Function {
-	return &Function{
-		Entity: Entity{
-			isPrivate: isPriv,
-			typeNode:  typeNode,
-			name:      name,
-		},
-	}
-}
-
 func (this *Function) IsInitialized() bool {
 	return true
 }

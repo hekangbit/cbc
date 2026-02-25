@@ -6,6 +6,8 @@ type FunctionType struct {
 	paramTypes *ParamTypes
 }
 
+var _ IType = &FunctionType{}
+
 func NewFunctionType(ret IType, partypes *ParamTypes) *FunctionType {
 	return &FunctionType{
 		returnType: ret,
@@ -63,16 +65,20 @@ func (this *FunctionType) AcceptsArgc(numArgs int) bool {
 }
 
 func (this *FunctionType) ParamTypes() []IType {
-	// TODO: add Types methods for ParamTypes
 	return this.paramTypes.Types()
 }
 
 func (this *FunctionType) Alignment() int64 {
-	panic("FunctionType.Alignment called")
+	panic("FunctionType#Alignment called")
 }
 
+// TODO: java throw error: FunctionType#size called
 func (this *FunctionType) Size() int64 {
-	panic("FunctionType.Size called")
+	panic("FunctionType#Size called")
+}
+
+func (this *FunctionType) AllocSize() int64 {
+	return this.Size()
 }
 
 // TODO: correct string format

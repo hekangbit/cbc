@@ -10,11 +10,9 @@ type ASTBlockNode struct {
 var _ IASTStmtNode = &ASTBlockNode{}
 
 func NewASTBlockNode(loc *Location, vars []*DefinedVariable, stmts []IASTStmtNode) *ASTBlockNode {
-	return &ASTBlockNode{
-		ASTStmtNode: ASTStmtNode{location: loc},
-		variables:   vars,
-		stmts:       stmts,
-	}
+	p := &ASTBlockNode{ASTStmtNode: ASTStmtNode{location: loc}, variables: vars, stmts: stmts}
+	p._impl = p
+	return p
 }
 
 func (this *ASTBlockNode) Variables() []*DefinedVariable {
@@ -40,8 +38,18 @@ func (this *ASTBlockNode) SetScope(scope *LocalScope) {
 	this.scope = scope
 }
 
-func (this *ASTBlockNode) Dump(d *Dumper) {
-	d.PrintClass(this, this.Location())
+func (this *ASTBlockNode) _Dump(d *Dumper) {
+	ivars := make([]Dumpable, len(this.variables))
+	for i, tmp := range this.variables {
+		ivars[i] = tmp
+	}
+	d.PrintNodeList("variables", ivars)
+
+	istmts := make([]Dumpable, len(this.stmts))
+	for i, tmp := range this.stmts {
+		istmts[i] = tmp
+	}
+	d.PrintNodeList("stmts", istmts)
 }
 
 func (this *ASTBlockNode) Accept(visitor IASTVisitor) interface{} {

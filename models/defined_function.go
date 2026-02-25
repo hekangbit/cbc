@@ -1,21 +1,24 @@
 package models
 
 type DefinedFunction struct {
-	*Function
+	Function
 	params *Params
 	body   *ASTBlockNode
 	scope  *LocalScope
 	ir     []IRStmt
 }
 
-var _ IFunction = (*DefinedFunction)(nil)
+var _ IFunction = &DefinedFunction{}
 
-func NewDefinedFunction(priv bool, typeNode *TypeNode, name string, params *Params, body *ASTBlockNode) *DefinedFunction {
-	return &DefinedFunction{
-		Function: NewFunction(priv, typeNode, name),
-		params:   params,
-		body:     body,
-	}
+func NewDefinedFunction(priv bool, t *ASTTypeNode, name string, params *Params, body *ASTBlockNode) *DefinedFunction {
+	var p = new(DefinedFunction)
+	p._impl = p
+	p.isPrivate = priv
+	p.name = name
+	p.typeNode = t
+	p.params = params
+	p.body = body
+	return p
 }
 
 func (this *DefinedFunction) IsDefined() bool {
@@ -50,8 +53,7 @@ func (this *DefinedFunction) LocalVariables() []*DefinedVariable {
 	return this.scope.AllLocalVariables()
 }
 
-func (this *DefinedFunction) Dump(d *Dumper) {
-	d.PrintClass(this, this.Location())
+func (this *DefinedFunction) _Dump(d *Dumper) {
 	d.PrintMemberString("name", this.Name(), false)
 	d.PrintMemberBool("isPrivate", this.IsPrivate())
 	d.PrintMemberDumpable("params", this.params)

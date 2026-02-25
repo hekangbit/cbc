@@ -11,21 +11,17 @@ type ASTBinaryOpNode struct {
 var _ IASTExprNode = &ASTBinaryOpNode{}
 
 func NewASTBinaryOpNode(left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
-	return &ASTBinaryOpNode{
-		operator: op,
-		left:     left,
-		right:    right,
-		type_:    nil,
-	}
+	p := &ASTBinaryOpNode{operator: op, left: left, right: right, type_: nil}
+	p.ASTExprNode._impl = p
+	p.ASTExprNode.Node._impl = p
+	return p
 }
 
 func NewASTBinaryOpNodeWithType(ty IType, left IASTExprNode, op string, right IASTExprNode) *ASTBinaryOpNode {
-	return &ASTBinaryOpNode{
-		operator: op,
-		left:     left,
-		right:    right,
-		type_:    ty,
-	}
+	p := &ASTBinaryOpNode{operator: op, left: left, right: right, type_: ty}
+	p.ASTExprNode._impl = p
+	p.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTBinaryOpNode) Operator() string {
@@ -66,7 +62,7 @@ func (this *ASTBinaryOpNode) Location() *Location {
 	return this.left.Location()
 }
 
-func (this *ASTBinaryOpNode) Dump(d *Dumper) {
+func (this *ASTBinaryOpNode) _Dump(d *Dumper) {
 	d.PrintMemberString("operator", this.operator, false)
 	d.PrintMemberDumpable("left", this.left)
 	d.PrintMemberDumpable("right", this.right)

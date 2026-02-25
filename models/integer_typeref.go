@@ -1,7 +1,7 @@
 package models
 
 type IntegerTypeRef struct {
-	*BaseTypeRef
+	BaseTypeRef
 	name string
 }
 
@@ -75,7 +75,7 @@ func NewIntegerTypeRef(name string) *IntegerTypeRef {
 
 func NewIntegerTypeRefWithLocation(name string, loc *Location) *IntegerTypeRef {
 	return &IntegerTypeRef{
-		BaseTypeRef: NewBaseTypeRef(loc),
+		BaseTypeRef: BaseTypeRef{location: loc},
 		name:        name,
 	}
 }

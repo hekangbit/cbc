@@ -95,7 +95,7 @@ func (this *ArrayType) IsCompatible(target IType) bool {
 	return this.elemType.IsCompatible(target.ElemType()) && this.elemType.Size() == target.ElemType().Size()
 }
 
-func (this *ArrayType) IsCasstableTo(target IType) bool {
+func (this *ArrayType) IsCastableTo(target IType) bool {
 	return target.IsPointer() || target.IsArray()
 }
 

@@ -11,7 +11,7 @@ type ICompositeType interface {
 	MemberTypes() []IType
 	HasMember(name string) bool
 
-	// TODO: may need return error?
+	// TODO: may need return error? or may return nil, -1, to indicate there is error
 	MemberType(name string) IType
 	MemberOffset(name string) int64
 	GetMember(name string) *Slot
@@ -26,16 +26,6 @@ type CompositeType struct {
 	cachedSize         int64
 	cachedAlign        int64
 	isRecursiveChecked bool
-}
-
-func NewCompositeType(name string, members []*Slot, location Location) *CompositeType {
-	return &CompositeType{
-		NamedType:          *NewNamedType(name, location),
-		members:            members,
-		cachedSize:         SizeUnknown,
-		cachedAlign:        SizeUnknown,
-		isRecursiveChecked: false,
-	}
 }
 
 func (this *CompositeType) IsCompositeType() bool {

@@ -1,56 +1,55 @@
 package models
 
-type TypeNode struct {
+type ASTTypeNode struct {
+	Node
 	typeRef ITypeRef
 	typ     IType
 }
 
-var _ INode = &TypeNode{}
+var _ INode = &ASTTypeNode{}
 
-func NewTypeNodeFromRef(ref ITypeRef) *TypeNode {
-	return &TypeNode{
-		typeRef: ref,
-		typ:     nil,
-	}
+func NewTypeNodeFromRef(ref ITypeRef) *ASTTypeNode {
+	p := &ASTTypeNode{typeRef: ref, typ: nil}
+	p._impl = p
+	return p
 }
 
-func NewTypeNodeFromType(typ IType) *TypeNode {
-	return &TypeNode{
-		typeRef: nil,
-		typ:     typ,
-	}
+func NewTypeNodeFromType(typ IType) *ASTTypeNode {
+	p := &ASTTypeNode{typeRef: nil, typ: typ}
+	p._impl = p
+	return p
 }
 
-func (this *TypeNode) TypeRef() ITypeRef {
+func (this *ASTTypeNode) TypeRef() ITypeRef {
 	return this.typeRef
 }
 
-func (this *TypeNode) Type() IType {
+func (this *ASTTypeNode) Type() IType {
 	if this.typ == nil {
-		panic("TypeNode not resolved and no typeRef available")
+		panic("ASTTypeNode not resolved and no typeRef available")
 	}
 	return this.typ
 }
 
-func (this *TypeNode) IsResolved() bool {
+func (this *ASTTypeNode) IsResolved() bool {
 	return this.typ != nil
 }
 
-func (this *TypeNode) SetType(typ IType) {
+func (this *ASTTypeNode) SetType(typ IType) {
 	if this.typ != nil {
-		panic("TypeNode#SetType called twice")
+		panic("ASTTypeNode#SetType called twice")
 	}
 	this.typ = typ
 }
 
-func (this *TypeNode) Location() *Location {
+func (this *ASTTypeNode) Location() *Location {
 	if this.typeRef != nil {
 		return this.typeRef.Location()
 	}
 	return nil
 }
 
-func (this *TypeNode) Dump(d *Dumper) {
+func (this *ASTTypeNode) _Dump(d *Dumper) {
 	d.PrintMemberTypeRef("typeRef", this.typeRef)
 	d.PrintMemberType("type", this.typ)
 }

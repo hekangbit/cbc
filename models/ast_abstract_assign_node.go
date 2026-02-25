@@ -13,8 +13,6 @@ type ASTAbstractAssignNode struct {
 	rhs IASTExprNode
 }
 
-var _ IASTAbstractAssignNode = &ASTAbstractAssignNode{}
-
 func (this *ASTAbstractAssignNode) Type() IType {
 	return this.lhs.Type()
 }
@@ -35,7 +33,7 @@ func (this *ASTAbstractAssignNode) Location() *Location {
 	return this.LHS().Location()
 }
 
-func (this *ASTAbstractAssignNode) Dump(d *Dumper) {
+func (this *ASTAbstractAssignNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("lhs", this.lhs)
 	d.PrintMemberDumpable("rhs", this.rhs)
 }

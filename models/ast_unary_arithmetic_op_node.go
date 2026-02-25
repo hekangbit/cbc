@@ -1,15 +1,20 @@
 package models
 
 type ASTUnaryArithmeticOpNode struct {
-	*ASTUnaryOpNode
+	ASTUnaryOpNode
 	amount int64
 }
 
+var _ IASTExprNode = &ASTUnaryArithmeticOpNode{}
+
 func NewASTUnaryArithmeticOpNode(op string, expr IASTExprNode) *ASTUnaryArithmeticOpNode {
-	return &ASTUnaryArithmeticOpNode{
-		ASTUnaryOpNode: NewASTUnaryOpNode(op, expr),
+	p := &ASTUnaryArithmeticOpNode{
+		ASTUnaryOpNode: ASTUnaryOpNode{operator: op, expr: expr},
 		amount:         1,
 	}
+	p.ASTUnaryOpNode.ASTExprNode._impl = p
+	p.ASTUnaryOpNode.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTUnaryArithmeticOpNode) SetExpr(expr IASTExprNode) {

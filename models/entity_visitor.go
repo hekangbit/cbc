@@ -1,5 +1,6 @@
 package models
 
+// TODO
 type IEntityVisitor interface {
 	VisitDefinedVariable(*DefinedVariable) interface{}
 	VisitUndefinedVariable(*UndefinedVariable) interface{}

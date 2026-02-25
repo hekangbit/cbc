@@ -1,22 +1,32 @@
 package models
 
+import (
+	"io"
+	"os"
+)
+
 type INode interface {
 	Dumpable
+	DumpNode()
+	DumpByStream(io.Writer)
+	_Dump(d *Dumper)
 	Location() *Location
 }
 
-// TODO: no need define struct for this interface
-// cause No usefull shared method to define
 type Node struct {
+	_impl INode
 }
 
-// TODO: all concreate Node struct need has Dump method
-// and need call printClass(this, location) first,
-// see java code for detail
-func (n *Node) Dump(d *Dumper) {
-	panic("Node::Dump method must be implemented by concrete node type")
+func (this *Node) DumpNode() {
+	this._impl.DumpByStream(os.Stdout)
 }
 
-func (n *Node) Location() *Location {
-	panic("Node::Location method must be implemented by concrete node type")
+func (this *Node) DumpByStream(s io.Writer) {
+	this._impl.Dump(NewDumper(s))
+}
+
+func (this *Node) Dump(d *Dumper) {
+	// TODO: java dump this class, but how about golang
+	d.PrintClass(this._impl, this._impl.Location())
+	this._impl._Dump(d)
 }

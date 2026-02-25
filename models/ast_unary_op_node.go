@@ -7,11 +7,13 @@ type ASTUnaryOpNode struct {
 	opType   IType
 }
 
+var _ IASTExprNode = &ASTUnaryOpNode{}
+
 func NewASTUnaryOpNode(op string, expr IASTExprNode) *ASTUnaryOpNode {
-	return &ASTUnaryOpNode{
-		operator: op,
-		expr:     expr,
-	}
+	p := &ASTUnaryOpNode{operator: op, expr: expr}
+	p.ASTExprNode._impl = p
+	p.ASTExprNode.Node._impl = p
+	return p
 }
 
 func (this *ASTUnaryOpNode) Operator() string {
@@ -42,7 +44,7 @@ func (this *ASTUnaryOpNode) Location() *Location {
 	return this.expr.Location()
 }
 
-func (this *ASTUnaryOpNode) Dump(d *Dumper) {
+func (this *ASTUnaryOpNode) _Dump(d *Dumper) {
 	d.PrintMemberStringNotResolved("operator", this.operator)
 	d.PrintMemberDumpable("expr", this.expr)
 }
