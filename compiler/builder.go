@@ -4,6 +4,7 @@ import (
 	"cbc/loader"
 	"cbc/models"
 	"cbc/parser"
+	"cbc/util"
 	"strconv"
 
 	"github.com/antlr4-go/antlr/v4"
@@ -564,7 +565,11 @@ func (this *ASTBuilder) VisitCharConst(ctx *parser.CharConstContext) interface{}
 }
 
 func (this *ASTBuilder) VisitStringConst(ctx *parser.StringConstContext) interface{} {
-	return this.VisitChildren(ctx)
+	s, err := util.StringValue(ctx.GetText())
+	if err != nil {
+		panic("ASTBuilder#VisitStringConst string literal invalid")
+	}
+	return models.NewASTStringLiteralNode(this.Loc(ctx.GetStart()), models.NewPointerTypeRef(models.NewCharRef()), s)
 }
 
 func (this *ASTBuilder) VisitIdentifier(ctx *parser.IdentifierContext) interface{} {
@@ -572,5 +577,5 @@ func (this *ASTBuilder) VisitIdentifier(ctx *parser.IdentifierContext) interface
 }
 
 func (this *ASTBuilder) VisitParenExpr(ctx *parser.ParenExprContext) interface{} {
-	return this.VisitChildren(ctx)
+	return ctx.Expr().Accept(this)
 }
