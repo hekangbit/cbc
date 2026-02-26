@@ -9,15 +9,31 @@ import (
 	"github.com/antlr4-go/antlr/v4"
 )
 
+const (
+	POSTFIX_OP_KIND_SUFFIX_OP int = iota
+	POSTFIX_OP_KIND_ARRAY_INDEX
+	POSTFIX_OP_KIND_MEMBER
+	POSTFIX_OP_KIND_PTR_MEMBER
+	POSTFIX_OP_KIND_FUNCTION_CALL
+)
+
+type PostfixOpContent struct {
+	kind int
+	data interface{}
+}
+
 type ASTBuilder struct {
 	*parser.BaseCbVisitor
 	name        string
 	sourcePath  string
 	curBaseType models.ITypeRef
-	curPrimary  models.IASTExprNode
 }
 
 var _ parser.CbVisitor = &ASTBuilder{}
+
+func (this *ASTBuilder) Loc(token antlr.Token) *models.Location {
+	return models.NewLocation(this.sourcePath, token)
+}
 
 func (this *ASTBuilder) Visit(tree antlr.ParseTree) interface{} {
 	return tree.Accept(this)
@@ -473,39 +489,53 @@ func (this *ASTBuilder) VisitUnaryPostfix(ctx *parser.UnaryPostfixContext) inter
 }
 
 func (this *ASTBuilder) VisitPostfix(ctx *parser.PostfixContext) interface{} {
-	this.curPrimary = ctx.Primary().Accept(this).(models.IASTExprNode)
+	expr := ctx.Primary().Accept(this).(models.IASTExprNode)
 	for _, tmpCtx := range ctx.AllPostfixOp() {
-		this.curPrimary = tmpCtx.Accept(this).(models.IASTExprNode)
+		content := tmpCtx.Accept(this).(PostfixOpContent)
+		switch content.kind {
+		case POSTFIX_OP_KIND_SUFFIX_OP:
+			expr = models.NewASTSuffixOpNode(content.data.(string), expr)
+		case POSTFIX_OP_KIND_ARRAY_INDEX:
+			expr = models.NewASTArrayIdxRefNode(expr, content.data.(models.IASTExprNode))
+		case POSTFIX_OP_KIND_MEMBER:
+			expr = models.NewASTMemberNode(expr, content.data.(string))
+		case POSTFIX_OP_KIND_PTR_MEMBER:
+			expr = models.NewASTPtrMemberNode(expr, content.data.(string))
+		case POSTFIX_OP_KIND_FUNCTION_CALL:
+			expr = models.NewASTFunctionCallNode(expr, content.data.([]models.IASTExprNode))
+		default:
+			panic("ASTBuilder#VisitPostfix invalid postfix op kind")
+		}
 	}
-	return this.curPrimary
+	return expr
 }
 
 func (this *ASTBuilder) VisitPostInc(ctx *parser.PostIncContext) interface{} {
-	return models.NewASTSuffixOpNode("++", this.curPrimary)
+	return PostfixOpContent{kind: POSTFIX_OP_KIND_SUFFIX_OP, data: "++"}
 }
 
 func (this *ASTBuilder) VisitPostDec(ctx *parser.PostDecContext) interface{} {
-	return models.NewASTSuffixOpNode("--", this.curPrimary)
+	return PostfixOpContent{kind: POSTFIX_OP_KIND_SUFFIX_OP, data: "--"}
 }
 
 func (this *ASTBuilder) VisitPostArrayIndex(ctx *parser.PostArrayIndexContext) interface{} {
 	idx := ctx.Expr().Accept(this).(models.IASTExprNode)
-	return models.NewASTArrayIdxRefNode(this.curPrimary, idx)
+	return PostfixOpContent{kind: POSTFIX_OP_KIND_ARRAY_INDEX, data: idx}
 }
 
 func (this *ASTBuilder) VisitPostMember(ctx *parser.PostMemberContext) interface{} {
 	memb := ctx.Identifier().Accept(this).(string)
-	return models.NewASTMemberNode(this.curPrimary, memb)
+	return PostfixOpContent{kind: POSTFIX_OP_KIND_MEMBER, data: memb}
 }
 
 func (this *ASTBuilder) VisitPostPtrMember(ctx *parser.PostPtrMemberContext) interface{} {
 	memb := ctx.Identifier().Accept(this).(string)
-	return models.NewASTPtrMemberNode(this.curPrimary, memb)
+	return PostfixOpContent{kind: POSTFIX_OP_KIND_PTR_MEMBER, data: memb}
 }
 
 func (this *ASTBuilder) VisitFuncCall(ctx *parser.FuncCallContext) interface{} {
 	args := ctx.Args().Accept(this).([]models.IASTExprNode)
-	return models.NewASTFunctionCallNode(this.curPrimary, args)
+	return PostfixOpContent{kind: POSTFIX_OP_KIND_FUNCTION_CALL, data: args}
 }
 
 // TODO
@@ -527,7 +557,6 @@ func (this *ASTBuilder) VisitIntConst(ctx *parser.IntConstContext) interface{} {
 
 // TODO: cast int to int64, and need check effect
 func (this *ASTBuilder) VisitCharConst(ctx *parser.CharConstContext) interface{} {
-	ctx.Character().GetText()
 	r := []rune(ctx.Character().GetText())[1]
 	val := int(r)
 	p := models.NewASTIntegerLiteralNode(models.NewLocation(this.sourcePath, ctx.GetStart()), models.NewCharRef(), int64(val))
@@ -539,7 +568,7 @@ func (this *ASTBuilder) VisitStringConst(ctx *parser.StringConstContext) interfa
 }
 
 func (this *ASTBuilder) VisitIdentifier(ctx *parser.IdentifierContext) interface{} {
-	return this.VisitChildren(ctx)
+	return models.NewASTVariableNode(this.Loc(ctx.GetStart()), ctx.Identifier().GetText())
 }
 
 func (this *ASTBuilder) VisitParenExpr(ctx *parser.ParenExprContext) interface{} {

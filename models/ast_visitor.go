@@ -22,4 +22,5 @@ type IASTVisitor interface {
 	VisitMemberNodeNode(*ASTMemberNode) interface{}
 	VisitPtrMemberNode(*ASTPtrMemberNode) interface{}
 	VisitIntegerLiteralNode(*ASTIntegerLiteralNode) interface{}
+	VisitVariableNode(*ASTVariableNode) interface{}
 }

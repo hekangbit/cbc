@@ -67,7 +67,7 @@ func (this *ASTArrayIdxRefNode) _Dump(d *Dumper) {
 		d.PrintMemberType("type", this.ty)
 	}
 	d.PrintMemberDumpable("expr", this.expr)
-	d.PrintMemberDumpable("expr", this.index)
+	d.PrintMemberDumpable("index", this.index)
 }
 
 func (this *ASTArrayIdxRefNode) Accept(visitor IASTVisitor) interface{} {
