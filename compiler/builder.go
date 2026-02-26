@@ -41,6 +41,7 @@ func (this *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
 	return models.NewAST(models.NewLocation(this.sourcePath, ctx.GetStart()), decls)
 }
 
+// TODO: remove visit children
 func (this *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interface{} {
 	for _, importStmt := range ctx.AllImportStmt() {
 		importStmt.Accept(this)
@@ -48,6 +49,7 @@ func (this *ASTBuilder) VisitImportStmts(ctx *parser.ImportStmtsContext) interfa
 	return this.VisitChildren(ctx)
 }
 
+// TODO: remove visit children
 func (this *ASTBuilder) VisitImportStmt(ctx *parser.ImportStmtContext) interface{} {
 	path := ctx.Identifier(0).GetText()
 	for i := 1; i < len(ctx.AllIdentifier()); i++ {
@@ -507,8 +509,8 @@ func (this *ASTBuilder) VisitFuncCall(ctx *parser.FuncCallContext) interface{} {
 }
 
 // TODO
-func (v *ASTBuilder) VisitArgs(ctx *parser.ArgsContext) interface{} {
-	return v.VisitChildren(ctx)
+func (this *ASTBuilder) VisitArgs(ctx *parser.ArgsContext) interface{} {
+	return this.VisitChildren(ctx)
 }
 
 // TODO: How to get int64 const value
@@ -523,8 +525,13 @@ func (this *ASTBuilder) VisitIntConst(ctx *parser.IntConstContext) interface{} {
 	return p
 }
 
+// TODO: cast int to int64, and need check effect
 func (this *ASTBuilder) VisitCharConst(ctx *parser.CharConstContext) interface{} {
-	return this.VisitChildren(ctx)
+	ctx.Character().GetText()
+	r := []rune(ctx.Character().GetText())[1]
+	val := int(r)
+	p := models.NewASTIntegerLiteralNode(models.NewLocation(this.sourcePath, ctx.GetStart()), models.NewCharRef(), int64(val))
+	return p
 }
 
 func (this *ASTBuilder) VisitStringConst(ctx *parser.StringConstContext) interface{} {

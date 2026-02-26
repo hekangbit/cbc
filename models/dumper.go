@@ -36,6 +36,10 @@ func (this *Dumper) PrintNodeList(name string, nodes []Dumpable) {
 	this.unindent()
 }
 
+func (this *Dumper) PrintMemberChar(name string, n int) {
+	this.printPair(name, fmt.Sprintf("%d, (%c)", n, n))
+}
+
 func (this *Dumper) PrintMemberInt(name string, n int) {
 	this.printPair(name, fmt.Sprintf("%d", n))
 }

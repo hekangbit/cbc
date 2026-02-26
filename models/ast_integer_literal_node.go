@@ -22,9 +22,14 @@ func (this *ASTIntegerLiteralNode) Value() int64 {
 	return this.value
 }
 
+// TODO: int64 to int may error when print member char
 func (this *ASTIntegerLiteralNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("typeNode", this.typeNode)
-	d.PrintMemberInt64("value", this.value)
+	if this.typeNode.typeRef.(*IntegerTypeRef).name == "char" {
+		d.PrintMemberChar("value", int(this.value))
+	} else {
+		d.PrintMemberInt64("value", this.value)
+	}
 }
 
 func (this *ASTIntegerLiteralNode) Accept(visitor IASTVisitor) interface{} {

@@ -5,6 +5,8 @@ type IntegerTypeRef struct {
 	name string
 }
 
+var _ ITypeRef = &IntegerTypeRef{}
+
 func NewCharRef() *IntegerTypeRef {
 	return NewIntegerTypeRef("char")
 }
