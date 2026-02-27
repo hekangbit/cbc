@@ -3,8 +3,8 @@ package models
 // TODO：
 type IASTVisitor interface {
 	// Statements
-	VisitBlock(*ASTBlockNode) interface{}
-	VisitExprStmtNode(*ASTExprStmtNode) interface{}
+	VisitBlockNode(*ASTBlockNode) any
+	VisitExprStmtNode(*ASTExprStmtNode) any
 	// VisitIfStmtNode
 	// VisitSwitchNode
 	// VisitCaseNode
@@ -15,28 +15,28 @@ type IASTVisitor interface {
 	// VisitContinueNode
 	// VisitGotoNode
 	// VisitLabelNode
-	VisitReturnNode(*ASTReturnNode) interface{}
+	VisitReturnNode(*ASTReturnNode) any
 
 	// Expressions
-	VisitAssignNode(*ASTAssignNode) interface{}
-	VisitOpAssignNode(*ASTOpAssignNode) interface{}
-	VisitCondExprNode(*ASTCondExprNode) interface{}
-	VisitLogicalOrNode(*ASTLogicalOrNode) interface{}
-	VisitLogicalAndNode(*ASTLogicalAndNode) interface{}
-	VisitBinaryOp(*ASTBinaryOpNode) interface{}
-	VisitUnaryOpNode(*ASTUnaryOpNode) interface{}
-	VisitPrefixOpNode(*ASTPrefixOpNode) interface{}
-	VisitSuffixOpNode(*ASTSuffixOpNode) interface{}
-	VisitArrayIdxRefNode(*ASTArrayIdxRefNode) interface{}
-	VisitMemberNodeNode(*ASTMemberNode) interface{}
-	VisitPtrMemberNode(*ASTPtrMemberNode) interface{}
-	VisitFunctionCallNode(*ASTFunctionCallNode) interface{}
-	VisitDereferenceNode(*ASTDereferenceNode) interface{}
-	VisitAddressNode(*ASTAddressNode) interface{}
+	VisitAssignNode(*ASTAssignNode) any
+	VisitOpAssignNode(*ASTOpAssignNode) any
+	VisitCondExprNode(*ASTCondExprNode) any
+	VisitLogicalOrNode(*ASTLogicalOrNode) any
+	VisitLogicalAndNode(*ASTLogicalAndNode) any
+	VisitBinaryOp(*ASTBinaryOpNode) any
+	VisitUnaryOpNode(*ASTUnaryOpNode) any
+	VisitPrefixOpNode(*ASTPrefixOpNode) any
+	VisitSuffixOpNode(*ASTSuffixOpNode) any
+	VisitArrayIdxRefNode(*ASTArrayIdxRefNode) any
+	VisitMemberNodeNode(*ASTMemberNode) any
+	VisitPtrMemberNode(*ASTPtrMemberNode) any
+	VisitFunctionCallNode(*ASTFunctionCallNode) any
+	VisitDereferenceNode(*ASTDereferenceNode) any
+	VisitAddressNode(*ASTAddressNode) any
 	// VisitCastNode
-	VisitSizeofExprNode(*ASTSizeofExprNode) interface{}
-	VisitSizeofTypeNode(*ASTSizeofTypeNode) interface{}
-	VisitVariableNode(*ASTVariableNode) interface{}
-	VisitIntegerLiteralNode(*ASTIntegerLiteralNode) interface{}
-	VisitStringLiteralNode(*ASTStringLiteralNode) interface{}
+	VisitSizeofExprNode(*ASTSizeofExprNode) any
+	VisitSizeofTypeNode(*ASTSizeofTypeNode) any
+	VisitVariableNode(*ASTVariableNode) any
+	VisitIntegerLiteralNode(*ASTIntegerLiteralNode) any
+	VisitStringLiteralNode(*ASTStringLiteralNode) any
 }

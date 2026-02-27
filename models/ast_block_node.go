@@ -53,5 +53,5 @@ func (this *ASTBlockNode) _Dump(d *Dumper) {
 }
 
 func (this *ASTBlockNode) Accept(visitor IASTVisitor) interface{} {
-	return visitor.VisitBlock(this)
+	return visitor.VisitBlockNode(this)
 }
