@@ -55,7 +55,7 @@ func (this *ASTBuilder) VisitErrorNode(_ antlr.ErrorNode) interface{} {
 func (this *ASTBuilder) VisitProg(ctx *parser.ProgContext) interface{} {
 	ctx.ImportStmts().Accept(this)
 	decls := ctx.TopDefs().Accept(this).(*models.Declarations)
-	return models.NewAST(models.NewLocation(this.sourcePath, ctx.GetStart()), decls)
+	return models.NewAST(this.Loc(ctx.GetStart()), decls)
 }
 
 // TODO: remove visit children
@@ -136,19 +136,19 @@ func (this *ASTBuilder) VisitCbTypeRef(ctx *parser.CbTypeRefContext) interface{}
 }
 
 func (this *ASTBuilder) VisitVoidTypeRef(ctx *parser.VoidTypeRefContext) interface{} {
-	return models.NewVoidTypeRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
+	return models.NewVoidTypeRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitCharTypeRef(ctx *parser.CharTypeRefContext) interface{} {
-	return models.NewCharRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
+	return models.NewCharRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitShortTypeRef(ctx *parser.ShortTypeRefContext) interface{} {
-	return models.NewShortRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
+	return models.NewShortRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitIntTypeRef(ctx *parser.IntTypeRefContext) interface{} {
-	return models.NewIntRefWithLocation(models.NewLocation(this.sourcePath, ctx.GetStart()))
+	return models.NewIntRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitArrayModifier(ctx *parser.ArrayModifierContext) interface{} {
@@ -177,10 +177,10 @@ func (this *ASTBuilder) VisitParams(ctx *parser.ParamsContext) interface{} {
 	voidToken := ctx.GetVoid()
 	if voidToken != nil {
 		paramDescs := make([]*models.CBCParameter, 0)
-		return models.NewParams(models.NewLocation(this.sourcePath, voidToken), paramDescs)
+		return models.NewParams(this.Loc(voidToken), paramDescs)
 	}
 	fixedParams := ctx.FixedParams().Accept(this).([]*models.CBCParameter)
-	fullParams := models.NewParams(models.NewLocation(this.sourcePath, ctx.GetStart()), fixedParams)
+	fullParams := models.NewParams(this.Loc(ctx.GetStart()), fixedParams)
 	if ctx.GetHasVararg() != nil {
 		fullParams.AcceptVarargs()
 	}
@@ -225,12 +225,12 @@ func (this *ASTBuilder) VisitBlock(ctx *parser.BlockContext) interface{} {
 		stmts = append(stmts, stmt)
 	}
 
-	return models.NewASTBlockNode(models.NewLocation(this.sourcePath, ctx.GetStart()), defLocalVars, stmts)
+	return models.NewASTBlockNode(this.Loc(ctx.GetStart()), defLocalVars, stmts)
 }
 
 func (this *ASTBuilder) VisitExprStatement(ctx *parser.ExprStatementContext) interface{} {
 	expr := ctx.Expr().Accept(this).(models.IASTExprNode)
-	return models.NewASTExprStmtNode(models.NewLocation(this.sourcePath, ctx.GetStart()), expr)
+	return models.NewASTExprStmtNode(this.Loc(ctx.GetStart()), expr)
 }
 
 func (this *ASTBuilder) VisitBlockStatement(ctx *parser.BlockStatementContext) interface{} {
@@ -294,7 +294,7 @@ func (this *ASTBuilder) VisitReturnStmt(ctx *parser.ReturnStmtContext) interface
 	if ctx.Expr() != nil {
 		exprNode = ctx.Expr().Accept(this).(models.IASTExprNode)
 	}
-	return models.NewASTReturnNode(models.NewLocation(this.sourcePath, ctx.GetStart()), exprNode)
+	return models.NewASTReturnNode(this.Loc(ctx.GetStart()), exprNode)
 }
 
 func (this *ASTBuilder) VisitAssignOp(ctx *parser.AssignOpContext) interface{} {
@@ -555,7 +555,7 @@ func (this *ASTBuilder) VisitIntConst(ctx *parser.IntConstContext) interface{} {
 	if err != nil {
 		panic("AST Builder: GetIntConst Fail")
 	}
-	p := models.NewASTIntegerLiteralNode(models.NewLocation(this.sourcePath, ctx.GetStart()), models.NewLongRef(), int64(val))
+	p := models.NewASTIntegerLiteralNode(this.Loc(ctx.GetStart()), models.NewLongRef(), int64(val))
 	return p
 }
 
@@ -563,7 +563,7 @@ func (this *ASTBuilder) VisitIntConst(ctx *parser.IntConstContext) interface{} {
 func (this *ASTBuilder) VisitCharConst(ctx *parser.CharConstContext) interface{} {
 	r := []rune(ctx.Character().GetText())[1]
 	val := int(r)
-	p := models.NewASTIntegerLiteralNode(models.NewLocation(this.sourcePath, ctx.GetStart()), models.NewCharRef(), int64(val))
+	p := models.NewASTIntegerLiteralNode(this.Loc(ctx.GetStart()), models.NewCharRef(), int64(val))
 	return p
 }
 
