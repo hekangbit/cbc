@@ -4,6 +4,7 @@ import (
 	"cbc/models"
 	"cbc/parser"
 	"cbc/sysdep/x86"
+	"cbc/util"
 	"fmt"
 	"os"
 
@@ -12,6 +13,8 @@ import (
 
 var CompilerProgramName string = "cbc"
 var CompilerVersion string = "1.0.0"
+
+var errorHandler util.ErrorHandler
 
 func DebugDump(path string) {
 	src, err := os.ReadFile(path)
@@ -54,6 +57,36 @@ func DumpAST(ast *models.AST, mode CompilerMode) bool {
 	}
 }
 
+func DumpSemant(ast *models.AST, mode CompilerMode) bool {
+	switch mode {
+	case COMPILER_MODE_DumpReference:
+		return true
+	case COMPILER_MODE_DumpSemantic:
+		ast.DumpNode()
+		return true
+	default:
+		return false
+	}
+}
+
+func DumpIR(ir *models.IR, mode CompilerMode) bool {
+	switch mode {
+	case COMPILER_MODE_DumpIR:
+		ir.Dump()
+		return true
+	default:
+		return false
+	}
+}
+
+func DumpAsm(asmObj *x86.AssemblyCode, mode CompilerMode) bool {
+	return false
+}
+
+func PrintAsm(asmObj *x86.AssemblyCode, mode CompilerMode) bool {
+	return false
+}
+
 func GenerateExecutable(opts *Options) {
 }
 
@@ -81,47 +114,46 @@ func SemanticAnalyze(astNode *models.AST, typeTable models.TypeTable, opts *Opti
 	return astNode
 }
 
-func GenerateIR(astNode *models.AST, typeTable models.TypeTable) *models.IR {
-	return &models.IR{}
+func GenerateIR(sem *models.AST, typeTable models.TypeTable) *models.IR {
+	generator := NewIRGenerator(typeTable, errorHandler)
+	return generator.Generate(sem)
 }
 
-func GenerateAssembly(ir *models.IR, opts *Options) x86.AssemblyCode {
-	return x86.AssemblyCode{}
+func GenerateAssembly(ir *models.IR, opts *Options) *x86.AssemblyCode {
+	return &x86.AssemblyCode{}
 }
 
 func WriteFile(path string, content string) {
 }
 
+// parse file
+// semantic analyze
+// generate ir
+// generate asm
+// write file
 func Compile(srcPath string, dstPath string, opts *Options) {
-	var tree *models.AST
 	fmt.Println("Compile " + srcPath + " to " + dstPath)
-	// parse file
-	// semantic analyze
-	// generate ir
-	// generate asm
-	// write file
-
 	typeTable := opts.GetTypeTable()
-	tree = ParseFile(srcPath, opts)
-	if DumpAST(tree, opts.Mode()) {
+	astObj := ParseFile(srcPath, opts)
+	if DumpAST(astObj, opts.Mode()) {
 		return
 	}
-	tree = SemanticAnalyze(tree, typeTable, opts)
-	// if (DumpSemant(tree, opts.mode())) {
-	// 	return
-	// }
-	ir := GenerateIR(tree, typeTable)
-	// if (DumpIR(ir, opts.mode())) {
-	// 	return
-	// }
-	asm := GenerateAssembly(ir, opts)
-	// if dumpAsm(asm, opts.mode()) {
-	// 	return
-	// }
-	// if printAsm(asm, opts.mode()) {
-	// 	return
-	// }
-	WriteFile(dstPath, asm.String())
+	semObj := SemanticAnalyze(astObj, typeTable, opts)
+	if DumpSemant(semObj, opts.Mode()) {
+		return
+	}
+	ir := GenerateIR(semObj, typeTable)
+	if DumpIR(ir, opts.Mode()) {
+		return
+	}
+	asmObj := GenerateAssembly(ir, opts)
+	if DumpAsm(asmObj, opts.Mode()) {
+		return
+	}
+	if PrintAsm(asmObj, opts.Mode()) {
+		return
+	}
+	WriteFile(dstPath, asmObj.String())
 }
 
 func Assemble(srcPath string, dstPath string, opts *Options) {
