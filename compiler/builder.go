@@ -539,9 +539,12 @@ func (this *ASTBuilder) VisitFuncCall(ctx *parser.FuncCallContext) interface{} {
 	return PostfixOpContent{kind: POSTFIX_OP_KIND_FUNCTION_CALL, data: args}
 }
 
-// TODO
 func (this *ASTBuilder) VisitArgs(ctx *parser.ArgsContext) interface{} {
-	return this.VisitChildren(ctx)
+	var args []models.IASTExprNode = make([]models.IASTExprNode, 0)
+	for _, tmpCtx := range ctx.AllExpr() {
+		args = append(args, tmpCtx.Accept(this).(models.IASTExprNode))
+	}
+	return args
 }
 
 // TODO: How to get int64 const value
