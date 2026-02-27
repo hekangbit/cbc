@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cbc/util"
+	"cbc/utils"
 	"fmt"
 	"io"
 	"strings"
@@ -69,7 +69,7 @@ func (this *Dumper) PrintMemberString(name string, str string, isResolved bool) 
 	if isResolved {
 		resolved = " (resolved)"
 	}
-	this.printPair(name, util.DumpString(str)+resolved)
+	this.printPair(name, utils.DumpString(str)+resolved)
 }
 
 func (this *Dumper) PrintMemberStringNotResolved(name string, str string) {

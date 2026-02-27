@@ -1,7 +1,7 @@
 package asm
 
 import (
-	"cbc/util"
+	"cbc/utils"
 	"fmt"
 )
 
@@ -39,7 +39,7 @@ func (this *NamedSymbol) CmpIntegerLiteral(i *IntegerLiteral) int {
 }
 
 func (this *NamedSymbol) CmpNamedSymbol(sym *NamedSymbol) int {
-	return util.CompareStrings(this.name, sym.name)
+	return utils.CompareStrings(this.name, sym.name)
 }
 
 func (this *NamedSymbol) CmpUnnamedSymbol(sym *UnnamedSymbol) int {
@@ -47,9 +47,9 @@ func (this *NamedSymbol) CmpUnnamedSymbol(sym *UnnamedSymbol) int {
 }
 
 func (this *NamedSymbol) CmpSuffixedSymbol(sym *SuffixedSymbol) int {
-	return util.CompareStrings(this.String(), sym.String())
+	return utils.CompareStrings(this.String(), sym.String())
 }
 
 func (this *NamedSymbol) Dump() string {
-	return fmt.Sprintf("(NamedSymbol %s)", util.DumpString(this.name))
+	return fmt.Sprintf("(NamedSymbol %s)", utils.DumpString(this.name))
 }

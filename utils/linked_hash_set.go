@@ -1,4 +1,4 @@
-package util
+package utils
 
 // Simulate Java LinkedHashSet
 type LinkedHashSet[T comparable] struct {

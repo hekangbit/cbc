@@ -4,7 +4,7 @@ import (
 	"cbc/models"
 	"cbc/parser"
 	"cbc/sysdep/x86"
-	"cbc/util"
+	"cbc/utils"
 	"fmt"
 	"os"
 
@@ -14,7 +14,7 @@ import (
 var CompilerProgramName string = "cbc"
 var CompilerVersion string = "1.0.0"
 
-var errorHandler util.ErrorHandler
+var errorHandler utils.ErrorHandler
 
 func DebugDump(path string) {
 	src, err := os.ReadFile(path)

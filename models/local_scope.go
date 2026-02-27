@@ -1,6 +1,6 @@
 package models
 
-import "cbc/util"
+import "cbc/utils"
 
 type LocalScope struct {
 	Scope
@@ -104,7 +104,7 @@ func (this *LocalScope) CollectScope(buf []*LocalScope) []*LocalScope {
 	return buf
 }
 
-func (this *LocalScope) CheckReferences(h util.ErrorHandler) {
+func (this *LocalScope) CheckReferences(h utils.ErrorHandler) {
 	for _, v := range this.variables {
 		if !v.IsRefered() {
 			// TODO: localscope.java can report warning, h.warn(...)

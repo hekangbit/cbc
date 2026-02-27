@@ -1,28 +1,28 @@
 package models
 
-import "cbc/util"
+import "cbc/utils"
 
 type Declarations struct {
-	defvars    *util.LinkedHashSet[*DefinedVariable]
-	vardecls   *util.LinkedHashSet[*UndefinedVariable]
-	deffuns    *util.LinkedHashSet[*DefinedFunction]
-	funcdecls  *util.LinkedHashSet[*UndefinedFunction]
-	constants  *util.LinkedHashSet[*Constant]
-	defstructs *util.LinkedHashSet[*ASTStructNode]
-	defunions  *util.LinkedHashSet[*ASTUnionNode]
-	typedefs   *util.LinkedHashSet[*ASTTypedefNode]
+	defvars    *utils.LinkedHashSet[*DefinedVariable]
+	vardecls   *utils.LinkedHashSet[*UndefinedVariable]
+	deffuns    *utils.LinkedHashSet[*DefinedFunction]
+	funcdecls  *utils.LinkedHashSet[*UndefinedFunction]
+	constants  *utils.LinkedHashSet[*Constant]
+	defstructs *utils.LinkedHashSet[*ASTStructNode]
+	defunions  *utils.LinkedHashSet[*ASTUnionNode]
+	typedefs   *utils.LinkedHashSet[*ASTTypedefNode]
 }
 
 func NewDeclarations() *Declarations {
 	return &Declarations{
-		defvars:    util.NewLinkedHashSet[*DefinedVariable](),
-		vardecls:   util.NewLinkedHashSet[*UndefinedVariable](),
-		deffuns:    util.NewLinkedHashSet[*DefinedFunction](),
-		funcdecls:  util.NewLinkedHashSet[*UndefinedFunction](),
-		constants:  util.NewLinkedHashSet[*Constant](),
-		defstructs: util.NewLinkedHashSet[*ASTStructNode](),
-		defunions:  util.NewLinkedHashSet[*ASTUnionNode](),
-		typedefs:   util.NewLinkedHashSet[*ASTTypedefNode](),
+		defvars:    utils.NewLinkedHashSet[*DefinedVariable](),
+		vardecls:   utils.NewLinkedHashSet[*UndefinedVariable](),
+		deffuns:    utils.NewLinkedHashSet[*DefinedFunction](),
+		funcdecls:  utils.NewLinkedHashSet[*UndefinedFunction](),
+		constants:  utils.NewLinkedHashSet[*Constant](),
+		defstructs: utils.NewLinkedHashSet[*ASTStructNode](),
+		defunions:  utils.NewLinkedHashSet[*ASTUnionNode](),
+		typedefs:   utils.NewLinkedHashSet[*ASTTypedefNode](),
 	}
 }
 

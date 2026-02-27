@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cbc/util"
+	"cbc/utils"
 	"fmt"
 )
 
@@ -13,7 +13,7 @@ type ITypeRef interface {
 // TODO: check hash algorithm, this is not the real object ptr
 // make this as a global functino
 func ITypeRefHashCode(t ITypeRef) int32 {
-	return util.HashCode(util.ToString(t))
+	return utils.HashCode(utils.ToString(t))
 }
 
 type BaseTypeRef struct {

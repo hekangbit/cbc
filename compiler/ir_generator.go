@@ -2,13 +2,13 @@ package compiler
 
 import (
 	"cbc/models"
-	"cbc/util"
+	"cbc/utils"
 )
 
 type IRGenerator struct {
 }
 
-func NewIRGenerator(typeTable models.TypeTable, errorHandler util.ErrorHandler) *IRGenerator {
+func NewIRGenerator(typeTable models.TypeTable, errorHandler utils.ErrorHandler) *IRGenerator {
 	return nil
 }
 

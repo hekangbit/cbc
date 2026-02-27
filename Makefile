@@ -6,8 +6,8 @@ MAIN_SRC := $(wildcard ./main.go)
 COMPILER_SRCS := $(wildcard compiler/*.go)
 MODELS_SRCS := $(wildcard models/*.go)
 ASM_SRCS := $(wildcard asm/*.go)
-UTIL_SRCS := $(wildcard util/*.go)
-SYSDEP_SRCS := $(wildcard util/*.go util/x86/*.go)
+UTIL_SRCS := $(wildcard utils/*.go)
+SYSDEP_SRCS := $(wildcard utils/*.go utils/x86/*.go)
 PARSER_SRCS := \
 	$(PARSER_DIR)/Cb.interp \
 	$(PARSER_DIR)/Cb.tokens \
