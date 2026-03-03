@@ -9,10 +9,9 @@ type FunctionType struct {
 var _ IType = &FunctionType{}
 
 func NewFunctionType(ret IType, partypes *ParamTypes) *FunctionType {
-	return &FunctionType{
-		returnType: ret,
-		paramTypes: partypes,
-	}
+	p := &FunctionType{returnType: ret, paramTypes: partypes}
+	p._impl = p
+	return p
 }
 
 func (this *FunctionType) IsFunction() bool {

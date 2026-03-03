@@ -1,15 +1,19 @@
 package asm
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type UnnamedSymbol struct {
 	BaseSymbol
 }
 
-var _ IBaseSymbol = (*UnnamedSymbol)(nil)
+var _ IBaseSymbol = &UnnamedSymbol{}
 
 func NewUnnamedSymbol() *UnnamedSymbol {
-	return &UnnamedSymbol{}
+	p := &UnnamedSymbol{}
+	p._impl = p
+	return p
 }
 
 func (this *UnnamedSymbol) Name() string {
@@ -25,35 +29,34 @@ func (this *UnnamedSymbol) ToSourceWithTable(table SymbolTable) string {
 }
 
 func (this *UnnamedSymbol) String() string {
-	return this.BaseSymbol.String()
+	return this._impl.String()
 }
 
 func (this *UnnamedSymbol) CompareTo(lit ILiteral) int {
 	return -(lit.CompareTo(this))
 }
 
-func (this *UnnamedSymbol) CmpIntegerLiteral(i *IntegerLiteral) int {
-	return 1
-}
-
-func (this *UnnamedSymbol) CmpNamedSymbol(sym *NamedSymbol) int {
-	return 1
-}
-
-func (this *UnnamedSymbol) CmpUnnamedSymbol(sym *UnnamedSymbol) int {
-	// TODO: string compare logic
-	str := this.String()
-	symStr := sym.String()
-	if str < symStr {
-		return -1
-	} else if str > symStr {
+func (this *UnnamedSymbol) Cmp(other ILiteral) int {
+	switch o := other.(type) {
+	case *IntegerLiteral:
 		return 1
+	case *NamedSymbol:
+		return 1
+	case *UnnamedSymbol:
+		// TODO: string compare logic
+		str := this.String()
+		symStr := o.String()
+		if str < symStr {
+			return -1
+		} else if str > symStr {
+			return 1
+		}
+		return 0
+	case *SuffixedSymbol:
+		return 1
+	default:
+		panic(fmt.Sprintf("unsupported comparison with %T", other))
 	}
-	return 0
-}
-
-func (this *UnnamedSymbol) CmpSuffixedSymbol(sym *SuffixedSymbol) int {
-	return 1
 }
 
 func (this *UnnamedSymbol) Dump() string {

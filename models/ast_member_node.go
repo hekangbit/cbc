@@ -19,7 +19,7 @@ func (this *ASTMemberNode) ElemType() ICompositeType {
 	// TODO: cbc java use try catch
 	// java throw new SemanticError(err.getMessage()); when cast fail
 	// design static shared method, to cast IType to CompositeType
-	return GetCompositeType(this.expr.Type())
+	return this.expr.Type().GetCompositeType()
 }
 
 func (this *ASTMemberNode) Expr() IASTExprNode {
@@ -53,5 +53,5 @@ func (this *ASTMemberNode) _Dump(d *Dumper) {
 }
 
 func (this *ASTMemberNode) Accept(visitor IASTVisitor) interface{} {
-	return visitor.VisitMemberNodeNode(this)
+	return visitor.VisitMemberNode(this)
 }

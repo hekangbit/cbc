@@ -20,14 +20,17 @@ func NewASTPtrMemberNode(expr IASTExprNode, member string) *ASTPtrMemberNode {
 }
 
 // TODO: cast may need return error
+// catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
 func (this *ASTPtrMemberNode) DereferedCompositeType() ICompositeType {
-	pt := GetPointerType(this.expr.Type())
-	return GetCompositeType(pt.ElemType()) // catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
+	pt := this.expr.Type().GetPointerType()
+	return pt.ElemType().GetCompositeType()
 }
 
+// TODO: check
+// catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
 func (this *ASTPtrMemberNode) DereferedType() IType {
-	pt := GetPointerType(this.expr.Type())
-	return pt.ElemType() // catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
+	pt := this.expr.Type().GetPointerType()
+	return pt.ElemType()
 }
 
 func (this *ASTPtrMemberNode) Expr() IASTExprNode {

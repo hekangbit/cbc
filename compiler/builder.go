@@ -477,12 +477,12 @@ func (this *ASTBuilder) VisitUnaryPrefixAddress(ctx *parser.UnaryPrefixAddressCo
 
 func (this *ASTBuilder) VisitUnaryPrefixSizeofType(ctx *parser.UnaryPrefixSizeofTypeContext) interface{} {
 	t := ctx.CbType().Accept(this).(*models.ASTTypeNode)
-	return models.NewASTSizeofTypeNode(t, models.NewUlongRef())
+	return models.NewASTSizeofTypeNode(t, models.NewULongRef())
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixSizeof(ctx *parser.UnaryPrefixSizeofContext) interface{} {
 	e := ctx.Unary().Accept(this).(models.IASTExprNode)
-	return models.NewASTSizeofExprNode(e, models.NewUlongRef())
+	return models.NewASTSizeofExprNode(e, models.NewULongRef())
 }
 
 func (this *ASTBuilder) VisitUnaryPostfix(ctx *parser.UnaryPostfixContext) interface{} {

@@ -110,13 +110,17 @@ func ParseFile(path string, opts *Options) *models.AST {
 	return cbAST
 }
 
-func SemanticAnalyze(astNode *models.AST, typeTable models.TypeTable, opts *Options) *models.AST {
+func SemanticAnalyze(astNode *models.AST, typeTable *models.TypeTable, opts *Options) *models.AST {
 	return astNode
 }
 
-func GenerateIR(sem *models.AST, typeTable models.TypeTable) *models.IR {
-	generator := NewIRGenerator(typeTable, errorHandler)
-	return generator.Generate(sem)
+func GenerateIR(sem *models.AST, typeTable *models.TypeTable) *models.IR {
+	generator := NewIRGenerator(typeTable, &errorHandler)
+	ir, err := generator.Generate(sem)
+	if err != nil {
+		panic("generate ir fail")
+	}
+	return ir
 }
 
 func GenerateAssembly(ir *models.IR, opts *Options) *x86.AssemblyCode {

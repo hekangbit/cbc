@@ -6,7 +6,7 @@ type IOperand interface {
 	Dump() string
 	IsRegister() bool
 	IsMemoryReference() bool
-	IntegerLiteral() IntegerLiteral
+	IntegerLiteral() *IntegerLiteral
 	CollectStatistics(Statistics)
 }
 
@@ -21,11 +21,11 @@ func (this *Operand) Dump() string {
 	panic("abstract method: Operand::Dump")
 }
 
-func (this *Operand) isRegister() bool {
+func (this *Operand) IsRegister() bool {
 	return false
 }
 
-func (this *Operand) isMemoryReference() bool {
+func (this *Operand) IsMemoryReference() bool {
 	return false
 }
 

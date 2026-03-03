@@ -14,11 +14,9 @@ type IntegerType struct {
 var _ IType = &IntegerType{}
 
 func NewIntegerType(size int64, isSigned bool, name string) *IntegerType {
-	return &IntegerType{
-		size:     size,
-		isSigned: isSigned,
-		name:     name,
-	}
+	p := &IntegerType{size: size, isSigned: isSigned, name: name}
+	p._impl = p
+	return p
 }
 
 func (i *IntegerType) IsInteger() bool {
@@ -57,7 +55,7 @@ func (i *IntegerType) IsSameType(other IType) bool {
 	if !other.IsInteger() {
 		return false
 	}
-	t := GetIntegerType(other)
+	t := other.GetIntegerType()
 	return i == t
 }
 

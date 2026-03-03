@@ -28,72 +28,25 @@ type IType interface {
 	IsCompatible(IType) bool
 	IsCastableTo(IType) bool
 	ElemType() IType
+	GetIntegerType() *IntegerType
+	GetPointerType() *PointerType
+	GetCompositeType() ICompositeType
+	GetFunctionType() *FunctionType
+	GetArrayType() *ArrayType
+	GetStructType() *StructType
+	GetUnionType() *UnionType
 }
-
-// TODO: these cast method, may need return error, cause java cast can throw exception
-func GetIntegerType(t IType) *IntegerType {
-	target, ok := t.(*IntegerType)
-	if !ok {
-		panic("Cast IType to *IntegerType fail")
-	}
-	return target
-}
-
-func GetPointerType(t IType) *PointerType {
-	target, ok := t.(*PointerType)
-	if !ok {
-		panic("Cast IType to *PointerType fail")
-	}
-	return target
-}
-
-func GetCompositeType(t IType) ICompositeType {
-	target, ok := t.(ICompositeType)
-	if !ok {
-		panic("Cast IType to ICompositeType fail")
-	}
-	return target
-}
-
-func GetFunctionType(t IType) *FunctionType {
-	target, ok := t.(*FunctionType)
-	if !ok {
-		panic("Cast IType to *FunctionType fail")
-	}
-	return target
-}
-
-func GetArrayType(t IType) *ArrayType {
-	target, ok := t.(*ArrayType)
-	if !ok {
-		panic("Cast IType to *ArrayType fail")
-	}
-	return target
-}
-
-// TODO
-/*
-func GetStructType(t IType) *StructType {
-	target, ok := t.(*StructType)
-	if !ok {
-		panic("Cast IType to *StructType fail")
-	}
-	return target
-}
-*/
-
-// TODO
-/*
-func GetUnionType(t IType) *UnionType {
-	target, ok := t.(*UnionType)
-	if !ok {
-		panic("Cast IType to *UnionType fail")
-	}
-	return target
-}
-*/
 
 type BaseType struct {
+	_impl IType
+}
+
+func (this *BaseType) AllocSize() int64 {
+	return this._impl.Size()
+}
+
+func (this *BaseType) Alignment() int64 {
+	return this._impl.AllocSize()
 }
 
 func (this *BaseType) IsVoid() bool {
@@ -158,4 +111,60 @@ func (this *BaseType) IsCallable() bool {
 
 func (this *BaseType) ElemType() IType {
 	panic("Type#ElemType called for undereferable type")
+}
+
+func (this *BaseType) GetIntegerType() *IntegerType {
+	target, ok := this._impl.(*IntegerType)
+	if !ok {
+		panic("Cast IType to *IntegerType fail")
+	}
+	return target
+}
+
+func (this *BaseType) GetPointerType() *PointerType {
+	target, ok := this._impl.(*PointerType)
+	if !ok {
+		panic("Cast IType to *PointerType fail")
+	}
+	return target
+}
+
+func (this *BaseType) GetCompositeType() ICompositeType {
+	target, ok := this._impl.(ICompositeType)
+	if !ok {
+		panic("Cast IType to ICompositeType fail")
+	}
+	return target
+}
+
+func (this *BaseType) GetFunctionType() *FunctionType {
+	target, ok := this._impl.(*FunctionType)
+	if !ok {
+		panic("Cast IType to *FunctionType fail")
+	}
+	return target
+}
+
+func (this *BaseType) GetArrayType() *ArrayType {
+	target, ok := this._impl.(*ArrayType)
+	if !ok {
+		panic("Cast IType to *ArrayType fail")
+	}
+	return target
+}
+
+func (this *BaseType) GetStructType() *StructType {
+	target, ok := this._impl.(*StructType)
+	if !ok {
+		panic("Cast IType to *StructType fail")
+	}
+	return target
+}
+
+func (this *BaseType) GetUnionType() *UnionType {
+	target, ok := this._impl.(*UnionType)
+	if !ok {
+		panic("Cast IType to *UnionType fail")
+	}
+	return target
 }

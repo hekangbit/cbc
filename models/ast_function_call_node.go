@@ -32,9 +32,10 @@ func (this *ASTFunctionCallNode) Type() IType {
 * This method expects expr.type().isCallable() is true.
  */
 // TODO: GetPointerType may need return error? cast may fail throw exception in java
+// check correct
 func (this *ASTFunctionCallNode) FunctionType() *FunctionType {
-	t := GetPointerType(this.expr.Type()).ElemType()
-	return GetFunctionType(t)
+	t := this.expr.Type().GetPointerType().ElemType()
+	return t.GetFunctionType()
 }
 
 // TODO: int64 -> int ?

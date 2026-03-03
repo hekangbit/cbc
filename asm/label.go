@@ -5,7 +5,7 @@ type Label struct {
 	symbol ISymbol
 }
 
-var _ IAssembly = (*Label)(nil)
+var _ IAssembly = &Label{}
 
 func NewLabel(sym ISymbol) *Label {
 	return &Label{symbol: sym}

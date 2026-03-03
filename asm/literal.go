@@ -1,15 +1,12 @@
 package asm
 
 type ILiteral interface {
-	CompareTo(other ILiteral) int
+	CompareTo(ILiteral) int
 	ToSource() string
-	ToSourceWithTable(table SymbolTable) string
+	ToSourceWithTable(SymbolTable) string
 	Dump() string
-	CollectStatistics(stats Statistics)
+	CollectStatistics(Statistics)
 	IsZero() bool
-	Plus(diff int64) ILiteral
-	CmpIntegerLiteral(i *IntegerLiteral) int
-	CmpNamedSymbol(sym *NamedSymbol) int
-	CmpUnnamedSymbol(sym *UnnamedSymbol) int
-	CmpSuffixedSymbol(sym *SuffixedSymbol) int
+	Plus(int64) ILiteral
+	Cmp(ILiteral) int
 }

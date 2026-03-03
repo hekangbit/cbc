@@ -5,32 +5,7 @@ type IBaseSymbol interface {
 }
 
 type BaseSymbol struct {
-	Symbol
-}
-
-var _ IBaseSymbol = (*BaseSymbol)(nil)
-
-func (this *BaseSymbol) Name() string {
-	panic("")
-}
-func (this *BaseSymbol) String() string {
-	panic("")
-}
-
-func (this *BaseSymbol) CompareTo(other ILiteral) int {
-	panic("")
-}
-
-func (this *BaseSymbol) Dump() string {
-	panic("")
-}
-
-func (this *BaseSymbol) ToSource() string {
-	panic("")
-}
-
-func (this *BaseSymbol) ToSourceWithTable(table SymbolTable) string {
-	panic("")
+	_impl ISymbol
 }
 
 func (this *BaseSymbol) IsZero() bool {
@@ -38,7 +13,7 @@ func (this *BaseSymbol) IsZero() bool {
 }
 
 func (this *BaseSymbol) CollectStatistics(stats Statistics) {
-	stats.SymbolUsed(this)
+	stats.SymbolUsed(this._impl)
 }
 
 func (this *BaseSymbol) Plus(n int64) ILiteral {

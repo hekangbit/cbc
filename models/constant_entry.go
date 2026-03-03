@@ -5,7 +5,7 @@ import "cbc/asm"
 type ConstantEntry struct {
 	value   string
 	symbol  asm.ISymbol
-	memref  *asm.MemoryReference
+	memref  asm.IMemoryReference
 	address *asm.ImmediateValue
 }
 
@@ -28,11 +28,11 @@ func (this *ConstantEntry) Symbol() asm.ISymbol {
 	return this.symbol
 }
 
-func (this *ConstantEntry) SetMemref(mem *asm.MemoryReference) {
+func (this *ConstantEntry) SetMemref(mem asm.IMemoryReference) {
 	this.memref = mem
 }
 
-func (this *ConstantEntry) Memref() *asm.MemoryReference {
+func (this *ConstantEntry) Memref() asm.IMemoryReference {
 	if this.memref == nil {
 		panic("must not happen: memref == nil")
 	}

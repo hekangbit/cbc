@@ -16,7 +16,7 @@ func (this *ParamTypeRefs) TypeRefs() []ITypeRef {
 	return this.paramDescriptors
 }
 
-func (this *ParamTypeRefs) InternTypes(table TypeTable) *ParamTypes {
+func (this *ParamTypeRefs) InternTypes(table *TypeTable) *ParamTypes {
 	cbtypes := make([]IType, 0)
 	for _, ref := range this.paramDescriptors {
 		cbtypes = append(cbtypes, table.GetParamType(ref))

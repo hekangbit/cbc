@@ -1,20 +1,19 @@
 package models
 
-// TODO：
 type IASTVisitor interface {
 	// Statements
 	VisitBlockNode(*ASTBlockNode) any
 	VisitExprStmtNode(*ASTExprStmtNode) any
-	// VisitIfStmtNode
-	// VisitSwitchNode
-	// VisitCaseNode
-	// VisitWhileNode
-	// VisitDoWhileNode
-	// VisitForNode
-	// VisitBreakNode
-	// VisitContinueNode
-	// VisitGotoNode
-	// VisitLabelNode
+	VisitIfNode(*ASTIfNode) any
+	VisitSwitchNode(*ASTSwitchNode) any
+	VisitCaseNode(*ASTCaseNode) any
+	VisitWhileNode(*ASTWhileNode) any
+	VisitDoWhileNode(*ASTDoWhileNode) any
+	VisitForNode(*ASTForNode) any
+	VisitBreakNode(*ASTBreakNode) any
+	VisitContinueNode(*ASTContinueNode) any
+	VisitGotoNode(*ASTGotoNode) any
+	VisitLabelNode(*ASTLabelNode) any
 	VisitReturnNode(*ASTReturnNode) any
 
 	// Expressions
@@ -23,17 +22,17 @@ type IASTVisitor interface {
 	VisitCondExprNode(*ASTCondExprNode) any
 	VisitLogicalOrNode(*ASTLogicalOrNode) any
 	VisitLogicalAndNode(*ASTLogicalAndNode) any
-	VisitBinaryOp(*ASTBinaryOpNode) any
+	VisitBinaryOpNode(*ASTBinaryOpNode) any
 	VisitUnaryOpNode(*ASTUnaryOpNode) any
 	VisitPrefixOpNode(*ASTPrefixOpNode) any
 	VisitSuffixOpNode(*ASTSuffixOpNode) any
 	VisitArrayIdxRefNode(*ASTArrayIdxRefNode) any
-	VisitMemberNodeNode(*ASTMemberNode) any
+	VisitMemberNode(*ASTMemberNode) any
 	VisitPtrMemberNode(*ASTPtrMemberNode) any
 	VisitFunctionCallNode(*ASTFunctionCallNode) any
 	VisitDereferenceNode(*ASTDereferenceNode) any
 	VisitAddressNode(*ASTAddressNode) any
-	// VisitCastNode
+	VisitCastNode(*ASTCastNode) any
 	VisitSizeofExprNode(*ASTSizeofExprNode) any
 	VisitSizeofTypeNode(*ASTSizeofTypeNode) any
 	VisitVariableNode(*ASTVariableNode) any

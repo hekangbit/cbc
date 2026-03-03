@@ -12,19 +12,15 @@ type ArrayType struct {
 var _ IType = &ArrayType{}
 
 func NewArrayType(t IType, pointerSize int64) *ArrayType {
-	return &ArrayType{
-		elemType:    t,
-		length:      undefined,
-		pointerSize: pointerSize,
-	}
+	p := &ArrayType{elemType: t, length: undefined, pointerSize: pointerSize}
+	p._impl = p
+	return p
 }
 
 func NewArrayTypeWithLen(t IType, len int64, pointerSize int64) *ArrayType {
-	return &ArrayType{
-		elemType:    t,
-		length:      len,
-		pointerSize: pointerSize,
-	}
+	p := &ArrayType{elemType: t, length: len, pointerSize: pointerSize}
+	p._impl = p
+	return p
 }
 
 func (this *ArrayType) IsArray() bool {

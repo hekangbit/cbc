@@ -14,6 +14,10 @@ func NewASTOpAssignNode(lhs IASTExprNode, op string, rhs IASTExprNode) *ASTOpAss
 	return p
 }
 
+func (this *ASTOpAssignNode) Operator() string {
+	return this.operator
+}
+
 func (this *ASTOpAssignNode) Accept(visitor IASTVisitor) interface{} {
 	return visitor.VisitOpAssignNode(this)
 }

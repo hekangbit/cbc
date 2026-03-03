@@ -9,10 +9,9 @@ type PointerType struct {
 }
 
 func NewPointerType(size int64, elemType IType) *PointerType {
-	return &PointerType{
-		size:     size,
-		elemType: elemType,
-	}
+	p := &PointerType{size: size, elemType: elemType}
+	p._impl = p
+	return p
 }
 
 func (this *PointerType) Size() int64 {
@@ -76,10 +75,6 @@ func (this *PointerType) IsCompatible(other IType) bool {
 	}
 
 	return this.elemType.IsCompatible(otherElemType)
-}
-
-func (this *PointerType) GetPointerType() *PointerType {
-	return this
 }
 
 func (this *PointerType) IsCastableTo(target IType) bool {

@@ -6,12 +6,11 @@ import (
 )
 
 type SuffixedSymbol struct {
-	Symbol
 	base   ISymbol
 	suffix string
 }
 
-var _ ISymbol = (*SuffixedSymbol)(nil)
+var _ ISymbol = &SuffixedSymbol{}
 
 func NewSuffixedSymbol(base ISymbol, suffix string) *SuffixedSymbol {
 	return &SuffixedSymbol{
@@ -52,20 +51,19 @@ func (s *SuffixedSymbol) CompareTo(lit ILiteral) int {
 	return -lit.CompareTo(s)
 }
 
-func (s *SuffixedSymbol) CmpIntegerLiteral(i *IntegerLiteral) int {
-	return 1
-}
-
-func (s *SuffixedSymbol) CmpNamedSymbol(sym *NamedSymbol) int {
-	return utils.CompareStrings(s.String(), sym.String())
-}
-
-func (s *SuffixedSymbol) CmpUnnamedSymbol(sym *UnnamedSymbol) int {
-	return -1
-}
-
-func (s *SuffixedSymbol) CmpSuffixedSymbol(sym *SuffixedSymbol) int {
-	return utils.CompareStrings(s.String(), sym.String())
+func (this *SuffixedSymbol) Cmp(other ILiteral) int {
+	switch o := other.(type) {
+	case *IntegerLiteral:
+		return 1
+	case *NamedSymbol:
+		return utils.CompareStrings(this.String(), o.String())
+	case *UnnamedSymbol:
+		return -1
+	case *SuffixedSymbol:
+		return utils.CompareStrings(this.String(), o.String())
+	default:
+		panic(fmt.Sprintf("unsupported comparison with %T", other))
+	}
 }
 
 func (s *SuffixedSymbol) Dump() string {

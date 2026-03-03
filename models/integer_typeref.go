@@ -39,35 +39,35 @@ func NewLongRefWithLocation(loc *Location) *IntegerTypeRef {
 	return NewIntegerTypeRefWithLocation("long", loc)
 }
 
-func NewUcharRef() *IntegerTypeRef {
+func NewUCharRef() *IntegerTypeRef {
 	return NewIntegerTypeRef("unsigned char")
 }
 
-func NewUcharRefWithLocation(loc *Location) *IntegerTypeRef {
+func NewUCharRefWithLocation(loc *Location) *IntegerTypeRef {
 	return NewIntegerTypeRefWithLocation("unsigned char", loc)
 }
 
-func NewUshortRef() *IntegerTypeRef {
+func NewUShortRef() *IntegerTypeRef {
 	return NewIntegerTypeRef("unsigned short")
 }
 
-func NewUshortRefWithLocation(loc *Location) *IntegerTypeRef {
+func NewUShortRefWithLocation(loc *Location) *IntegerTypeRef {
 	return NewIntegerTypeRefWithLocation("unsigned short", loc)
 }
 
-func NewUintRef() *IntegerTypeRef {
+func NewUIntRef() *IntegerTypeRef {
 	return NewIntegerTypeRef("unsigned int")
 }
 
-func NewUintRefWithLocation(loc *Location) *IntegerTypeRef {
+func NewUIntRefWithLocation(loc *Location) *IntegerTypeRef {
 	return NewIntegerTypeRefWithLocation("unsigned int", loc)
 }
 
-func NewUlongRef() *IntegerTypeRef {
+func NewULongRef() *IntegerTypeRef {
 	return NewIntegerTypeRef("unsigned long")
 }
 
-func NewUlongRefWithLocation(loc *Location) *IntegerTypeRef {
+func NewULongRefWithLocation(loc *Location) *IntegerTypeRef {
 	return NewIntegerTypeRefWithLocation("unsigned long", loc)
 }
 

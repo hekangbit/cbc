@@ -5,7 +5,7 @@ type DefinedFunction struct {
 	params *Params
 	body   *ASTBlockNode
 	scope  *LocalScope
-	ir     []IRStmt
+	ir     []IIRStmt
 }
 
 var _ IFunction = &DefinedFunction{}
@@ -33,11 +33,11 @@ func (this *DefinedFunction) Body() *ASTBlockNode {
 	return this.body
 }
 
-func (this *DefinedFunction) IR() []IRStmt {
+func (this *DefinedFunction) IR() []IIRStmt {
 	return this.ir
 }
 
-func (this *DefinedFunction) SetIR(ir []IRStmt) {
+func (this *DefinedFunction) SetIR(ir []IIRStmt) {
 	this.ir = ir
 }
 

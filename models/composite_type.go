@@ -52,7 +52,7 @@ func (this *CompositeType) CompareMemberTypes(other IType, cmpType string) bool 
 		return false
 	}
 
-	otherComposite := GetCompositeType(other)
+	otherComposite := other.GetCompositeType()
 
 	otherMembers := otherComposite.Members()
 
@@ -103,8 +103,8 @@ func (this *CompositeType) Alignment() int64 {
 	return this.cachedAlign
 }
 
-func (this *CompositeType) Members() ([]*Slot, error) {
-	return this.members, nil
+func (this *CompositeType) Members() []*Slot {
+	return this.members
 }
 
 func (this *CompositeType) MemberTypes() []IType {

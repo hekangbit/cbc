@@ -45,6 +45,6 @@ func (this *ErrorHandler) WarnMsg(msg string) {
 	this.nWarning++
 }
 
-func (this *ErrorHandler) ErrorOccurred() bool {
+func (this *ErrorHandler) ErrorOccured() bool {
 	return this.nError > 0
 }

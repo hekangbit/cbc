@@ -2,10 +2,6 @@ package asm
 
 import "reflect"
 
-type IImmediateValue interface {
-	IOperand
-}
-
 type ImmediateValue struct {
 	Operand
 	expr ILiteral

@@ -47,9 +47,10 @@ func (this *LocalScope) DefineVariable(v *DefinedVariable) {
 	this.variables[v.Name()] = v
 }
 
-func (this *LocalScope) AllocateTmp(t IType) {
+func (this *LocalScope) AllocateTmp(t IType) *DefinedVariable {
 	v := NewTmpNewDefinedVariable(t)
 	this.DefineVariable(v)
+	return v
 }
 
 func (this *LocalScope) Get(name string) IEntity {

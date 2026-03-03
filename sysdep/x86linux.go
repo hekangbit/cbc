@@ -7,6 +7,6 @@ import (
 type X86Linux struct {
 }
 
-func (platform *X86Linux) GetTypeTable() models.TypeTable {
-	return models.TypeTable{}
+func (platform *X86Linux) GetTypeTable() *models.TypeTable {
+	return &models.TypeTable{}
 }

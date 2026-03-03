@@ -1,6 +1,7 @@
 package models
 
 import (
+	"cbc/asm"
 	"cbc/utils"
 	"fmt"
 	"io"
@@ -24,6 +25,11 @@ func NewDumper(s io.Writer) *Dumper {
 func (this *Dumper) PrintClass(obj interface{}, loc *Location) {
 	this.printIndent()
 	fmt.Fprintf(this.stream, "<<%T>> (%v)\n", obj, loc)
+}
+
+func (this *Dumper) PrintClassNoLoc(obj interface{}) {
+	this.printIndent()
+	fmt.Fprintf(this.stream, "<<%T>>\n", obj)
 }
 
 func (this *Dumper) PrintNodeList(name string, nodes []Dumpable) {
@@ -100,6 +106,12 @@ func (this *Dumper) PrintMemberDumpable(name string, n Dumpable) {
 		n.Dump(this)
 		this.unindent()
 	}
+}
+
+// TODO: how to simuate java hashCode method Integer.toHexString(memb.hashCode())
+func (this *Dumper) PrintMemberLabel(name string, memb *asm.Label) {
+	addr := fmt.Sprintf("%p", memb) // use address as hash code
+	this.printPair(name, addr)
 }
 
 func (this *Dumper) indent() {

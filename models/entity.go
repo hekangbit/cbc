@@ -23,7 +23,7 @@ type IEntity interface {
 	SetMemref(asm.IMemoryReference)
 	Memref() asm.IMemoryReference
 	SetAddressMem(asm.IMemoryReference)
-	SetAddressImm(asm.IImmediateValue)
+	SetAddressImm(*asm.ImmediateValue)
 	Address() asm.IOperand
 	CheckAddress()
 	Location() *Location
@@ -102,7 +102,7 @@ func (e *Entity) SetAddressMem(mem asm.IMemoryReference) {
 	e.address = mem
 }
 
-func (e *Entity) SetAddressImm(imm asm.IImmediateValue) {
+func (e *Entity) SetAddressImm(imm *asm.ImmediateValue) {
 	e.address = imm
 }
 

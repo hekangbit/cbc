@@ -10,8 +10,12 @@ type NamedSymbol struct {
 	name string
 }
 
+var _ IBaseSymbol = &NamedSymbol{}
+
 func NewNamedSymbol(name string) *NamedSymbol {
-	return &NamedSymbol{name: name}
+	p := &NamedSymbol{name: name}
+	p._impl = p
+	return p
 }
 
 func (this *NamedSymbol) Name() string {
@@ -34,20 +38,19 @@ func (this *NamedSymbol) CompareTo(lit ILiteral) int {
 	return -lit.CompareTo(this)
 }
 
-func (this *NamedSymbol) CmpIntegerLiteral(i *IntegerLiteral) int {
-	return 1
-}
-
-func (this *NamedSymbol) CmpNamedSymbol(sym *NamedSymbol) int {
-	return utils.CompareStrings(this.name, sym.name)
-}
-
-func (this *NamedSymbol) CmpUnnamedSymbol(sym *UnnamedSymbol) int {
-	return -1
-}
-
-func (this *NamedSymbol) CmpSuffixedSymbol(sym *SuffixedSymbol) int {
-	return utils.CompareStrings(this.String(), sym.String())
+func (this *NamedSymbol) Cmp(other ILiteral) int {
+	switch o := other.(type) {
+	case *IntegerLiteral:
+		return 1
+	case *NamedSymbol:
+		return utils.CompareStrings(this.name, o.name)
+	case *UnnamedSymbol:
+		return -1
+	case *SuffixedSymbol:
+		return utils.CompareStrings(this.String(), o.String())
+	default:
+		panic(fmt.Sprintf("unsupported comparison with %T", other))
+	}
 }
 
 func (this *NamedSymbol) Dump() string {

@@ -45,7 +45,7 @@ func (options *Options) SourceFiles() []SourceFile {
 	return options.sourceFiles
 }
 
-func (options *Options) GetTypeTable() models.TypeTable {
+func (options *Options) GetTypeTable() *models.TypeTable {
 	return options.platform.GetTypeTable()
 }
 

@@ -28,7 +28,7 @@ func (this *Function) Parameters() []*CBCParameter {
 
 // TODO: GetFunctionType may return error, like java throw cast exception
 func (this *Function) ReturnType() IType {
-	t := GetFunctionType(this.Type())
+	t := this.Type().GetFunctionType()
 	return t.ReturnType()
 }
 

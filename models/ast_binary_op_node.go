@@ -69,5 +69,5 @@ func (this *ASTBinaryOpNode) _Dump(d *Dumper) {
 }
 
 func (this *ASTBinaryOpNode) Accept(visitor IASTVisitor) interface{} {
-	return visitor.VisitBinaryOp(this)
+	return visitor.VisitBinaryOpNode(this)
 }
