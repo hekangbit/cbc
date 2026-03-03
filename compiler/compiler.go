@@ -16,6 +16,28 @@ var CompilerVersion string = "1.0.0"
 
 var errorHandler utils.ErrorHandler
 
+type CustomErrorListener struct {
+	*antlr.DefaultErrorListener
+	hasError   bool
+	sourcePath string
+	count      int
+}
+
+func NewCustomErrorListener(sourcePath string) *CustomErrorListener {
+	return &CustomErrorListener{
+		DefaultErrorListener: &antlr.DefaultErrorListener{},
+		hasError:             false,
+		sourcePath:           sourcePath,
+		count:                0,
+	}
+}
+
+func (l *CustomErrorListener) SyntaxError(recognizer antlr.Recognizer, offendingSymbol interface{}, line, column int, msg string, e antlr.RecognitionException) {
+	fmt.Fprintf(os.Stderr, "%s:%d:%d error: %s\n", l.sourcePath, line, column, msg)
+	l.hasError = true
+	l.count++
+}
+
 func DebugDump(path string) {
 	src, err := os.ReadFile(path)
 	if err != nil {
@@ -100,9 +122,24 @@ func ParseFile(path string, opts *Options) *models.AST {
 	}
 	input := antlr.NewInputStream(string(src))
 	cbLexer := parser.NewCbLexer(input)
+
+	cbLexer.RemoveErrorListeners() // can keep default listener
+	errorListener := NewCustomErrorListener(path)
+	cbLexer.AddErrorListener(errorListener)
+
 	tokenStream := antlr.NewCommonTokenStream(cbLexer, antlr.TokenDefaultChannel)
 	cbParser := parser.NewCbParser(tokenStream)
+
+	cbParser.RemoveErrorListeners()
+	cbParser.AddErrorListener(errorListener)
 	tree := cbParser.Prog()
+
+	if errorListener.hasError {
+		fmt.Printf("stop compile %s\n", path)
+		fmt.Printf("totaly %d errors\n", errorListener.count)
+		os.Exit(1)
+	}
+
 	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}, sourcePath: path}
 	program := tree.Accept(builder)
 	cbAST := program.(*models.AST)
@@ -136,7 +173,7 @@ func WriteFile(path string, content string) {
 // generate asm
 // write file
 func Compile(srcPath string, dstPath string, opts *Options) {
-	fmt.Println("Compile " + srcPath + " to " + dstPath)
+	fmt.Println("compile " + srcPath + " to " + dstPath)
 	typeTable := opts.GetTypeTable()
 	astObj := ParseFile(srcPath, opts)
 	if DumpAST(astObj, opts.Mode()) {
