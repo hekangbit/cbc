@@ -13,7 +13,7 @@ func NewASTIntegerLiteralNode(loc *Location, ref ITypeRef, value int64) *ASTInte
 	p.ASTLiteralNode.ASTExprNode._impl = p
 	p.ASTLiteralNode.ASTExprNode.Node._impl = p
 	p.location = loc
-	p.typeNode = NewTypeNodeFromRef(ref)
+	p.typeNode = NewASTTypeNodeFromRef(ref)
 	p.value = value
 	return p
 }

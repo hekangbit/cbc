@@ -9,7 +9,7 @@ type ASTSizeofTypeNode struct {
 var _ IASTExprNode = &ASTSizeofTypeNode{}
 
 func NewASTSizeofTypeNode(operand *ASTTypeNode, tyRef ITypeRef) *ASTSizeofTypeNode {
-	p := &ASTSizeofTypeNode{operand: operand, ty: NewTypeNodeFromRef(tyRef)}
+	p := &ASTSizeofTypeNode{operand: operand, ty: NewASTTypeNodeFromRef(tyRef)}
 	p.ASTExprNode._impl = p
 	p.ASTExprNode.Node._impl = p
 	return p

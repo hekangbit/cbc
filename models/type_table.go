@@ -33,19 +33,19 @@ func LLP64() *TypeTable { return newTable(1, 2, 4, 4, 8) }
 
 func newTable(charSize, shortSize, intSize, longSize, ptrSize int) *TypeTable {
 	tt := NewTypeTable(intSize, longSize, ptrSize)
-	tt.put(NewVoidTypeRef(), &VoidType{})
-	tt.put(NewCharRef(), &IntegerType{size: int64(charSize), isSigned: true, name: "char"})
-	tt.put(NewShortRef(), &IntegerType{size: int64(shortSize), isSigned: true, name: "short"})
-	tt.put(NewIntRef(), &IntegerType{size: int64(intSize), isSigned: true, name: "int"})
-	tt.put(NewLongRef(), &IntegerType{size: int64(longSize), isSigned: true, name: "long"})
-	tt.put(NewUCharRef(), &IntegerType{size: int64(charSize), isSigned: false, name: "unsigned char"})
-	tt.put(NewUShortRef(), &IntegerType{size: int64(shortSize), isSigned: false, name: "unsigned short"})
-	tt.put(NewUIntRef(), &IntegerType{size: int64(intSize), isSigned: false, name: "unsigned int"})
-	tt.put(NewULongRef(), &IntegerType{size: int64(longSize), isSigned: false, name: "unsigned long"})
+	tt.Put(NewVoidTypeRef(), &VoidType{})
+	tt.Put(NewCharRef(), &IntegerType{size: int64(charSize), isSigned: true, name: "char"})
+	tt.Put(NewShortRef(), &IntegerType{size: int64(shortSize), isSigned: true, name: "short"})
+	tt.Put(NewIntRef(), &IntegerType{size: int64(intSize), isSigned: true, name: "int"})
+	tt.Put(NewLongRef(), &IntegerType{size: int64(longSize), isSigned: true, name: "long"})
+	tt.Put(NewUCharRef(), &IntegerType{size: int64(charSize), isSigned: false, name: "unsigned char"})
+	tt.Put(NewUShortRef(), &IntegerType{size: int64(shortSize), isSigned: false, name: "unsigned short"})
+	tt.Put(NewUIntRef(), &IntegerType{size: int64(intSize), isSigned: false, name: "unsigned int"})
+	tt.Put(NewULongRef(), &IntegerType{size: int64(longSize), isSigned: false, name: "unsigned long"})
 	return tt
 }
 
-func (tt *TypeTable) put(ref ITypeRef, t IType) {
+func (tt *TypeTable) Put(ref ITypeRef, t IType) {
 	if _, ok := tt.table[ref]; ok {
 		panic(fmt.Sprintf("duplicated type definition: %v", ref))
 	}
@@ -63,7 +63,7 @@ func (tt *TypeTable) Get(ref ITypeRef) IType {
 	}
 	switch r := ref.(type) {
 	case *UserTypeRef:
-		panic(fmt.Sprintf("undefined type: %s", r.Name))
+		panic(fmt.Sprintf("undefined type: %s", r.Name()))
 	case *PointerTypeRef:
 		base := tt.Get(r.ElemType())
 		t := NewPointerType(int64(tt.pointerSize), base) // &PointerType{size: int64(tt.pointerSize), elemType: base}
@@ -80,7 +80,7 @@ func (tt *TypeTable) Get(ref ITypeRef) IType {
 		tt.table[ref] = t
 		return t
 	default:
-		// TODO: java throw new Error("unregistered type: " + ref.toString()); so golang need reurn error
+		// TODO: java throw new Error("unregistered type: " + ref.toString()); so golang need return error
 		panic(fmt.Sprintf("unregistered type: %v", ref))
 	}
 }

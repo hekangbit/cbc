@@ -8,13 +8,13 @@ type ASTTypeNode struct {
 
 var _ INode = &ASTTypeNode{}
 
-func NewTypeNodeFromRef(ref ITypeRef) *ASTTypeNode {
+func NewASTTypeNodeFromRef(ref ITypeRef) *ASTTypeNode {
 	p := &ASTTypeNode{typeRef: ref, typ: nil}
 	p._impl = p
 	return p
 }
 
-func NewTypeNodeFromType(typ IType) *ASTTypeNode {
+func NewASTTypeNodeFromType(typ IType) *ASTTypeNode {
 	p := &ASTTypeNode{typeRef: nil, typ: typ}
 	p._impl = p
 	return p

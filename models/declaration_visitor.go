@@ -1,8 +1,7 @@
 package models
 
-// TODO:
 type IDeclarationVisitor interface {
-	VisitStructNode(*ASTStructNode) interface{}
-	VisitUnionNode(*ASTUnionNode) interface{}
-	VisitTypedefNode(*ASTTypedefNode) interface{}
+	VisitStructNode(*ASTStructNode) any
+	VisitUnionNode(*ASTUnionNode) any
+	VisitTypedefNode(*ASTTypedefNode) any
 }

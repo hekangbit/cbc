@@ -148,6 +148,8 @@ func ParseFile(path string, opts *Options) *models.AST {
 }
 
 func SemanticAnalyze(astNode *models.AST, typeTable *models.TypeTable, opts *Options) *models.AST {
+	resolver := NewTypeResolver(typeTable, &errorHandler)
+	resolver.Resolve(astNode)
 	return astNode
 }
 
@@ -174,7 +176,7 @@ func WriteFile(path string, content string) {
 // write file
 func Compile(srcPath string, dstPath string, opts *Options) {
 	fmt.Println("compile " + srcPath + " to " + dstPath)
-	typeTable := opts.GetTypeTable()
+	typeTable := opts.TypeTable()
 	astObj := ParseFile(srcPath, opts)
 	if DumpAST(astObj, opts.Mode()) {
 		return

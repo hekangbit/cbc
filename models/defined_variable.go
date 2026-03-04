@@ -30,7 +30,7 @@ func NewDefinedVariable(priv bool, typeNode *ASTTypeNode, name string, init IAST
 }
 
 func NewTmpNewDefinedVariable(t IType) *DefinedVariable {
-	v := NewDefinedVariable(false, NewTypeNodeFromType(t), "@tmp"+strconv.Itoa(int(tmpSeq)), nil)
+	v := NewDefinedVariable(false, NewASTTypeNodeFromType(t), "@tmp"+strconv.Itoa(int(tmpSeq)), nil)
 	tmpSeq++
 	return v
 }

@@ -4,9 +4,16 @@ import (
 	"cbc/models"
 )
 
+// TODO:
 type X86Linux struct {
 }
 
-func (platform *X86Linux) GetTypeTable() *models.TypeTable {
-	return &models.TypeTable{}
+var _ IPlatform = &X86Linux{}
+
+func NewX86Linux() *X86Linux {
+	return &X86Linux{}
+}
+
+func (this *X86Linux) TypeTable() *models.TypeTable {
+	return models.ILP64()
 }

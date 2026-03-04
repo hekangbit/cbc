@@ -13,7 +13,7 @@ func NewASTStringLiteralNode(loc *Location, ref ITypeRef, value string) *ASTStri
 	p.ASTLiteralNode.ASTExprNode._impl = p
 	p.ASTLiteralNode.ASTExprNode.Node._impl = p
 	p.location = loc
-	p.typeNode = NewTypeNodeFromRef(ref)
+	p.typeNode = NewASTTypeNodeFromRef(ref)
 	p.value = value
 	return p
 }

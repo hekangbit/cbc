@@ -11,7 +11,7 @@ import (
 
 type Options struct {
 	mode           CompilerMode
-	platform       sysdep.Platform
+	platform       sysdep.IPlatform
 	outputFileName string
 	verbose        bool
 	loader         loader.LibraryLoader
@@ -24,7 +24,7 @@ type Options struct {
 }
 
 func ParseOptions(args []string) (*Options, error) {
-	opts := &Options{mode: COMPILER_MODE_None, outputFileName: "", platform: &sysdep.X86Linux{}}
+	opts := &Options{mode: COMPILER_MODE_None, outputFileName: "", platform: sysdep.NewX86Linux()}
 	err := opts.ParserArgs(args)
 	return opts, err
 }
@@ -45,8 +45,8 @@ func (options *Options) SourceFiles() []SourceFile {
 	return options.sourceFiles
 }
 
-func (options *Options) GetTypeTable() *models.TypeTable {
-	return options.platform.GetTypeTable()
+func (options *Options) TypeTable() *models.TypeTable {
+	return options.platform.TypeTable()
 }
 
 func (options *Options) IsGeneratingSharedLibrary() bool {

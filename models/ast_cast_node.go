@@ -9,7 +9,7 @@ type ASTCastNode struct {
 var _ IASTExprNode = &ASTCastNode{}
 
 func NewASTCastNode(t IType, expr IASTExprNode) *ASTCastNode {
-	return NewASTCastNodeWithTypeNode(NewTypeNodeFromType(t), expr)
+	return NewASTCastNodeWithTypeNode(NewASTTypeNodeFromType(t), expr)
 }
 
 func NewASTCastNodeWithTypeNode(typeNode *ASTTypeNode, expr IASTExprNode) *ASTCastNode {

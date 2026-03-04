@@ -117,20 +117,20 @@ func (this *ASTBuilder) VisitDefFunc(ctx *parser.DefFuncContext) interface{} {
 	params := ctx.Params().Accept(this).(*models.Params)
 	body := ctx.Block().Accept(this).(*models.ASTBlockNode)
 	funcTypeRef := models.NewFunctionTypeRef(retTypeRef, params.ParametersTypeRef())
-	funcTypeNode := models.NewTypeNodeFromRef(funcTypeRef)
+	funcTypeNode := models.NewASTTypeNodeFromRef(funcTypeRef)
 	return models.NewDefinedFunction(priv, funcTypeNode, name, params, body)
 }
 
 func (this *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
 	typeRef := ctx.CbTypeRef().Accept(this).(models.ITypeRef)
-	return models.NewTypeNodeFromRef(typeRef)
+	return models.NewASTTypeNodeFromRef(typeRef)
 }
 
 func (this *ASTBuilder) VisitCbTypeRef(ctx *parser.CbTypeRefContext) interface{} {
 	this.curBaseType = ctx.CbTypeRefBase().Accept(this).(models.ITypeRef)
 	modifiers := ctx.AllTypeModifier()
-	for i := 0; i < len(modifiers); i++ {
-		this.curBaseType = modifiers[i].Accept(this).(models.ITypeRef)
+	for _, modifier := range modifiers {
+		this.curBaseType = modifier.Accept(this).(models.ITypeRef)
 	}
 	return this.curBaseType
 }
