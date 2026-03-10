@@ -49,7 +49,7 @@ func (this *DefinedFunction) LvarScope() *LocalScope {
 	return this.body.Scope()
 }
 
-func (this *DefinedFunction) LocalVariables() []*DefinedVariable {
+func (this *DefinedFunction) LocalVariables() []IDefinedVariable {
 	return this.scope.AllLocalVariables()
 }
 

@@ -148,8 +148,13 @@ func ParseFile(path string, opts *Options) *models.AST {
 }
 
 func SemanticAnalyze(astNode *models.AST, typeTable *models.TypeTable, opts *Options) *models.AST {
-	resolver := NewTypeResolver(typeTable, &errorHandler)
-	resolver.Resolve(astNode)
+	localResolver := NewLocalResolver(&errorHandler)
+	err := localResolver.Resolve(astNode)
+	if err != nil {
+		return nil
+	}
+	// typeResolver := NewTypeResolver(typeTable, &errorHandler)
+	// typeResolver.Resolve(astNode)
 	return astNode
 }
 
@@ -174,29 +179,30 @@ func WriteFile(path string, content string) {
 // generate ir
 // generate asm
 // write file
-func Compile(srcPath string, dstPath string, opts *Options) {
+func Compile(srcPath string, dstPath string, opts *Options) error {
 	fmt.Println("compile " + srcPath + " to " + dstPath)
 	typeTable := opts.TypeTable()
 	astObj := ParseFile(srcPath, opts)
 	if DumpAST(astObj, opts.Mode()) {
-		return
+		return nil
 	}
 	semObj := SemanticAnalyze(astObj, typeTable, opts)
 	if DumpSemant(semObj, opts.Mode()) {
-		return
+		return nil
 	}
-	ir := GenerateIR(semObj, typeTable)
-	if DumpIR(ir, opts.Mode()) {
-		return
-	}
-	asmObj := GenerateAssembly(ir, opts)
-	if DumpAsm(asmObj, opts.Mode()) {
-		return
-	}
-	if PrintAsm(asmObj, opts.Mode()) {
-		return
-	}
-	WriteFile(dstPath, asmObj.String())
+	// ir := GenerateIR(semObj, typeTable)
+	// if DumpIR(ir, opts.Mode()) {
+	// 	return
+	// }
+	// asmObj := GenerateAssembly(ir, opts)
+	// if DumpAsm(asmObj, opts.Mode()) {
+	// 	return
+	// }
+	// if PrintAsm(asmObj, opts.Mode()) {
+	// 	return
+	// }
+	// WriteFile(dstPath, asmObj.String())
+	return nil
 }
 
 func Assemble(srcPath string, dstPath string, opts *Options) {
@@ -212,7 +218,7 @@ func Link(opts *Options) {
 	}
 }
 
-func Build(srcs []SourceFile, opts *Options) {
+func Build(srcs []SourceFile, opts *Options) error {
 	// compile all source files
 	for _, src := range srcs {
 		// .cb -> .s
@@ -234,9 +240,10 @@ func Build(srcs []SourceFile, opts *Options) {
 
 	// link
 	if !opts.IsLinkRequired() {
-		return
+		return nil
 	}
 	Link(opts)
+	return nil
 }
 
 func Run(args []string) {

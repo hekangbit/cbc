@@ -5,35 +5,17 @@ type IScope interface {
 	Toplevel() *ToplevelScope
 	Parent() IScope
 	AddChild(*LocalScope)
-	Get(string) IEntity
+	Get(string) (IEntity, error)
 }
 
 type Scope struct {
 	children []*LocalScope
 }
 
-func NewScope() *Scope {
-	return &Scope{
-		children: make([]*LocalScope, 0),
-	}
+func BaseScope() Scope {
+	return Scope{children: make([]*LocalScope, 0)}
 }
 
 func (this *Scope) AddChild(s *LocalScope) {
 	this.children = append(this.children, s)
-}
-
-func (this *Scope) IsToplevel() bool {
-	panic("Scope::IsToplevel need implenmented by concreate struct")
-}
-
-func (this *Scope) Toplevel() *ToplevelScope {
-	panic("Scope::Toplevel need implenmented by concreate struct")
-}
-
-func (this *Scope) Parent() IScope {
-	panic("Scope::Parent need implenmented by concreate struct")
-}
-
-func (this *Scope) Get(name string) IEntity {
-	panic("Scope::Get need implenmented by concreate struct")
 }

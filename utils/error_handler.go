@@ -27,20 +27,20 @@ func NewErrorHandlerWithWriter(progid string, w io.Writer) *ErrorHandler {
 	}
 }
 
-func (this *ErrorHandler) Error(loc string, msg string) {
-	this.ErrorMsg(loc + ": " + msg)
+func (this *ErrorHandler) ErrorWithLoc(loc fmt.Stringer, msg string) {
+	this.Error(loc.String() + ": " + msg)
 }
 
-func (this *ErrorHandler) ErrorMsg(msg string) {
+func (this *ErrorHandler) Error(msg string) {
 	fmt.Fprintf(this.writer, "%s: error: %s\n", this.programID, msg)
 	this.nError++
 }
 
-func (this *ErrorHandler) Warn(loc string, msg string) {
-	this.WarnMsg(loc + ": " + msg)
+func (this *ErrorHandler) WarnWithLoc(loc fmt.Stringer, msg string) {
+	this.Warn(loc.String() + ": " + msg)
 }
 
-func (this *ErrorHandler) WarnMsg(msg string) {
+func (this *ErrorHandler) Warn(msg string) {
 	fmt.Fprintf(this.writer, "%s: warning: %s\n", this.programID, msg)
 	this.nWarning++
 }

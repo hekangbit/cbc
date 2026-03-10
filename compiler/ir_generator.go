@@ -161,7 +161,7 @@ func (g *IRGenerator) VisitBlockNode(node *models.ASTBlockNode) any {
 func (g *IRGenerator) VisitExprStmtNode(node *models.ASTExprStmtNode) any {
 	e := node.Expr().Accept(g)
 	if e != nil {
-		g.errorHandler.Warn(node.Location().String(), "useless expression")
+		g.errorHandler.WarnWithLoc(node.Location(), "useless expression")
 	}
 	return nil
 }
@@ -698,7 +698,7 @@ func (g *IRGenerator) ptrdiff_t() asm.Type {
 }
 
 func (g *IRGenerator) error(node models.INode, msg string) {
-	g.errorHandler.Error(node.Location().String(), msg)
+	g.errorHandler.ErrorWithLoc(node.Location(), msg)
 }
 
 func (g *IRGenerator) defineLabel(name string, loc *models.Location) (*asm.Label, error) {
@@ -731,10 +731,10 @@ func (g *IRGenerator) getJumpEntry(name string) *JumpEntry {
 func (g *IRGenerator) checkJumpLinks(jumpMap map[string]*JumpEntry) {
 	for name, jump := range jumpMap {
 		if !jump.isDefined {
-			g.errorHandler.Error(jump.location.String(), "undefined label: "+name)
+			g.errorHandler.ErrorWithLoc(jump.location, "undefined label: "+name)
 		}
 		if jump.numRefered == 0 {
-			g.errorHandler.Warn(jump.location.String(), "useless label: "+name)
+			g.errorHandler.WarnWithLoc(jump.location, "useless label: "+name)
 		}
 	}
 }

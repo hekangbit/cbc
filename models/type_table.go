@@ -158,14 +158,14 @@ func (tt *TypeTable) SemanticCheck(h utils.ErrorHandler) {
 
 func (tt *TypeTable) checkVoidMembersArray(at *ArrayType, h utils.ErrorHandler) {
 	if _, ok := at.ElemType().(*VoidType); ok {
-		h.ErrorMsg("array cannot contain void")
+		h.Error("array cannot contain void")
 	}
 }
 
 func (tt *TypeTable) checkVoidMembersComposite(ct *CompositeType, h utils.ErrorHandler) {
 	for _, s := range ct.Members() {
 		if _, ok := s.Type().(*VoidType); ok {
-			h.ErrorMsg("struct/union cannot contain void")
+			h.Error("struct/union cannot contain void")
 		}
 	}
 }
@@ -174,7 +174,7 @@ func (tt *TypeTable) checkDuplicatedMembers(ct *CompositeType, h utils.ErrorHand
 	seen := make(map[string]bool)
 	for _, s := range ct.Members() {
 		if seen[s.Name()] {
-			h.Error(ct.Location().String(), ct.String()+" has duplicated member: "+s.Name())
+			h.ErrorWithLoc(ct.Location(), ct.String()+" has duplicated member: "+s.Name())
 		}
 		seen[s.Name()] = true
 	}
@@ -188,7 +188,7 @@ func (tt *TypeTable) checkRecursiveDefinition(t IType, h utils.ErrorHandler) {
 func (tt *TypeTable) checkRecursiveDefinitionInternal(t IType, marks map[IType]int, h utils.ErrorHandler) {
 	if marks[t] == markChecking {
 		nameTy := t.(INamedType)
-		h.Error(nameTy.Location().String(), fmt.Sprintf("recursive type definition: %s", t.String()))
+		h.ErrorWithLoc(nameTy.Location(), fmt.Sprintf("recursive type definition: %s", t.String()))
 		return
 	}
 	if marks[t] == markChecked {

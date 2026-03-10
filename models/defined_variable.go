@@ -8,6 +8,17 @@ import (
 // TODO: cast tmpSeq to int for itoa, any better solution
 var tmpSeq int64 = 0
 
+type IDefinedVariable interface {
+	IVariable
+
+	SetSequence(seq int64)
+	HasInitializer() bool
+	Initializer() IASTExprNode
+	SetInitializer(expr IASTExprNode)
+	SetIR(expr IIRExpr)
+	IR() IIRExpr
+}
+
 type DefinedVariable struct {
 	Variable
 	initializer IASTExprNode
@@ -16,7 +27,7 @@ type DefinedVariable struct {
 	symbol      asm.ISymbol
 }
 
-var _ IVariable = &DefinedVariable{}
+var _ IDefinedVariable = &DefinedVariable{}
 
 func NewDefinedVariable(priv bool, typeNode *ASTTypeNode, name string, init IASTExprNode) *DefinedVariable {
 	var p = new(DefinedVariable)

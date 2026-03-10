@@ -11,8 +11,8 @@ func NewCBCParameter(typenode *ASTTypeNode, name string) *CBCParameter {
 	p.isPrivate = false
 	p.typeNode = typenode
 	return p
-
 }
+
 func (param *CBCParameter) IsParameter() bool {
 	return true
 }

@@ -53,7 +53,7 @@ func (this *TypeResolver) bindType(n *models.ASTTypeNode) {
 }
 
 func (this *TypeResolver) error(node models.INode, msg string) {
-	this.errorHandler.Error(node.Location().String(), msg)
+	this.errorHandler.ErrorWithLoc(node.Location(), msg)
 }
 
 // --- Implement DeclarationVisitor ---
