@@ -5,6 +5,7 @@ import (
 	"cbc/parser"
 	"cbc/sysdep/x86"
 	"cbc/utils"
+	"errors"
 	"fmt"
 	"os"
 
@@ -13,8 +14,7 @@ import (
 
 var CompilerProgramName string = "cbc"
 var CompilerVersion string = "1.0.0"
-
-var errorHandler utils.ErrorHandler
+var errorHandler *utils.ErrorHandler = utils.NewErrorHandler(CompilerProgramName)
 
 type CustomErrorListener struct {
 	*antlr.DefaultErrorListener
@@ -81,9 +81,7 @@ func DumpAST(ast *models.AST, mode CompilerMode) bool {
 
 func DumpSemant(ast *models.AST, mode CompilerMode) bool {
 	switch mode {
-	case COMPILER_MODE_DumpReference:
-		return true
-	case COMPILER_MODE_DumpSemantic:
+	case COMPILER_MODE_DumpReference, COMPILER_MODE_DumpSemantic:
 		ast.DumpNode()
 		return true
 	default:
@@ -147,19 +145,23 @@ func ParseFile(path string, opts *Options) *models.AST {
 	return cbAST
 }
 
-func SemanticAnalyze(astNode *models.AST, typeTable *models.TypeTable, opts *Options) *models.AST {
-	localResolver := NewLocalResolver(&errorHandler)
+func SemanticAnalyzePhase1(astNode *models.AST, typeTable *models.TypeTable, opts *Options) error {
+	localResolver := NewLocalResolver(errorHandler)
 	err := localResolver.Resolve(astNode)
 	if err != nil {
-		return nil
+		return errors.New("SemanticAnalyzePhase1 Local Resolver fail")
 	}
-	// typeResolver := NewTypeResolver(typeTable, &errorHandler)
+	// typeResolver := NewTypeResolver(typeTable, errorHandler)
 	// typeResolver.Resolve(astNode)
-	return astNode
+	return nil
+}
+
+func SemanticAnalyzePhase2(astNode *models.AST, typeTable *models.TypeTable, opts *Options) error {
+	return nil
 }
 
 func GenerateIR(sem *models.AST, typeTable *models.TypeTable) *models.IR {
-	generator := NewIRGenerator(typeTable, &errorHandler)
+	generator := NewIRGenerator(typeTable, errorHandler)
 	ir, err := generator.Generate(sem)
 	if err != nil {
 		panic("generate ir fail")
@@ -179,16 +181,24 @@ func WriteFile(path string, content string) {
 // generate ir
 // generate asm
 // write file
-func Compile(srcPath string, dstPath string, opts *Options) error {
-	fmt.Println("compile " + srcPath + " to " + dstPath)
+func CompileToAsm(srcPath string, dstPath string, opts *Options) error {
+	var err error
+	fmt.Println("CompileToAsm: " + srcPath + " to " + dstPath)
 	typeTable := opts.TypeTable()
 	astObj := ParseFile(srcPath, opts)
 	if DumpAST(astObj, opts.Mode()) {
 		return nil
 	}
-	semObj := SemanticAnalyze(astObj, typeTable, opts)
-	if DumpSemant(semObj, opts.Mode()) {
+	err = SemanticAnalyzePhase1(astObj, typeTable, opts)
+	if err != nil {
+		return err
+	}
+	if DumpSemant(astObj, opts.Mode()) {
 		return nil
+	}
+	err = SemanticAnalyzePhase2(astObj, typeTable, opts)
+	if err != nil {
+		return err
 	}
 	// ir := GenerateIR(semObj, typeTable)
 	// if DumpIR(ir, opts.Mode()) {
@@ -205,8 +215,8 @@ func Compile(srcPath string, dstPath string, opts *Options) error {
 	return nil
 }
 
-func Assemble(srcPath string, dstPath string, opts *Options) {
-	fmt.Println("Assemble " + srcPath + " to " + dstPath)
+func AssembleToObj(srcPath string, dstPath string, opts *Options) {
+	fmt.Println("AssembleToObj: " + srcPath + " to " + dstPath)
 }
 
 func Link(opts *Options) {
@@ -218,31 +228,54 @@ func Link(opts *Options) {
 	}
 }
 
-func Build(srcs []SourceFile, opts *Options) error {
-	// compile all source files
+func CompileFile(src SourceFile, opts *Options) error {
+	var err error
+	// .cb -> .s
+	if src.IsCbSource() {
+		destPath := opts.AsmFileNameOf(src)
+		err = CompileToAsm(src.Path(), destPath, opts)
+		if err != nil {
+			return err
+		}
+		src.SetCurrentName(destPath)
+	}
+	if !opts.IsAssembleRequired() {
+		return nil
+	}
+	// .s -> .o
+	if src.IsAssemblySource() {
+		destPath := opts.ObjFileNameOf(src)
+		AssembleToObj(src.Path(), destPath, opts)
+		src.SetCurrentName(destPath)
+	}
+	return nil
+}
+
+func CompileFiles(srcs []SourceFile, opts *Options) error {
+	var err error
 	for _, src := range srcs {
-		// .cb -> .s
-		if src.IsCbSource() {
-			destPath := opts.AsmFileNameOf(src)
-			Compile(src.Path(), destPath, opts)
-			src.SetCurrentName(destPath)
-		}
-		if !opts.IsAssembleRequired() {
-			continue
-		}
-		// .s -> .o
-		if src.IsAssemblySource() {
-			destPath := opts.ObjFileNameOf(src)
-			Assemble(src.Path(), destPath, opts)
-			src.SetCurrentName(destPath)
+		err = CompileFile(src, opts)
+		if err != nil {
+			return err
 		}
 	}
+	return nil
+}
 
-	// link
+func Build(srcs []SourceFile, opts *Options) error {
+	var err error
+
+	err = CompileFiles(srcs, opts)
+	if err != nil {
+		return err
+	}
+
 	if !opts.IsLinkRequired() {
 		return nil
 	}
+
 	Link(opts)
+
 	return nil
 }
 
@@ -252,7 +285,6 @@ func Run(args []string) {
 		fmt.Fprintf(os.Stderr, "Fatal error: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("Options: ", opts)
 	srcs := opts.SourceFiles()
 	Build(srcs, opts)
 }
