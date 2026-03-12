@@ -85,7 +85,8 @@ func (g *IRGenerator) assign(loc *models.Location, lhs models.IIRExpr, rhs model
 }
 
 func (g *IRGenerator) tmpVar(t models.IType) *models.DefinedVariable {
-	return g.scopeStack.Back().Value.(*models.LocalScope).AllocateTmp(t)
+	v, _ := g.scopeStack.Back().Value.(*models.LocalScope).AllocateTmp(t)
+	return v
 }
 
 func (g *IRGenerator) label(label *asm.Label) {

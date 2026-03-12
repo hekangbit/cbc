@@ -45,17 +45,21 @@ func (this *LocalScope) IsDefinedLocally(name string) bool {
 	return false
 }
 
-func (this *LocalScope) DefineVariable(v IDefinedVariable) {
+func (this *LocalScope) DefineVariable(v IDefinedVariable) error {
 	if _, ok := this.variables[v.Name()]; ok {
-		panic("duplicated variable: " + v.Name())
+		return fmt.Errorf("duplicated variable in local scope: %s", v.Name())
 	}
 	this.variables[v.Name()] = v
+	return nil
 }
 
-func (this *LocalScope) AllocateTmp(t IType) *DefinedVariable {
+func (this *LocalScope) AllocateTmp(t IType) (*DefinedVariable, error) {
 	v := NewTmpNewDefinedVariable(t)
-	this.DefineVariable(v)
-	return v
+	err := this.DefineVariable(v)
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
 }
 
 func (this *LocalScope) Get(name string) (IEntity, error) {

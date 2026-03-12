@@ -35,10 +35,16 @@ func (this *LocalResolver) Resolve(astObj *models.AST) error {
 	this.scopeStack = append(this.scopeStack, toplevel)
 
 	for _, decl := range astObj.Declarations() {
-		toplevel.DeclareEntity(decl)
+		err := toplevel.DeclareEntity(decl)
+		if err != nil {
+			this.errorHandler.ErrorWithLoc(decl.Location(), err.Error())
+		}
 	}
 	for _, ent := range astObj.Definitions() {
-		toplevel.DefineEntity(ent)
+		err := toplevel.DefineEntity(ent)
+		if err != nil {
+			this.errorHandler.ErrorWithLoc(ent.Location(), err.Error())
+		}
 	}
 
 	this.ResolveGvarInitializers(astObj.DefinedVariables())
@@ -91,10 +97,9 @@ func (this *LocalResolver) CurrentScope() models.IScope {
 func (this *LocalResolver) PushScope(vars []models.IDefinedVariable) {
 	scope := models.NewLocalScope(this.CurrentScope())
 	for _, v := range vars {
-		if scope.IsDefinedLocally(v.Name()) {
-			this.errorHandler.ErrorWithLoc(v.Location(), fmt.Sprintf("duplicated variable in scope: %s", v.Name()))
-		} else {
-			scope.DefineVariable(v)
+		err := scope.DefineVariable(v)
+		if err != nil {
+			this.errorHandler.ErrorWithLoc(v.Location(), err.Error())
 		}
 	}
 	this.scopeStack = append(this.scopeStack, scope)
@@ -103,11 +108,7 @@ func (this *LocalResolver) PushScope(vars []models.IDefinedVariable) {
 func (this *LocalResolver) PopScope() *models.LocalScope {
 	scope := this.scopeStack[len(this.scopeStack)-1]
 	this.scopeStack = this.scopeStack[:len(this.scopeStack)-1]
-	result, ok := scope.(*models.LocalScope)
-	if !ok {
-		panic("LocalResolver pop none local scope")
-	}
-	return result
+	return scope.(*models.LocalScope) // push pop pair, always return localScope, no need check cast
 }
 
 func (this *LocalResolver) VisitBlockNode(node *models.ASTBlockNode) any {
@@ -128,11 +129,11 @@ func (this *LocalResolver) VisitStringLiteralNode(node *models.ASTStringLiteralN
 
 func (this *LocalResolver) VisitVariableNode(node *models.ASTVariableNode) any {
 	ent, err := this.CurrentScope().Get(node.Name())
-	if err == nil {
-		ent.Refered()
-		node.SetEntity(ent)
+	if err != nil {
+		this.errorHandler.ErrorWithLoc(node.Location(), err.Error())
 		return nil
 	}
-	this.errorHandler.ErrorWithLoc(node.Location(), err.Error())
+	ent.Refered()
+	node.SetEntity(ent)
 	return nil
 }

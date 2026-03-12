@@ -36,7 +36,6 @@ func (this *ToplevelScope) Toplevel() *ToplevelScope {
 func (this *ToplevelScope) DeclareEntity(ent IEntity) error {
 	e, ok := this.entities[ent.Name()]
 	if ok {
-		// TODO：java throw new SemanticException("duplicated declaration: ")
 		msg := fmt.Sprintf("duplicated declaration: %s: %s and %s", ent.Name(), e.Location().String(), ent.Location().String())
 		return fmt.Errorf("%s", msg)
 	}
@@ -47,7 +46,6 @@ func (this *ToplevelScope) DeclareEntity(ent IEntity) error {
 func (this *ToplevelScope) DefineEntity(ent IEntity) error {
 	e, ok := this.entities[ent.Name()]
 	if ok && e.IsDefined() {
-		// TODO: java throw new SemanticException("duplicated declaration: ")
 		msg := fmt.Sprintf("duplicated definition: %s: %s and %s", ent.Name(), e.Location().String(), ent.Location().String())
 		return fmt.Errorf("%s", msg)
 	}
