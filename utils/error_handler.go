@@ -48,3 +48,7 @@ func (this *ErrorHandler) Warn(msg string) {
 func (this *ErrorHandler) ErrorOccured() bool {
 	return this.nError > 0
 }
+
+func (this *ErrorHandler) DumpErrorNum() {
+	fmt.Fprintf(this.writer, "total %d errors\n", this.nError)
+}
