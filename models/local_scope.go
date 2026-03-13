@@ -117,7 +117,7 @@ func (this *LocalScope) CollectScope(buf []*LocalScope) []*LocalScope {
 func (this *LocalScope) CheckReferences(h *utils.ErrorHandler) {
 	for _, v := range this.variables {
 		if !v.IsRefered() {
-			h.WarnWithLoc(v.Location(), fmt.Sprintf("unused variable: %s", v.Name()))
+			h.WarnWithLoc(v.Location(), fmt.Sprintf("unused local scope variable: %s", v.Name()))
 		}
 	}
 	for _, child := range this.children {

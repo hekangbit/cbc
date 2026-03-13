@@ -63,7 +63,6 @@ func (this *LocalResolver) Resolve(astObj *models.AST) error {
 }
 
 func (this *LocalResolver) ResolveGvarInitializers(gvars []*models.DefinedVariable) {
-	// TODO: may return error for catch exception
 	for _, gvar := range gvars {
 		if gvar.HasInitializer() {
 			this.ResolveExpr(gvar.Initializer())
@@ -72,7 +71,6 @@ func (this *LocalResolver) ResolveGvarInitializers(gvars []*models.DefinedVariab
 }
 
 func (this *LocalResolver) ResolveConstantValues(consts []*models.Constant) {
-	// TODO: may return error for catch exception
 	for _, c := range consts {
 		this.ResolveExpr(c.Value())
 	}

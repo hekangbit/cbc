@@ -287,7 +287,7 @@ func Run(args []string) {
 	}
 	srcs := opts.SourceFiles()
 	Build(srcs, opts)
-	if errorHandler.ErrorOccured() {
-		errorHandler.DumpErrorNum()
+	if errorHandler.IssueOccured() {
+		errorHandler.DumpTotal()
 	}
 }

@@ -49,6 +49,10 @@ func (this *ErrorHandler) ErrorOccured() bool {
 	return this.nError > 0
 }
 
-func (this *ErrorHandler) DumpErrorNum() {
-	fmt.Fprintf(this.writer, "total %d errors\n", this.nError)
+func (this *ErrorHandler) IssueOccured() bool {
+	return this.nError > 0 || this.nWarning > 0
+}
+
+func (this *ErrorHandler) DumpTotal() {
+	fmt.Fprintf(this.writer, "total %d errors, %d warnings\n", this.nError, this.nWarning)
 }

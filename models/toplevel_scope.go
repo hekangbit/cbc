@@ -113,7 +113,7 @@ func (this *ToplevelScope) StaticLocalVariables() []IDefinedVariable {
 func (this *ToplevelScope) CheckReferences(h *utils.ErrorHandler) {
 	for _, ent := range this.entities {
 		if ent.IsDefined() && ent.IsPrivate() && !ent.IsConstant() && !ent.IsRefered() {
-			h.WarnWithLoc(ent.Location(), fmt.Sprintf("unused variable: : %s", ent.Name()))
+			h.WarnWithLoc(ent.Location(), fmt.Sprintf("unused top level variable: : %s", ent.Name()))
 		}
 	}
 	for _, funcScope := range this.children {
