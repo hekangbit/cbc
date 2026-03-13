@@ -25,7 +25,7 @@ func NewTypeResolver(typeTable *models.TypeTable, errorHandler *utils.ErrorHandl
 	return p
 }
 
-func (this *TypeResolver) Resolve(astObj *models.AST) {
+func (this *TypeResolver) Resolve(astObj *models.AST) error {
 	this.defineTypes(astObj.Types())
 	for _, tdef := range astObj.Types() {
 		tdef.Accept(this)
@@ -33,9 +33,10 @@ func (this *TypeResolver) Resolve(astObj *models.AST) {
 	for _, e := range astObj.Entities() {
 		e.Accept(this)
 	}
+	return nil
 }
 
-func (this *TypeResolver) defineTypes(deftypes []models.IASTTypeDefinition) {
+func (this *TypeResolver) defineTypes(deftypes []models.IASTAbstractTypeDefinitionNode) {
 	for _, def := range deftypes {
 		if this.typeTable.IsDefined(def.TypeRef()) {
 			this.error(def, "duplicated type definition: "+def.TypeRef().String())
@@ -74,7 +75,7 @@ func (this *TypeResolver) VisitTypedefNode(typedefNode *models.ASTTypedefNode) a
 	return nil
 }
 
-func (this *TypeResolver) resolveCompositeType(def models.IASTCompositeTypeDefinition) {
+func (this *TypeResolver) resolveCompositeType(def models.IASTAbstractCompositeTypeDefinitionNode) {
 	ct, ok := this.typeTable.Get(def.TypeNode().TypeRef()).(models.ICompositeType)
 	if !ok {
 		// TODO: java throw new Error("cannot intern struct/union: " + def.name());

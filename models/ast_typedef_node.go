@@ -1,15 +1,15 @@
 package models
 
 type ASTTypedefNode struct {
-	ASTTypeDefinition
+	ASTAbstractTypeDefinitionNode
 	real *ASTTypeNode
 }
 
-var _ IASTTypeDefinition = &ASTTypedefNode{}
+var _ IASTAbstractTypeDefinitionNode = &ASTTypedefNode{}
 
 func NewTypedefNode(loc *Location, realTyRef ITypeRef, name string) *ASTTypedefNode {
 	p := &ASTTypedefNode{
-		ASTTypeDefinition: ASTTypeDefinition{
+		ASTAbstractTypeDefinitionNode: ASTAbstractTypeDefinitionNode{
 			location: loc,
 			typeNode: NewASTTypeNodeFromRef(NewUserTypeRef(name)),
 			name:     name,

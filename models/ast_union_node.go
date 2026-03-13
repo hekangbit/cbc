@@ -1,15 +1,15 @@
 package models
 
 type ASTUnionNode struct {
-	ASTCompositeTypeDefinition
+	ASTAbstractCompositeTypeDefinitionNode
 }
 
-var _ IASTCompositeTypeDefinition = &ASTUnionNode{}
+var _ IASTAbstractCompositeTypeDefinitionNode = &ASTUnionNode{}
 
 func NewASTUnionNode(loc *Location, ref ITypeRef, name string, members []*Slot) *ASTUnionNode {
 	p := &ASTUnionNode{
-		ASTCompositeTypeDefinition: ASTCompositeTypeDefinition{
-			ASTTypeDefinition: ASTTypeDefinition{
+		ASTAbstractCompositeTypeDefinitionNode: ASTAbstractCompositeTypeDefinitionNode{
+			ASTAbstractTypeDefinitionNode: ASTAbstractTypeDefinitionNode{
 				name:     name,
 				location: loc,
 				typeNode: NewASTTypeNodeFromRef(ref),
@@ -24,10 +24,6 @@ func NewASTUnionNode(loc *Location, ref ITypeRef, name string, members []*Slot) 
 
 func (this *ASTUnionNode) Kind() string {
 	return "union"
-}
-
-func (this *ASTUnionNode) IsUnion() bool {
-	return true
 }
 
 // Used by type resolver

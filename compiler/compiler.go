@@ -151,8 +151,8 @@ func SemanticAnalyzePhase1(astNode *models.AST, typeTable *models.TypeTable, opt
 	if err != nil {
 		return errors.New("SemanticAnalyzePhase1 Local Resolver fail")
 	}
-	// typeResolver := NewTypeResolver(typeTable, errorHandler)
-	// typeResolver.Resolve(astNode)
+	typeResolver := NewTypeResolver(typeTable, errorHandler)
+	typeResolver.Resolve(astNode)
 	return nil
 }
 

@@ -1,15 +1,15 @@
 package models
 
 type ASTStructNode struct {
-	ASTCompositeTypeDefinition
+	ASTAbstractCompositeTypeDefinitionNode
 }
 
-var _ IASTCompositeTypeDefinition = &ASTStructNode{}
+var _ IASTAbstractCompositeTypeDefinitionNode = &ASTStructNode{}
 
 func NewASTStructNode(loc *Location, ref ITypeRef, name string, members []*Slot) *ASTStructNode {
 	p := &ASTStructNode{
-		ASTCompositeTypeDefinition: ASTCompositeTypeDefinition{
-			ASTTypeDefinition: ASTTypeDefinition{
+		ASTAbstractCompositeTypeDefinitionNode: ASTAbstractCompositeTypeDefinitionNode{
+			ASTAbstractTypeDefinitionNode: ASTAbstractTypeDefinitionNode{
 				name:     name,
 				location: loc,
 				typeNode: NewASTTypeNodeFromRef(ref),
@@ -24,10 +24,6 @@ func NewASTStructNode(loc *Location, ref ITypeRef, name string, members []*Slot)
 
 func (this *ASTStructNode) Kind() string {
 	return "struct"
-}
-
-func (this *ASTStructNode) IsStruct() bool {
-	return true
 }
 
 // Used by type resolver

@@ -2,6 +2,7 @@ package models
 
 import (
 	"cbc/parser"
+	"errors"
 	"io"
 
 	"github.com/antlr4-go/antlr/v4"
@@ -29,18 +30,18 @@ func (this *AST) Location() *Location {
 	return this.source
 }
 
-func (this *AST) Types() []IASTTypeDefinition {
-	result := []IASTTypeDefinition{}
+func (this *AST) Types() []IASTAbstractTypeDefinitionNode {
+	result := []IASTAbstractTypeDefinitionNode{}
 	// TODO: open this after implement struct, union, typedef
-	// for _, t := range this.decls.Defstructs() {
-	// 	result = append(result, t)
-	// }
-	// for _, t := range this.decls.Defunions() {
-	// 	result = append(result, t)
-	// }
-	// for _, t := range this.decls.Typedefs() {
-	// 	result = append(result, t)
-	// }
+	for _, t := range this.decls.Defstructs() {
+		result = append(result, t)
+	}
+	for _, t := range this.decls.Defunions() {
+		result = append(result, t)
+	}
+	for _, t := range this.decls.Typedefs() {
+		result = append(result, t)
+	}
 	return result
 }
 
@@ -101,11 +102,12 @@ func (this *AST) DefinedFunctions() []*DefinedFunction {
 	return this.decls.Deffuns()
 }
 
-func (this *AST) SetScope(scope *ToplevelScope) {
+func (this *AST) SetScope(scope *ToplevelScope) error {
 	if this.scope != nil {
-		panic("must not happen: ToplevelScope set twice")
+		return errors.New("must not happen: ToplevelScope set twice")
 	}
 	this.scope = scope
+	return nil
 }
 
 func (this *AST) Scope() *ToplevelScope {

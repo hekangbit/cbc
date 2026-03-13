@@ -57,7 +57,10 @@ func (this *LocalResolver) Resolve(astObj *models.AST) error {
 		return fmt.Errorf("Compile failed.")
 	}
 
-	astObj.SetScope(toplevel)
+	err := astObj.SetScope(toplevel)
+	if err != nil {
+		return err
+	}
 	astObj.SetConstantTable(&this.constantTable)
 	return nil
 }
