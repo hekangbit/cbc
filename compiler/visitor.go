@@ -4,6 +4,10 @@ import "cbc/models"
 
 type IVisitor interface {
 	models.IASTVisitor
+	visitStmt(models.IASTStmtNode)
+	visitStmts([]models.IASTStmtNode)
+	visitExpr(models.IASTExprNode)
+	visitExprs([]models.IASTExprNode)
 }
 
 type Visitor struct {
@@ -32,7 +36,7 @@ func (this *Visitor) visitExprs(exprs []models.IASTExprNode) {
 	}
 }
 
-// --- ASTVisitor default methods---
+// --- models.IASTVisitor default methods---
 
 func (this *Visitor) VisitBlockNode(node *models.ASTBlockNode) interface{} {
 	for _, v := range node.Variables() {
