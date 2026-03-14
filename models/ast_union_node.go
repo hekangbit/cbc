@@ -7,17 +7,11 @@ type ASTUnionNode struct {
 var _ IASTAbstractCompositeTypeDefinitionNode = &ASTUnionNode{}
 
 func NewASTUnionNode(loc *Location, ref ITypeRef, name string, members []*Slot) *ASTUnionNode {
-	p := &ASTUnionNode{
-		ASTAbstractCompositeTypeDefinitionNode: ASTAbstractCompositeTypeDefinitionNode{
-			ASTAbstractTypeDefinitionNode: ASTAbstractTypeDefinitionNode{
-				name:     name,
-				location: loc,
-				typeNode: NewASTTypeNodeFromRef(ref),
-			},
-			members: members,
-		},
-	}
-
+	p := new(ASTUnionNode)
+	p.name = name
+	p.location = loc
+	p.typeNode = NewASTTypeNodeFromRef(ref)
+	p.members = members
 	p._impl = p
 	return p
 }

@@ -9,17 +9,18 @@ type StructType struct {
 	CompositeType
 }
 
-func NewStructType(name string, membs []*Slot, loc *Location) *StructType {
-	p := &StructType{
-		CompositeType: CompositeType{
-			NamedType:          NamedType{name: name, location: loc},
-			cachedSize:         SizeUnknown,
-			cachedAlign:        SizeUnknown,
-			isRecursiveChecked: false,
-			members:            membs,
-		},
-	}
+var _ ICompositeType = &StructType{}
+
+func NewStructType(name string, members []*Slot, loc *Location) *StructType {
+	p := new(StructType)
+	p.name = name
+	p.location = loc
+	p.cachedSize = SizeUnknown
+	p.cachedAlign = SizeUnknown
+	p.isRecursiveChecked = false
+	p.members = members
 	p._impl = p
+	p._impl_comp_type = p
 	return p
 }
 
@@ -34,7 +35,7 @@ func (this *StructType) IsSameType(other IType) bool {
 	return this == other.GetStructType() // TODO: is this correct?
 }
 
-func (this *StructType) ComputeOffset() {
+func (this *StructType) ComputeOffsets() {
 	var offset int64 = 0
 	var maxAlign int64 = 1
 	for _, slot := range this.Members() {

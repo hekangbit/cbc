@@ -522,6 +522,7 @@ func (g *IRGenerator) transformIndex(node *models.ASTArrayIdxRefNode) models.IIR
 	}
 }
 
+// TODO: Offset return error when member not exist, need catch
 func (g *IRGenerator) VisitMemberNode(node *models.ASTMemberNode) any {
 	expr := g.addressOf(g.transformExpr(node.Expr()))
 	offset := g.ptrdiff(node.Offset())
@@ -533,6 +534,7 @@ func (g *IRGenerator) VisitMemberNode(node *models.ASTMemberNode) any {
 	}
 }
 
+// TODO: Offset return error when member not exist, need catch
 func (g *IRGenerator) VisitPtrMemberNode(node *models.ASTPtrMemberNode) any {
 	expr := g.transformExpr(node.Expr())
 	offset := g.ptrdiff(node.Offset())

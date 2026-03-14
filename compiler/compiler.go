@@ -5,7 +5,6 @@ import (
 	"cbc/parser"
 	"cbc/sysdep/x86"
 	"cbc/utils"
-	"errors"
 	"fmt"
 	"os"
 
@@ -14,7 +13,6 @@ import (
 
 var CompilerProgramName string = "cbc"
 var CompilerVersion string = "1.0.0"
-var errorHandler *utils.ErrorHandler = utils.NewErrorHandler(CompilerProgramName)
 
 type CustomErrorListener struct {
 	*antlr.DefaultErrorListener
@@ -107,12 +105,6 @@ func PrintAsm(asmObj *x86.AssemblyCode, mode CompilerMode) bool {
 	return false
 }
 
-func GenerateExecutable(opts *Options) {
-}
-
-func GenerateSharedLibrary(opts *Options) {
-}
-
 func ParseFile(path string, opts *Options) *models.AST {
 	src, err := os.ReadFile(path)
 	if err != nil {
@@ -145,22 +137,26 @@ func ParseFile(path string, opts *Options) *models.AST {
 	return cbAST
 }
 
-func SemanticAnalyzePhase1(astNode *models.AST, typeTable *models.TypeTable, opts *Options) error {
+func SemanticAnalyzeResolvePhase(astNode *models.AST, typeTable *models.TypeTable, opts *Options, errorHandler *utils.ErrorHandler) error {
+	var err error
 	localResolver := NewLocalResolver(errorHandler)
-	err := localResolver.Resolve(astNode)
+	err = localResolver.Resolve(astNode)
 	if err != nil {
-		return errors.New("SemanticAnalyzePhase1 Local Resolver fail")
+		return err
 	}
 	typeResolver := NewTypeResolver(typeTable, errorHandler)
-	typeResolver.Resolve(astNode)
+	err = typeResolver.Resolve(astNode)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
-func SemanticAnalyzePhase2(astNode *models.AST, typeTable *models.TypeTable, opts *Options) error {
+func SemanticAnalyzeCheckPhase(astNode *models.AST, typeTable *models.TypeTable, opts *Options, errorHandler *utils.ErrorHandler) error {
 	return nil
 }
 
-func GenerateIR(sem *models.AST, typeTable *models.TypeTable) *models.IR {
+func GenerateIR(sem *models.AST, typeTable *models.TypeTable, errorHandler *utils.ErrorHandler) *models.IR {
 	generator := NewIRGenerator(typeTable, errorHandler)
 	ir, err := generator.Generate(sem)
 	if err != nil {
@@ -176,34 +172,37 @@ func GenerateAssembly(ir *models.IR, opts *Options) *x86.AssemblyCode {
 func WriteFile(path string, content string) {
 }
 
-// parse file
-// semantic analyze
-// generate ir
-// generate asm
-// write file
-func CompileToAsm(srcPath string, dstPath string, opts *Options) error {
+func CompileToAsm(srcPath string, dstPath string, opts *Options, errorHandler *utils.ErrorHandler) error {
 	var err error
 	fmt.Println("CompileToAsm: " + srcPath + " to " + dstPath)
 	typeTable := opts.TypeTable()
+
+	// 1. parse file
 	astObj := ParseFile(srcPath, opts)
 	if DumpAST(astObj, opts.Mode()) {
 		return nil
 	}
-	err = SemanticAnalyzePhase1(astObj, typeTable, opts)
+
+	// 2. semantic analyze
+	err = SemanticAnalyzeResolvePhase(astObj, typeTable, opts, errorHandler)
 	if err != nil {
 		return err
 	}
 	if DumpSemant(astObj, opts.Mode()) {
 		return nil
 	}
-	err = SemanticAnalyzePhase2(astObj, typeTable, opts)
+	err = SemanticAnalyzeCheckPhase(astObj, typeTable, opts, errorHandler)
 	if err != nil {
 		return err
 	}
-	// ir := GenerateIR(semObj, typeTable)
+
+	// 3. generate ir
+	// ir := GenerateIR(semObj, typeTable, errorHandler)
 	// if DumpIR(ir, opts.Mode()) {
 	// 	return
 	// }
+
+	// 4. generate asm
 	// asmObj := GenerateAssembly(ir, opts)
 	// if DumpAsm(asmObj, opts.Mode()) {
 	// 	return
@@ -219,6 +218,49 @@ func AssembleToObj(srcPath string, dstPath string, opts *Options) {
 	fmt.Println("AssembleToObj: " + srcPath + " to " + dstPath)
 }
 
+func CompileFile(src SourceFile, opts *Options, errorHandler *utils.ErrorHandler) error {
+	var err error
+
+	// 1. .cb -> .s
+	if src.IsCbSource() {
+		destPath := opts.AsmFileNameOf(src)
+		err = CompileToAsm(src.Path(), destPath, opts, errorHandler)
+		if err != nil {
+			return err
+		}
+		src.SetCurrentName(destPath)
+	}
+
+	// 2. .s -> .o
+	if !opts.IsAssembleRequired() {
+		return nil
+	}
+	if src.IsAssemblySource() {
+		destPath := opts.ObjFileNameOf(src)
+		AssembleToObj(src.Path(), destPath, opts)
+		src.SetCurrentName(destPath)
+	}
+
+	return nil
+}
+
+func CompileFiles(srcs []SourceFile, opts *Options, errorHandler *utils.ErrorHandler) error {
+	var err error
+	for _, src := range srcs {
+		err = CompileFile(src, opts, errorHandler)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func GenerateExecutable(opts *Options) {
+}
+
+func GenerateSharedLibrary(opts *Options) {
+}
+
 func Link(opts *Options) {
 	fmt.Println("Link")
 	if !opts.IsGeneratingSharedLibrary() {
@@ -228,44 +270,10 @@ func Link(opts *Options) {
 	}
 }
 
-func CompileFile(src SourceFile, opts *Options) error {
-	var err error
-	// .cb -> .s
-	if src.IsCbSource() {
-		destPath := opts.AsmFileNameOf(src)
-		err = CompileToAsm(src.Path(), destPath, opts)
-		if err != nil {
-			return err
-		}
-		src.SetCurrentName(destPath)
-	}
-	if !opts.IsAssembleRequired() {
-		return nil
-	}
-	// .s -> .o
-	if src.IsAssemblySource() {
-		destPath := opts.ObjFileNameOf(src)
-		AssembleToObj(src.Path(), destPath, opts)
-		src.SetCurrentName(destPath)
-	}
-	return nil
-}
-
-func CompileFiles(srcs []SourceFile, opts *Options) error {
-	var err error
-	for _, src := range srcs {
-		err = CompileFile(src, opts)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func Build(srcs []SourceFile, opts *Options) error {
+func Build(srcs []SourceFile, opts *Options, errorHandler *utils.ErrorHandler) error {
 	var err error
 
-	err = CompileFiles(srcs, opts)
+	err = CompileFiles(srcs, opts, errorHandler)
 	if err != nil {
 		return err
 	}
@@ -280,13 +288,15 @@ func Build(srcs []SourceFile, opts *Options) error {
 }
 
 func Run(args []string) {
+	var errorHandler *utils.ErrorHandler = utils.NewErrorHandler(CompilerProgramName)
 	opts, err := ParseOptions(args)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Fatal error: %v\n", err)
+		errorHandler.Error(err.Error())
+		fmt.Println("Try \"cbc --help\" for usage")
 		os.Exit(1)
 	}
 	srcs := opts.SourceFiles()
-	Build(srcs, opts)
+	Build(srcs, opts, errorHandler)
 	if errorHandler.IssueOccured() {
 		errorHandler.DumpTotal()
 	}

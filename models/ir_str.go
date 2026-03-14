@@ -51,5 +51,5 @@ func (this *IRStr) Accept(visitor IRVisitor) interface{} {
 
 // TODO: java call toString, means call Object class method
 func (this *IRStr) _Dump(d *Dumper) {
-	d.PrintMemberStringNotResolved("entry", utils.ToString(this.entry))
+	d.PrintMemberStringNotResolved("entry", utils.ToString(this.entry)) // TODO
 }

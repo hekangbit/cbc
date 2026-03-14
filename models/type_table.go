@@ -14,7 +14,7 @@ type TypeTable struct {
 	intSize     int
 	longSize    int
 	pointerSize int
-	table       map[ITypeRef]IType
+	table       map[string]IType
 }
 
 func NewTypeTable(intSize, longSize, pointerSize int) *TypeTable {
@@ -22,7 +22,7 @@ func NewTypeTable(intSize, longSize, pointerSize int) *TypeTable {
 		intSize:     intSize,
 		longSize:    longSize,
 		pointerSize: pointerSize,
-		table:       make(map[ITypeRef]IType),
+		table:       make(map[string]IType),
 	}
 }
 
@@ -46,42 +46,43 @@ func newTable(charSize, shortSize, intSize, longSize, ptrSize int) *TypeTable {
 }
 
 func (tt *TypeTable) Put(ref ITypeRef, t IType) {
-	if _, ok := tt.table[ref]; ok {
-		panic(fmt.Sprintf("duplicated type definition: %v", ref))
+	if _, ok := tt.table[ref.String()]; ok {
+		panic(fmt.Sprintf("duplicated type definition: %s", ref.String()))
 	}
-	tt.table[ref] = t
+	tt.table[ref.String()] = t
 }
 
 func (tt *TypeTable) IsDefined(ref ITypeRef) bool {
-	_, ok := tt.table[ref]
+	_, ok := tt.table[ref.String()]
 	return ok
 }
 
 func (tt *TypeTable) Get(ref ITypeRef) IType {
-	if t, ok := tt.table[ref]; ok {
+	key := ref.String()
+	if t, ok := tt.table[key]; ok {
 		return t
 	}
 	switch r := ref.(type) {
 	case *UserTypeRef:
+		// TODO: typedef aa bb, need return Type of aa, right now still not check error in parser
 		panic(fmt.Sprintf("undefined type: %s", r.Name()))
 	case *PointerTypeRef:
 		base := tt.Get(r.ElemType())
-		t := NewPointerType(int64(tt.pointerSize), base) // &PointerType{size: int64(tt.pointerSize), elemType: base}
-		tt.table[ref] = t
+		t := NewPointerType(int64(tt.pointerSize), base)
+		tt.table[key] = t
 		return t
 	case *ArrayTypeRef:
 		base := tt.Get(r.ElemType())
-		t := NewArrayTypeWithLen(base, r.Length(), int64(tt.pointerSize)) // &ArrayType{BaseType: base, Length: r.Length}
-		tt.table[ref] = t
+		t := NewArrayTypeWithLen(base, r.Length(), int64(tt.pointerSize))
+		tt.table[key] = t
 		return t
 	case *FunctionTypeRef:
 		ret := tt.Get(r.ReturnType())
-		t := NewFunctionType(ret, r.Params().InternTypes(tt)) // &FunctionType{ReturnType: ret, ParamTypes: params}
-		tt.table[ref] = t
+		t := NewFunctionType(ret, r.Params().InternTypes(tt))
+		tt.table[key] = t
 		return t
 	default:
-		// TODO: java throw new Error("unregistered type: " + ref.toString()); so golang need return error
-		panic(fmt.Sprintf("unregistered type: %v", ref))
+		panic(fmt.Sprintf("unregistered type: %s", ref.String()))
 	}
 }
 
@@ -144,9 +145,9 @@ func (tt *TypeTable) Types() []IType {
 	return types
 }
 
-func (tt *TypeTable) SemanticCheck(h utils.ErrorHandler) {
+func (tt *TypeTable) SemanticCheck(h *utils.ErrorHandler) {
 	for _, t := range tt.Types() {
-		if ct, ok := t.(*CompositeType); ok {
+		if ct, ok := t.(ICompositeType); ok {
 			tt.checkVoidMembersComposite(ct, h) // check void field in struct or union
 			tt.checkDuplicatedMembers(ct, h)    // check dupliate field name
 		} else if at, ok := t.(*ArrayType); ok {
@@ -156,13 +157,13 @@ func (tt *TypeTable) SemanticCheck(h utils.ErrorHandler) {
 	}
 }
 
-func (tt *TypeTable) checkVoidMembersArray(at *ArrayType, h utils.ErrorHandler) {
+func (tt *TypeTable) checkVoidMembersArray(at *ArrayType, h *utils.ErrorHandler) {
 	if _, ok := at.ElemType().(*VoidType); ok {
 		h.Error("array cannot contain void")
 	}
 }
 
-func (tt *TypeTable) checkVoidMembersComposite(ct *CompositeType, h utils.ErrorHandler) {
+func (tt *TypeTable) checkVoidMembersComposite(ct ICompositeType, h *utils.ErrorHandler) {
 	for _, s := range ct.Members() {
 		if _, ok := s.Type().(*VoidType); ok {
 			h.Error("struct/union cannot contain void")
@@ -170,7 +171,7 @@ func (tt *TypeTable) checkVoidMembersComposite(ct *CompositeType, h utils.ErrorH
 	}
 }
 
-func (tt *TypeTable) checkDuplicatedMembers(ct *CompositeType, h utils.ErrorHandler) {
+func (tt *TypeTable) checkDuplicatedMembers(ct ICompositeType, h *utils.ErrorHandler) {
 	seen := make(map[string]bool)
 	for _, s := range ct.Members() {
 		if seen[s.Name()] {
@@ -180,12 +181,12 @@ func (tt *TypeTable) checkDuplicatedMembers(ct *CompositeType, h utils.ErrorHand
 	}
 }
 
-func (tt *TypeTable) checkRecursiveDefinition(t IType, h utils.ErrorHandler) {
+func (tt *TypeTable) checkRecursiveDefinition(t IType, h *utils.ErrorHandler) {
 	marks := make(map[IType]int)
 	tt.checkRecursiveDefinitionInternal(t, marks, h)
 }
 
-func (tt *TypeTable) checkRecursiveDefinitionInternal(t IType, marks map[IType]int, h utils.ErrorHandler) {
+func (tt *TypeTable) checkRecursiveDefinitionInternal(t IType, marks map[IType]int, h *utils.ErrorHandler) {
 	if marks[t] == markChecking {
 		nameTy := t.(INamedType)
 		h.ErrorWithLoc(nameTy.Location(), fmt.Sprintf("recursive type definition: %s", t.String()))
@@ -196,7 +197,7 @@ func (tt *TypeTable) checkRecursiveDefinitionInternal(t IType, marks map[IType]i
 	}
 	marks[t] = markChecking
 	switch typ := t.(type) {
-	case *CompositeType:
+	case ICompositeType:
 		for _, s := range typ.Members() {
 			tt.checkRecursiveDefinitionInternal(s.Type(), marks, h)
 		}

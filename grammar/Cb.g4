@@ -8,13 +8,29 @@ importStmt
     : 'import' Identifier('.'Identifier)* ';';
 
 topDefs
-    : (defVars | defFunc | typedef)*;
+    : (defVars | defFunc | defConst | defStruct | defUnion | typedef)*;
 defVars
     : (priv='static')? cbtype=cbType Identifier (hasInit='=' initializer=expr)? (',' Identifier (hasInit='=' initializer=expr)?)* ';';
 defFunc
     : (priv='static')? retCbtype=cbTypeRef Identifier '(' params ')' block;
+defConst
+    : 'const'
+    ;
+defStruct
+    : 'struct' Identifier memberList
+    ;
+defUnion
+    : 'union' Identifier memberList
+    ;
 typedef
     : 'typedef' cbType Identifier ';';
+
+memberList
+    : '{' (slot ';')* '}'
+    ;
+slot
+    : cbType Identifier
+    ;
 
 stmt
     : expr ';'                         #ExprStatement
@@ -61,6 +77,8 @@ cbTypeRefBase
     | 'unsigned' 'int'                 # unsignedIntTypeRef
     | 'unsigned' 'long'                # unsignedLongTypeRef
     | 'struct' Identifier              # structTypeRef
+    | 'union' Identifier               # unionTypeRef
+    | Identifier                       # typeDefTypeRef
     ;
 typeModifier
     : '[' ']'                          # arrayModifier

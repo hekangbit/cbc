@@ -20,12 +20,6 @@ type BaseTypeRef struct {
 	location *Location
 }
 
-var _ ITypeRef = (*BaseTypeRef)(nil)
-
 func (this *BaseTypeRef) Location() *Location {
 	return this.location
-}
-
-func (this *BaseTypeRef) String() string {
-	panic("String method must be implemented by concrete type")
 }

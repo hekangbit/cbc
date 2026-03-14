@@ -43,12 +43,14 @@ func (this *ASTPtrMemberNode) Member() string {
 
 // TODO: MemberOffset may return error when not found member
 func (this *ASTPtrMemberNode) Offset() int64 {
-	return this.DereferedCompositeType().MemberOffset(this.member)
+	offset, _ := this.DereferedCompositeType().MemberOffset(this.member)
+	return offset
 }
 
 // TODO: MemberOffset may return error when not found member
 func (this *ASTPtrMemberNode) OrigType() IType {
-	return this.DereferedCompositeType().MemberType(this.member)
+	t, _ := this.DereferedCompositeType().MemberType(this.member)
+	return t
 }
 
 func (this *ASTPtrMemberNode) Location() *Location {

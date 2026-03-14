@@ -3,7 +3,7 @@ package compiler
 import (
 	"cbc/models"
 	"cbc/utils"
-	"fmt"
+	"errors"
 )
 
 type LocalResolver struct {
@@ -54,7 +54,7 @@ func (this *LocalResolver) Resolve(astObj *models.AST) error {
 	toplevel.CheckReferences(this.errorHandler)
 
 	if this.errorHandler.ErrorOccured() {
-		return fmt.Errorf("Compile failed.")
+		return errors.New("semantic analyze local resolve failed")
 	}
 
 	err := astObj.SetScope(toplevel)

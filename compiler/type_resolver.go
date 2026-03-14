@@ -3,6 +3,7 @@ package compiler
 import (
 	"cbc/models"
 	"cbc/utils"
+	"errors"
 )
 
 type TypeResolver struct {
@@ -27,22 +28,25 @@ func NewTypeResolver(typeTable *models.TypeTable, errorHandler *utils.ErrorHandl
 
 func (this *TypeResolver) Resolve(astObj *models.AST) error {
 	this.defineTypes(astObj.Types())
-	for _, tdef := range astObj.Types() {
-		tdef.Accept(this)
+	for _, node := range astObj.Types() {
+		node.Accept(this)
 	}
-	for _, e := range astObj.Entities() {
-		e.Accept(this)
+	for _, ent := range astObj.Entities() {
+		ent.Accept(this)
+	}
+	if this.errorHandler.ErrorOccured() {
+		return errors.New("semantic analyze type resolve failed")
 	}
 	return nil
 }
 
-func (this *TypeResolver) defineTypes(deftypes []models.IASTAbstractTypeDefinitionNode) {
-	for _, def := range deftypes {
-		if this.typeTable.IsDefined(def.TypeRef()) {
-			this.error(def, "duplicated type definition: "+def.TypeRef().String())
-		} else {
-			this.typeTable.Put(def.TypeRef(), def.DefiningType())
+func (this *TypeResolver) defineTypes(typeDefNodes []models.IASTAbstractTypeDefinitionNode) {
+	for _, typeDefNode := range typeDefNodes {
+		if this.typeTable.IsDefined(typeDefNode.TypeRef()) {
+			this.errorHandler.ErrorWithLoc(typeDefNode.Location(), "duplicated type definition: "+typeDefNode.TypeRef().String())
+			continue
 		}
+		this.typeTable.Put(typeDefNode.TypeRef(), typeDefNode.DefiningType())
 	}
 }
 
@@ -53,11 +57,19 @@ func (this *TypeResolver) bindType(n *models.ASTTypeNode) {
 	n.SetType(this.typeTable.Get(n.TypeRef()))
 }
 
-func (this *TypeResolver) error(node models.INode, msg string) {
-	this.errorHandler.ErrorWithLoc(node.Location(), msg)
+func (this *TypeResolver) resolveCompositeType(def models.IASTAbstractCompositeTypeDefinitionNode) error {
+	ref := this.typeTable.Get(def.TypeNode().TypeRef())
+	compType, ok := ref.(models.ICompositeType)
+	if !ok {
+		panic("cannot intern struct/union: " + def.Name())
+	}
+	for _, slot := range compType.Members() {
+		this.bindType(slot.TypeNode())
+	}
+	return nil
 }
 
-// --- Implement DeclarationVisitor ---
+// --- Implement DeclarationVisitor interface---
 
 func (this *TypeResolver) VisitStructNode(structNode *models.ASTStructNode) any {
 	this.resolveCompositeType(structNode)
@@ -75,18 +87,7 @@ func (this *TypeResolver) VisitTypedefNode(typedefNode *models.ASTTypedefNode) a
 	return nil
 }
 
-func (this *TypeResolver) resolveCompositeType(def models.IASTAbstractCompositeTypeDefinitionNode) {
-	ct, ok := this.typeTable.Get(def.TypeNode().TypeRef()).(models.ICompositeType)
-	if !ok {
-		// TODO: java throw new Error("cannot intern struct/union: " + def.name());
-		panic("cannot intern struct/union: " + def.Name())
-	}
-	for _, slot := range ct.Members() {
-		this.bindType(slot.TypeNode())
-	}
-}
-
-// --- implement EntityVisitor ---
+// --- Implement EntityVisitor interface---
 
 func (this *TypeResolver) VisitDefinedVariable(varNode *models.DefinedVariable) any {
 	this.bindType(varNode.TypeNode())
@@ -127,11 +128,11 @@ func (this *TypeResolver) resolveFunctionHeader(f models.IFunction) {
 	}
 }
 
-// --- 覆盖 ASTVisitor 中的部分方法，以进行类型绑定 ---
+// --- Implement ASTVisitor interface ---
 
 func (this *TypeResolver) VisitBlockNode(node *models.ASTBlockNode) any {
 	for _, v := range node.Variables() {
-		v.Accept(this) // 通过EntityVisitor访问
+		v.Accept(this)
 	}
 	this.visitStmts(node.Stmts())
 	return nil
@@ -139,15 +140,9 @@ func (this *TypeResolver) VisitBlockNode(node *models.ASTBlockNode) any {
 
 func (this *TypeResolver) VisitCastNode(node *models.ASTCastNode) any {
 	this.bindType(node.TypeNode())
-	return this.Visitor.VisitCastNode(node)
+	this.Visitor.VisitCastNode(node)
+	return nil
 }
-
-// TODO: remove duplicate
-// func (this *TypeResolver) VisitCastNode(node *models.ASTCastNode) any {
-// 	this.bindType(node.TypeNode())
-// 	this.visitExpr(node.Expr())
-// 	return nil
-// }
 
 func (this *TypeResolver) VisitSizeofExprNode(node *models.ASTSizeofExprNode) any {
 	this.bindType(node.TypeNode())

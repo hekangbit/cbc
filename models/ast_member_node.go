@@ -30,14 +30,18 @@ func (this *ASTMemberNode) Member() string {
 	return this.member
 }
 
+// TODO: need carefully check, return error, check call stack
+// which caller catch the error
 func (this *ASTMemberNode) Offset() int64 {
-	return this.ElemType().MemberOffset(this.member)
+	offset, _ := this.ElemType().MemberOffset(this.member)
+	return offset
 }
 
 // TODO: MemberType need return error when Member string not exist
 // java throw Exception, but golang can't
 func (this *ASTMemberNode) OrigType() IType {
-	return this.ElemType().MemberType(this.member)
+	t, _ := this.ElemType().MemberType(this.member)
+	return t
 }
 
 func (this *ASTMemberNode) Location() *Location {

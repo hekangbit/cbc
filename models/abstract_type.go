@@ -110,13 +110,13 @@ func (this *BaseType) IsCallable() bool {
 }
 
 func (this *BaseType) ElemType() IType {
-	panic("Type#ElemType called for undereferable type")
+	panic("#ElemType called for undereferable type")
 }
 
 func (this *BaseType) GetIntegerType() *IntegerType {
 	target, ok := this._impl.(*IntegerType)
 	if !ok {
-		panic("Cast IType to *IntegerType fail")
+		return nil
 	}
 	return target
 }
@@ -124,7 +124,7 @@ func (this *BaseType) GetIntegerType() *IntegerType {
 func (this *BaseType) GetPointerType() *PointerType {
 	target, ok := this._impl.(*PointerType)
 	if !ok {
-		panic("Cast IType to *PointerType fail")
+		return nil
 	}
 	return target
 }
@@ -132,7 +132,7 @@ func (this *BaseType) GetPointerType() *PointerType {
 func (this *BaseType) GetCompositeType() ICompositeType {
 	target, ok := this._impl.(ICompositeType)
 	if !ok {
-		panic("Cast IType to ICompositeType fail")
+		return nil
 	}
 	return target
 }
@@ -140,7 +140,7 @@ func (this *BaseType) GetCompositeType() ICompositeType {
 func (this *BaseType) GetFunctionType() *FunctionType {
 	target, ok := this._impl.(*FunctionType)
 	if !ok {
-		panic("Cast IType to *FunctionType fail")
+		return nil
 	}
 	return target
 }
@@ -148,7 +148,7 @@ func (this *BaseType) GetFunctionType() *FunctionType {
 func (this *BaseType) GetArrayType() *ArrayType {
 	target, ok := this._impl.(*ArrayType)
 	if !ok {
-		panic("Cast IType to *ArrayType fail")
+		return nil
 	}
 	return target
 }
@@ -156,7 +156,7 @@ func (this *BaseType) GetArrayType() *ArrayType {
 func (this *BaseType) GetStructType() *StructType {
 	target, ok := this._impl.(*StructType)
 	if !ok {
-		panic("Cast IType to *StructType fail")
+		return nil
 	}
 	return target
 }
@@ -164,7 +164,7 @@ func (this *BaseType) GetStructType() *StructType {
 func (this *BaseType) GetUnionType() *UnionType {
 	target, ok := this._impl.(*UnionType)
 	if !ok {
-		panic("Cast IType to *UnionType fail")
+		return nil
 	}
 	return target
 }

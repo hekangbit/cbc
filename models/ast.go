@@ -32,7 +32,6 @@ func (this *AST) Location() *Location {
 
 func (this *AST) Types() []IASTAbstractTypeDefinitionNode {
 	result := []IASTAbstractTypeDefinitionNode{}
-	// TODO: open this after implement struct, union, typedef
 	for _, t := range this.decls.Defstructs() {
 		result = append(result, t)
 	}
@@ -135,6 +134,14 @@ func (this *AST) IR() *IR {
 	panic("TODO: AST::IR")
 }
 
+func (this *AST) DumpTypes(d *Dumper, buf []IASTAbstractTypeDefinitionNode) {
+	dumpables := make([]Dumpable, len(buf))
+	for i, n := range buf {
+		dumpables[i] = n
+	}
+	d.PrintNodeList("type definition", dumpables)
+}
+
 func (this *AST) DumpDefinedVariables(d *Dumper, buf []*DefinedVariable) {
 	dumpables := make([]Dumpable, len(buf))
 	for i, p := range buf {
@@ -152,6 +159,7 @@ func (this *AST) DumpDefinedFunctions(d *Dumper, buf []*DefinedFunction) {
 }
 
 func (this *AST) _Dump(d *Dumper) {
+	this.DumpTypes(d, this.Types())
 	this.DumpDefinedVariables(d, this.DefinedVariables())
 	this.DumpDefinedFunctions(d, this.DefinedFunctions())
 }

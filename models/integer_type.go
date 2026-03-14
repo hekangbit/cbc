@@ -50,13 +50,12 @@ func (i *IntegerType) IsInDomain(value int64) bool {
 }
 
 // TODO: Cast may return error? IsSame means Ptr same
-// use typeTable, same type always points to same object, singleton mode
+// use typeTable, same type always points to same object?
 func (i *IntegerType) IsSameType(other IType) bool {
 	if !other.IsInteger() {
 		return false
 	}
-	t := other.GetIntegerType()
-	return i == t
+	return i == other.GetIntegerType()
 }
 
 func (i *IntegerType) Equals(other interface{}) bool {

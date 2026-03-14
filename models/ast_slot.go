@@ -11,7 +11,7 @@ type Slot struct {
 
 var _ INode = &Slot{}
 
-func NewSlot(typeNode *ASTTypeNode, name string) *Slot {
+func NewASTSlot(typeNode *ASTTypeNode, name string) *Slot {
 	p := &Slot{typeNode: typeNode, name: name, offset: SizeUnknown}
 	p._impl = p
 	return p

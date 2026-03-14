@@ -9,14 +9,18 @@ type UnionType struct {
 	CompositeType
 }
 
+var _ ICompositeType = &UnionType{}
+
 func NewUnionType(name string, members []*Slot, loc *Location) *UnionType {
-	p := &UnionType{
-		CompositeType: CompositeType{
-			NamedType: NamedType{name: name, location: loc},
-			members:   members,
-		},
-	}
+	p := new(UnionType)
+	p.name = name
+	p.location = loc
+	p.cachedSize = SizeUnknown
+	p.cachedAlign = SizeUnknown
+	p.isRecursiveChecked = false
+	p.members = members
 	p._impl = p
+	p._impl_comp_type = p
 	return p
 }
 
@@ -28,11 +32,7 @@ func (this *UnionType) IsSameType(other IType) bool {
 	if other == nil {
 		return false
 	}
-	otherTy, ok := other.(*UnionType)
-	if !ok {
-		return false
-	}
-	return this == otherTy
+	return this == other.GetUnionType()
 }
 
 func (this *UnionType) ComputeOffsets() {
