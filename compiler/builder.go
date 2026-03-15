@@ -18,19 +18,35 @@ const (
 	POSTFIX_OP_KIND_FUNCTION_CALL
 )
 
-type PostfixOpContent struct {
+const (
+	MODIFIER_KIND_ARRAY int = iota
+	MODIFIER_KIND_SIZED_ARRAY
+	MODIFIER_KIND_POINTER
+	MODIFIER_KIND_FUNCTION
+)
+
+type TaggedValue struct {
 	kind int
 	data interface{}
 }
 
 type ASTBuilder struct {
 	*parser.BaseCbVisitor
-	name        string
-	sourcePath  string
-	curBaseType models.ITypeRef
+	name         string
+	sourcePath   string
+	knowTypedefs map[string]struct{}
 }
 
 var _ parser.CbVisitor = &ASTBuilder{}
+
+func (this *ASTBuilder) AddUserTypedef(name string) {
+	this.knowTypedefs[name] = struct{}{}
+}
+
+func (this *ASTBuilder) IsUserTypedef(name string) bool {
+	_, ok := this.knowTypedefs[name]
+	return ok
+}
 
 func (this *ASTBuilder) Loc(token antlr.Token) *models.Location {
 	return models.NewLocation(this.sourcePath, token)
@@ -148,8 +164,10 @@ func (this *ASTBuilder) VisitDefUnion(ctx *parser.DefUnionContext) interface{} {
 }
 
 func (this *ASTBuilder) VisitTypedef(ctx *parser.TypedefContext) interface{} {
-	// TODO:
-	return nil
+	ref := ctx.CbType().Accept(this).(models.ITypeRef)
+	name := ctx.Identifier().GetText()
+	this.AddUserTypedef(ref.String())
+	return models.NewASTTypedefNode(this.Loc(ctx.GetStart()), ref, name)
 }
 
 func (this *ASTBuilder) VisitMemberList(ctx *parser.MemberListContext) interface{} {
@@ -252,17 +270,36 @@ func (this *ASTBuilder) VisitReturnStmt(ctx *parser.ReturnStmtContext) interface
 }
 
 func (this *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
-	typeRef := ctx.CbTypeRef().Accept(this).(models.ITypeRef)
-	return models.NewASTTypeNodeFromRef(typeRef)
+	ref := ctx.CbTypeRef().Accept(this)
+	if ref == nil {
+		return nil
+	}
+	return models.NewASTTypeNodeFromRef(ref.(models.ITypeRef))
 }
 
 func (this *ASTBuilder) VisitCbTypeRef(ctx *parser.CbTypeRefContext) interface{} {
-	this.curBaseType = ctx.CbTypeRefBase().Accept(this).(models.ITypeRef)
+	p := ctx.CbTypeRefBase().Accept(this)
+	if p == nil {
+		return nil
+	}
+	ref := p.(models.ITypeRef)
 	modifiers := ctx.AllTypeModifier()
 	for _, modifier := range modifiers {
-		this.curBaseType = modifier.Accept(this).(models.ITypeRef)
+		taggedVal := modifier.Accept(this).(TaggedValue)
+		switch taggedVal.kind {
+		case MODIFIER_KIND_ARRAY:
+			ref = models.NewArrayTypeRef(ref)
+		case MODIFIER_KIND_SIZED_ARRAY:
+			ref = models.NewArrayTypeRefWithLen(ref, taggedVal.data.(int64))
+		case MODIFIER_KIND_POINTER:
+			ref = models.NewPointerTypeRef(ref)
+		case MODIFIER_KIND_FUNCTION:
+			ref = models.NewFunctionTypeRef(ref, taggedVal.data.(*models.ParamTypeRefs))
+		default:
+			panic("ASTBuilder#VisitCbTypeRef invalid modifier kind")
+		}
 	}
-	return this.curBaseType
+	return ref
 }
 
 func (this *ASTBuilder) VisitVoidTypeRef(ctx *parser.VoidTypeRefContext) interface{} {
@@ -282,57 +319,62 @@ func (this *ASTBuilder) VisitIntTypeRef(ctx *parser.IntTypeRefContext) interface
 }
 
 func (this *ASTBuilder) VisitLongTypeRef(ctx *parser.LongTypeRefContext) interface{} {
-	return nil
+	return models.NewLongRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitUnsignedCharTypeRef(ctx *parser.UnsignedCharTypeRefContext) interface{} {
-	return nil
+	return models.NewUCharRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitUnsignedShortTypeRef(ctx *parser.UnsignedShortTypeRefContext) interface{} {
-	return nil
+	return models.NewUShortRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitUnsignedIntTypeRef(ctx *parser.UnsignedIntTypeRefContext) interface{} {
-	return nil
+	return models.NewUIntRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitUnsignedLongTypeRef(ctx *parser.UnsignedLongTypeRefContext) interface{} {
-	return nil
+	return models.NewULongRefWithLocation(this.Loc(ctx.GetStart()))
 }
 
 func (this *ASTBuilder) VisitStructTypeRef(ctx *parser.StructTypeRefContext) interface{} {
-	return nil
+	name := ctx.Identifier().GetText()
+	return models.NewStructTypeRefWithLoc(this.Loc(ctx.GetStart()), name)
 }
 
 func (this *ASTBuilder) VisitUnionTypeRef(ctx *parser.UnionTypeRefContext) interface{} {
-	return nil
+	name := ctx.Identifier().GetText()
+	return models.NewUnionTypeRefWithLoc(this.Loc(ctx.GetStart()), name)
 }
 
 func (this *ASTBuilder) VisitTypeDefTypeRef(ctx *parser.TypeDefTypeRefContext) interface{} {
-	return nil
+	name := ctx.Identifier().GetText()
+	if !this.IsUserTypedef(name) {
+		return nil
+	}
+	return models.NewUserTypeRefWithLoc(this.Loc(ctx.GetStart()), name)
 }
 
 func (this *ASTBuilder) VisitArrayModifier(ctx *parser.ArrayModifierContext) interface{} {
-	return models.NewArrayTypeRef(this.curBaseType)
+	return TaggedValue{kind: MODIFIER_KIND_ARRAY}
 }
 
-// TODO: convert string to int64, now to int32
 func (this *ASTBuilder) VisitSizedArrayModifier(ctx *parser.SizedArrayModifierContext) interface{} {
-	length, err := strconv.Atoi(ctx.IntLiteral().GetText())
+	length, err := strconv.Atoi(ctx.IntLiteral().GetText()) // TODO: how to convert string to i64
 	if err != nil {
 		panic("AST Builder::VisitSizedArrayModifier GetIntConst Fail")
 	}
-	return models.NewArrayTypeRefWithLen(this.curBaseType, int64(length))
+	return TaggedValue{kind: MODIFIER_KIND_ARRAY, data: length}
+}
+
+func (this *ASTBuilder) VisitPointerModifier(ctx *parser.PointerModifierContext) interface{} {
+	return TaggedValue{kind: MODIFIER_KIND_POINTER}
 }
 
 func (this *ASTBuilder) VisitFunctionModifier(ctx *parser.FunctionModifierContext) interface{} {
 	params := ctx.ParamTypeRefs().Accept(this).(*models.ParamTypeRefs)
-	return models.NewFunctionTypeRef(this.curBaseType, params)
-}
-
-func (this *ASTBuilder) VisitPointerModifier(ctx *parser.PointerModifierContext) interface{} {
-	return models.NewPointerTypeRef(this.curBaseType)
+	return TaggedValue{kind: MODIFIER_KIND_FUNCTION, data: params}
 }
 
 func (this *ASTBuilder) VisitParams(ctx *parser.ParamsContext) interface{} {
@@ -360,7 +402,7 @@ func (this *ASTBuilder) VisitFixedParams(ctx *parser.FixedParamsContext) interfa
 
 func (this *ASTBuilder) VisitParam(ctx *parser.ParamContext) interface{} {
 	typeNode := ctx.CbType().Accept(this).(*models.ASTTypeNode)
-	name := ctx.Identifier().GetSymbol().GetText()
+	name := ctx.Identifier().GetText()
 	return models.NewCBCParameter(typeNode, name)
 }
 
@@ -569,7 +611,7 @@ func (this *ASTBuilder) VisitUnaryPostfix(ctx *parser.UnaryPostfixContext) inter
 func (this *ASTBuilder) VisitPostfix(ctx *parser.PostfixContext) interface{} {
 	expr := ctx.Primary().Accept(this).(models.IASTExprNode)
 	for _, tmpCtx := range ctx.AllPostfixOp() {
-		content := tmpCtx.Accept(this).(PostfixOpContent)
+		content := tmpCtx.Accept(this).(TaggedValue)
 		switch content.kind {
 		case POSTFIX_OP_KIND_SUFFIX_OP:
 			expr = models.NewASTSuffixOpNode(content.data.(string), expr)
@@ -589,31 +631,31 @@ func (this *ASTBuilder) VisitPostfix(ctx *parser.PostfixContext) interface{} {
 }
 
 func (this *ASTBuilder) VisitPostInc(ctx *parser.PostIncContext) interface{} {
-	return PostfixOpContent{kind: POSTFIX_OP_KIND_SUFFIX_OP, data: "++"}
+	return TaggedValue{kind: POSTFIX_OP_KIND_SUFFIX_OP, data: "++"}
 }
 
 func (this *ASTBuilder) VisitPostDec(ctx *parser.PostDecContext) interface{} {
-	return PostfixOpContent{kind: POSTFIX_OP_KIND_SUFFIX_OP, data: "--"}
+	return TaggedValue{kind: POSTFIX_OP_KIND_SUFFIX_OP, data: "--"}
 }
 
 func (this *ASTBuilder) VisitPostArrayIndex(ctx *parser.PostArrayIndexContext) interface{} {
 	idx := ctx.Expr().Accept(this).(models.IASTExprNode)
-	return PostfixOpContent{kind: POSTFIX_OP_KIND_ARRAY_INDEX, data: idx}
+	return TaggedValue{kind: POSTFIX_OP_KIND_ARRAY_INDEX, data: idx}
 }
 
 func (this *ASTBuilder) VisitPostMember(ctx *parser.PostMemberContext) interface{} {
-	memb := ctx.Identifier().Accept(this).(string)
-	return PostfixOpContent{kind: POSTFIX_OP_KIND_MEMBER, data: memb}
+	memb := ctx.Identifier().GetText()
+	return TaggedValue{kind: POSTFIX_OP_KIND_MEMBER, data: memb}
 }
 
 func (this *ASTBuilder) VisitPostPtrMember(ctx *parser.PostPtrMemberContext) interface{} {
-	memb := ctx.Identifier().Accept(this).(string)
-	return PostfixOpContent{kind: POSTFIX_OP_KIND_PTR_MEMBER, data: memb}
+	memb := ctx.Identifier().GetText()
+	return TaggedValue{kind: POSTFIX_OP_KIND_PTR_MEMBER, data: memb}
 }
 
 func (this *ASTBuilder) VisitFuncCall(ctx *parser.FuncCallContext) interface{} {
 	args := ctx.Args().Accept(this).([]models.IASTExprNode)
-	return PostfixOpContent{kind: POSTFIX_OP_KIND_FUNCTION_CALL, data: args}
+	return TaggedValue{kind: POSTFIX_OP_KIND_FUNCTION_CALL, data: args}
 }
 
 func (this *ASTBuilder) VisitArgs(ctx *parser.ArgsContext) interface{} {

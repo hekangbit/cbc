@@ -7,7 +7,7 @@ type ASTTypedefNode struct {
 
 var _ IASTAbstractTypeDefinitionNode = &ASTTypedefNode{}
 
-func NewTypedefNode(loc *Location, realTyRef ITypeRef, name string) *ASTTypedefNode {
+func NewASTTypedefNode(loc *Location, realTyRef ITypeRef, name string) *ASTTypedefNode {
 	p := &ASTTypedefNode{
 		ASTAbstractTypeDefinitionNode: ASTAbstractTypeDefinitionNode{
 			location: loc,

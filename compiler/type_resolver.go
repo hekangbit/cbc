@@ -12,17 +12,15 @@ type TypeResolver struct {
 	errorHandler *utils.ErrorHandler
 }
 
-// need support 3 interface
 var _ IVisitor = &TypeResolver{}
 var _ models.IDeclarationVisitor = &TypeResolver{}
 var _ models.IEntityVisitor = &TypeResolver{}
 
 func NewTypeResolver(typeTable *models.TypeTable, errorHandler *utils.ErrorHandler) *TypeResolver {
-	p := &TypeResolver{
-		typeTable:    typeTable,
-		errorHandler: errorHandler,
-	}
-	p.Visitor._impl_visitor = p
+	p := new(TypeResolver)
+	p.typeTable = typeTable
+	p.errorHandler = errorHandler
+	p._impl_visitor = p
 	return p
 }
 

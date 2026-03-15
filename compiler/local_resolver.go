@@ -17,8 +17,8 @@ var _ IVisitor = &LocalResolver{}
 
 func NewLocalResolver(h *utils.ErrorHandler) *LocalResolver {
 	p := new(LocalResolver)
-	p._impl_visitor = p
 	p.errorHandler = h
+	p._impl_visitor = p
 	return p
 }
 

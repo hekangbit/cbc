@@ -288,7 +288,7 @@ func Build(srcs []SourceFile, opts *Options, errorHandler *utils.ErrorHandler) e
 }
 
 func Run(args []string) {
-	var errorHandler *utils.ErrorHandler = utils.NewErrorHandler(CompilerProgramName)
+	var errorHandler = utils.NewErrorHandler(CompilerProgramName)
 	opts, err := ParseOptions(args)
 	if err != nil {
 		errorHandler.Error(err.Error())
