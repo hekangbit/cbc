@@ -14,16 +14,17 @@ defVars
 defFunc
     : (priv='static')? retCbtype=cbTypeRef Identifier '(' params ')' block;
 defConst
-    : 'const'
+    : 'const' cbType Identifier '=' expr ';'
     ;
 defStruct
-    : 'struct' Identifier memberList
+    : 'struct' Identifier memberList ';'
     ;
 defUnion
-    : 'union' Identifier memberList
+    : 'union' Identifier memberList ';'
     ;
 typedef
-    : 'typedef' cbType Identifier ';';
+    : 'typedef' cbType Identifier ';'
+    ;
 
 memberList
     : '{' (slot ';')* '}'

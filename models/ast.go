@@ -134,6 +134,14 @@ func (this *AST) IR() *IR {
 	panic("TODO: AST::IR")
 }
 
+func (this *AST) DumpConstants(d *Dumper, buf []*Constant) {
+	dumpables := make([]Dumpable, len(buf))
+	for i, c := range buf {
+		dumpables[i] = c
+	}
+	d.PrintNodeList("constants", dumpables)
+}
+
 func (this *AST) DumpTypes(d *Dumper, buf []IASTAbstractTypeDefinitionNode) {
 	dumpables := make([]Dumpable, len(buf))
 	for i, n := range buf {
@@ -159,6 +167,7 @@ func (this *AST) DumpDefinedFunctions(d *Dumper, buf []*DefinedFunction) {
 }
 
 func (this *AST) _Dump(d *Dumper) {
+	this.DumpConstants(d, this.Constants())
 	this.DumpTypes(d, this.Types())
 	this.DumpDefinedVariables(d, this.DefinedVariables())
 	this.DumpDefinedFunctions(d, this.DefinedFunctions())

@@ -103,6 +103,10 @@ func (this *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 		def := defFunCtx.Accept(this)
 		decls.AddDeffun(def.(*models.DefinedFunction))
 	}
+	for _, defConstCtx := range ctx.AllDefConst() {
+		def := defConstCtx.Accept(this)
+		decls.AddConstant(def.(*models.Constant))
+	}
 	for _, defStructCtx := range ctx.AllDefStruct() {
 		def := defStructCtx.Accept(this)
 		decls.AddDefstruct(def.(*models.ASTStructNode))
@@ -115,7 +119,6 @@ func (this *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 		def := typeDefCtx.Accept(this)
 		decls.AddTypedef(def.(*models.ASTTypedefNode))
 	}
-	// TODO: constant, typedef
 	return decls
 }
 
@@ -152,8 +155,10 @@ func (this *ASTBuilder) VisitDefFunc(ctx *parser.DefFuncContext) interface{} {
 }
 
 func (this *ASTBuilder) VisitDefConst(ctx *parser.DefConstContext) interface{} {
-	// TODO:
-	return nil
+	ty := ctx.CbType().Accept(this).(*models.ASTTypeNode)
+	name := ctx.Identifier().GetText()
+	value := ctx.Expr().Accept(this).(models.IASTExprNode)
+	return models.NewConstant(ty, name, value)
 }
 
 func (this *ASTBuilder) VisitDefStruct(ctx *parser.DefStructContext) interface{} {
