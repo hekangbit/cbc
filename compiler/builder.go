@@ -32,6 +32,7 @@ type TaggedValue struct {
 
 type ASTBuilder struct {
 	*parser.BaseCbVisitor
+	errorHandler *utils.ErrorHandler
 	name         string
 	sourcePath   string
 	knowTypedefs map[string]struct{}
@@ -94,21 +95,25 @@ func (this *ASTBuilder) VisitImportStmt(ctx *parser.ImportStmtContext) interface
 
 func (this *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 	decls := models.NewDeclarations()
-	for _, defVars := range ctx.AllDefVars() {
-		defs := defVars.Accept(this)
+	for _, defVarsCtx := range ctx.AllDefVars() {
+		defs := defVarsCtx.Accept(this)
 		decls.AddDefvars(defs.([]*models.DefinedVariable))
 	}
-	for _, defFun := range ctx.AllDefFunc() {
-		def := defFun.Accept(this)
+	for _, defFunCtx := range ctx.AllDefFunc() {
+		def := defFunCtx.Accept(this)
 		decls.AddDeffun(def.(*models.DefinedFunction))
 	}
-	for _, defStruct := range ctx.AllDefStruct() {
-		def := defStruct.Accept(this)
+	for _, defStructCtx := range ctx.AllDefStruct() {
+		def := defStructCtx.Accept(this)
 		decls.AddDefstruct(def.(*models.ASTStructNode))
 	}
-	for _, defUnion := range ctx.AllDefUnion() {
-		def := defUnion.Accept(this)
+	for _, defUnionCtx := range ctx.AllDefUnion() {
+		def := defUnionCtx.Accept(this)
 		decls.AddDefunion(def.(*models.ASTUnionNode))
+	}
+	for _, typeDefCtx := range ctx.AllTypedef() {
+		def := typeDefCtx.Accept(this)
+		decls.AddTypedef(def.(*models.ASTTypedefNode))
 	}
 	// TODO: constant, typedef
 	return decls
@@ -271,17 +276,11 @@ func (this *ASTBuilder) VisitReturnStmt(ctx *parser.ReturnStmtContext) interface
 
 func (this *ASTBuilder) VisitCbType(ctx *parser.CbTypeContext) interface{} {
 	ref := ctx.CbTypeRef().Accept(this)
-	if ref == nil {
-		return nil
-	}
 	return models.NewASTTypeNodeFromRef(ref.(models.ITypeRef))
 }
 
 func (this *ASTBuilder) VisitCbTypeRef(ctx *parser.CbTypeRefContext) interface{} {
 	p := ctx.CbTypeRefBase().Accept(this)
-	if p == nil {
-		return nil
-	}
 	ref := p.(models.ITypeRef)
 	modifiers := ctx.AllTypeModifier()
 	for _, modifier := range modifiers {
@@ -351,7 +350,7 @@ func (this *ASTBuilder) VisitUnionTypeRef(ctx *parser.UnionTypeRefContext) inter
 func (this *ASTBuilder) VisitTypeDefTypeRef(ctx *parser.TypeDefTypeRefContext) interface{} {
 	name := ctx.Identifier().GetText()
 	if !this.IsUserTypedef(name) {
-		return nil
+		this.errorHandler.ErrorWithLoc(this.Loc(ctx.GetStart()), "undefined type: "+name)
 	}
 	return models.NewUserTypeRefWithLoc(this.Loc(ctx.GetStart()), name)
 }

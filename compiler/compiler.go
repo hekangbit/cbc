@@ -105,7 +105,7 @@ func PrintAsm(asmObj *x86.AssemblyCode, mode CompilerMode) bool {
 	return false
 }
 
-func ParseFile(path string, opts *Options) *models.AST {
+func ParseFile(path string, opts *Options, h *utils.ErrorHandler) *models.AST {
 	src, err := os.ReadFile(path)
 	if err != nil {
 		os.Exit(64)
@@ -130,7 +130,7 @@ func ParseFile(path string, opts *Options) *models.AST {
 		os.Exit(1)
 	}
 
-	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}, sourcePath: path}
+	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}, sourcePath: path, errorHandler: h}
 	program := tree.Accept(builder)
 	cbAST := program.(*models.AST)
 	cbAST.SetStream(cbLexer, tokenStream)
@@ -178,7 +178,10 @@ func CompileToAsm(srcPath string, dstPath string, opts *Options, errorHandler *u
 	typeTable := opts.TypeTable()
 
 	// 1. parse file
-	astObj := ParseFile(srcPath, opts)
+	astObj := ParseFile(srcPath, opts, errorHandler)
+	if errorHandler.ErrorOccured() {
+		return fmt.Errorf("compile parse file <%s> fail", srcPath)
+	}
 	if DumpAST(astObj, opts.Mode()) {
 		return nil
 	}
