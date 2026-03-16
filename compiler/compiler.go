@@ -153,6 +153,11 @@ func SemanticAnalyzeResolvePhase(astNode *models.AST, typeTable *models.TypeTabl
 }
 
 func SemanticAnalyzeCheckPhase(astNode *models.AST, typeTable *models.TypeTable, opts *Options, errorHandler *utils.ErrorHandler) error {
+	var err error
+	err = typeTable.SemanticCheck(errorHandler)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

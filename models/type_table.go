@@ -2,6 +2,7 @@ package models
 
 import (
 	"cbc/utils"
+	"errors"
 	"fmt"
 )
 
@@ -198,7 +199,7 @@ func (tt *TypeTable) Types() []IType {
 	return types
 }
 
-func (tt *TypeTable) SemanticCheck(h *utils.ErrorHandler) {
+func (tt *TypeTable) SemanticCheck(h *utils.ErrorHandler) error {
 	for _, t := range tt.Types() {
 		if ct, ok := t.(ICompositeType); ok {
 			tt.checkVoidMembersComposite(ct, h) // check void field in struct or union
@@ -208,6 +209,10 @@ func (tt *TypeTable) SemanticCheck(h *utils.ErrorHandler) {
 		}
 		tt.checkRecursiveDefinition(t, h)
 	}
+	if h.ErrorOccured() {
+		return errors.New("semantic analyze type table semantic check failed")
+	}
+	return nil
 }
 
 func (tt *TypeTable) checkVoidMembersArray(at *ArrayType, h *utils.ErrorHandler) {
