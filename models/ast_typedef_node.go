@@ -10,8 +10,9 @@ var _ IASTAbstractTypeDefinitionNode = &ASTTypedefNode{}
 func NewASTTypedefNode(loc *Location, realTyRef ITypeRef, name string) *ASTTypedefNode {
 	p := new(ASTTypedefNode)
 	p.location = loc
-	p.typeNode = NewASTTypeNodeFromRef(NewUserTypeRef(name))
 	p.name = name
+	p.typeNode = NewASTTypeNodeFromRef(NewUserTypeRef(name))
+	p.real = NewASTTypeNodeFromRef(realTyRef)
 	p._impl = p
 	return p
 }
@@ -39,6 +40,7 @@ func (this *ASTTypedefNode) DefiningType() IType {
 func (this *ASTTypedefNode) _Dump(d *Dumper) {
 	d.PrintMemberStringNotResolved("name", this.name)
 	d.PrintMemberDumpable("typeNode", this.typeNode)
+	d.PrintMemberDumpable("real typeNode", this.real)
 }
 
 func (this *ASTTypedefNode) Accept(visitor IDeclarationVisitor) any {

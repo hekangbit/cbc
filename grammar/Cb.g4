@@ -23,7 +23,7 @@ defUnion
     : 'union' Identifier memberList ';'
     ;
 typedef
-    : 'typedef' cbType Identifier ';'
+    : 'typedef' cbTypeRef Identifier ';'
     ;
 
 memberList

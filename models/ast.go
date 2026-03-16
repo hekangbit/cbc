@@ -167,8 +167,8 @@ func (this *AST) DumpDefinedFunctions(d *Dumper, buf []*DefinedFunction) {
 }
 
 func (this *AST) _Dump(d *Dumper) {
-	this.DumpConstants(d, this.Constants())
 	this.DumpTypes(d, this.Types())
+	this.DumpConstants(d, this.Constants())
 	this.DumpDefinedVariables(d, this.DefinedVariables())
 	this.DumpDefinedFunctions(d, this.DefinedFunctions())
 }
@@ -211,7 +211,7 @@ func (this *AST) GetSingleMainStmt() IASTStmtNode {
 	return nil
 }
 
-// GetSingleMainExpr return the expr of signle statement in main function
+// GetSingleMainExpr return the expr of single statement in main function
 func (this *AST) GetSingleMainExpr() IASTExprNode {
 	stmt := this.GetSingleMainStmt()
 	if stmt == nil {

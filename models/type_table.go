@@ -64,7 +64,6 @@ func (tt *TypeTable) Get(ref ITypeRef) IType {
 	}
 	switch r := ref.(type) {
 	case *UserTypeRef:
-		// TODO: typedef aa bb, need return Type of aa, right now still not check error in parser
 		panic(fmt.Sprintf("undefined type: %s", r.Name()))
 	case *PointerTypeRef:
 		base := tt.Get(r.ElemType())

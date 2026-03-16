@@ -40,6 +40,15 @@ type ASTBuilder struct {
 
 var _ parser.CbVisitor = &ASTBuilder{}
 
+func NewASTBuilder(path string, h *utils.ErrorHandler) *ASTBuilder {
+	return &ASTBuilder{
+		BaseCbVisitor: &parser.BaseCbVisitor{},
+		sourcePath:    path,
+		errorHandler:  h,
+		knowTypedefs:  make(map[string]struct{}),
+	}
+}
+
 func (this *ASTBuilder) AddUserTypedef(name string) {
 	this.knowTypedefs[name] = struct{}{}
 }
@@ -95,30 +104,33 @@ func (this *ASTBuilder) VisitImportStmt(ctx *parser.ImportStmtContext) interface
 
 func (this *ASTBuilder) VisitTopDefs(ctx *parser.TopDefsContext) interface{} {
 	decls := models.NewDeclarations()
-	for _, defVarsCtx := range ctx.AllDefVars() {
-		defs := defVarsCtx.Accept(this)
-		decls.AddDefvars(defs.([]*models.DefinedVariable))
+
+	children := ctx.GetChildren()
+	for _, childCtx := range children {
+		switch c := childCtx.(type) {
+		case parser.ITypedefContext:
+			def := c.Accept(this)
+			decls.AddTypedef(def.(*models.ASTTypedefNode))
+		case parser.IDefConstContext:
+			def := c.Accept(this)
+			decls.AddConstant(def.(*models.Constant))
+		case parser.IDefStructContext:
+			def := c.Accept(this)
+			decls.AddDefstruct(def.(*models.ASTStructNode))
+		case parser.IDefUnionContext:
+			def := c.Accept(this)
+			decls.AddDefunion(def.(*models.ASTUnionNode))
+		case parser.IDefVarsContext:
+			def := c.Accept(this)
+			decls.AddDefvars(def.([]*models.DefinedVariable))
+		case parser.IDefFuncContext:
+			def := c.Accept(this)
+			decls.AddDeffun(def.(*models.DefinedFunction))
+		default:
+			panic("undefined grammar context in TopDefs")
+		}
 	}
-	for _, defFunCtx := range ctx.AllDefFunc() {
-		def := defFunCtx.Accept(this)
-		decls.AddDeffun(def.(*models.DefinedFunction))
-	}
-	for _, defConstCtx := range ctx.AllDefConst() {
-		def := defConstCtx.Accept(this)
-		decls.AddConstant(def.(*models.Constant))
-	}
-	for _, defStructCtx := range ctx.AllDefStruct() {
-		def := defStructCtx.Accept(this)
-		decls.AddDefstruct(def.(*models.ASTStructNode))
-	}
-	for _, defUnionCtx := range ctx.AllDefUnion() {
-		def := defUnionCtx.Accept(this)
-		decls.AddDefunion(def.(*models.ASTUnionNode))
-	}
-	for _, typeDefCtx := range ctx.AllTypedef() {
-		def := typeDefCtx.Accept(this)
-		decls.AddTypedef(def.(*models.ASTTypedefNode))
-	}
+
 	return decls
 }
 
@@ -174,9 +186,9 @@ func (this *ASTBuilder) VisitDefUnion(ctx *parser.DefUnionContext) interface{} {
 }
 
 func (this *ASTBuilder) VisitTypedef(ctx *parser.TypedefContext) interface{} {
-	ref := ctx.CbType().Accept(this).(models.ITypeRef)
+	ref := ctx.CbTypeRef().Accept(this).(models.ITypeRef)
 	name := ctx.Identifier().GetText()
-	this.AddUserTypedef(ref.String())
+	this.AddUserTypedef(name)
 	return models.NewASTTypedefNode(this.Loc(ctx.GetStart()), ref, name)
 }
 

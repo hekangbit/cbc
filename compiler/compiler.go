@@ -130,7 +130,7 @@ func ParseFile(path string, opts *Options, h *utils.ErrorHandler) *models.AST {
 		os.Exit(1)
 	}
 
-	builder := &ASTBuilder{BaseCbVisitor: &parser.BaseCbVisitor{}, sourcePath: path, errorHandler: h}
+	builder := NewASTBuilder(path, h)
 	program := tree.Accept(builder)
 	cbAST := program.(*models.AST)
 	cbAST.SetStream(cbLexer, tokenStream)

@@ -56,8 +56,8 @@ func (this *TypeResolver) bindType(n *models.ASTTypeNode) {
 }
 
 func (this *TypeResolver) resolveCompositeType(def models.IASTAbstractCompositeTypeDefinitionNode) error {
-	ref := this.typeTable.Get(def.TypeNode().TypeRef())
-	compType, ok := ref.(models.ICompositeType)
+	t := this.typeTable.Get(def.TypeNode().TypeRef())
+	compType, ok := t.(models.ICompositeType)
 	if !ok {
 		panic("cannot intern struct/union: " + def.Name())
 	}
