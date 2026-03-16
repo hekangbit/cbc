@@ -29,13 +29,6 @@ func (p *Params) ParametersTypeRef() *ParamTypeRefs {
 	return NewParamTypeRefs(p.location, typeRefs, p.vararg)
 }
 
-func (p *Params) Equals(other interface{}) bool {
-	if otherParams, ok := other.(*Params); ok {
-		return p.EqualsParams(otherParams)
-	}
-	return false
-}
-
 func (p *Params) EqualsParams(other *Params) bool {
 	if other == nil {
 		return false

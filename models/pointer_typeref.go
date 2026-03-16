@@ -29,14 +29,6 @@ func (this *PointerTypeRef) ElemType() ITypeRef {
 	return this.elemTypeRef
 }
 
-func (this *PointerTypeRef) Equals(other interface{}) bool {
-	otherRef, ok := other.(*PointerTypeRef)
-	if !ok {
-		return false
-	}
-	return this.elemTypeRef == otherRef.elemTypeRef
-}
-
 func (this *PointerTypeRef) String() string {
 	return this.elemTypeRef.String() + "*"
 }

@@ -1,7 +1,5 @@
 package models
 
-import "reflect"
-
 type ParamTypeRefs struct {
 	*ParamSlots[ITypeRef]
 }
@@ -22,21 +20,4 @@ func (this *ParamTypeRefs) InternTypes(table *TypeTable) *ParamTypes {
 		cbtypes = append(cbtypes, table.GetParamType(ref))
 	}
 	return NewParamTypes(this.location, cbtypes, this.vararg)
-}
-
-func (this *ParamTypeRefs) Equals(other interface{}) bool {
-	otherRef, ok := other.(*ParamTypeRefs)
-	if !ok {
-		return false
-	}
-
-	if this.vararg != otherRef.vararg {
-		return false
-	}
-
-	if len(this.paramDescriptors) != len(otherRef.paramDescriptors) {
-		return false
-	}
-	// TODO: need check the deep equal correctness
-	return reflect.DeepEqual(this.paramDescriptors, otherRef.paramDescriptors)
 }

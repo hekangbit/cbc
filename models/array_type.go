@@ -64,15 +64,6 @@ func (this *ArrayType) Alignment() int64 {
 	return this.elemType.Alignment()
 }
 
-func (this *ArrayType) Equals(other interface{}) bool {
-	t, ok := other.(*ArrayType)
-	if !ok {
-		return false
-	}
-	// TODO: java equals is pointer address compare, how about in golang
-	return (this.elemType == t.elemType) && (this.length == t.length)
-}
-
 func (this *ArrayType) IsSameType(other IType) bool {
 	// length is not important
 	if !other.IsPointer() && !other.IsArray() {

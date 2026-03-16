@@ -1,7 +1,5 @@
 package models
 
-import "reflect"
-
 type ParamTypes struct {
 	*ParamSlots[IType]
 }
@@ -31,19 +29,4 @@ func (this *ParamTypes) IsSameType(other *ParamTypes) bool {
 		}
 	}
 	return true
-}
-
-func (this *ParamTypes) Equals(other interface{}) bool {
-	if other == nil {
-		return false
-	}
-	otherType, ok := other.(*ParamTypes)
-	if !ok {
-		return false
-	}
-	if this.vararg != otherType.vararg {
-		return false
-	}
-
-	return reflect.DeepEqual(this.paramDescriptors, otherType.paramDescriptors)
 }

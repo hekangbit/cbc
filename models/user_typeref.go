@@ -27,14 +27,6 @@ func (this *UserTypeRef) Name() string {
 	return this.name
 }
 
-func (this *UserTypeRef) Equals(other any) bool {
-	otherRef, ok := other.(*UserTypeRef)
-	if !ok {
-		return false
-	}
-	return this.name == otherRef.name
-}
-
 func (this *UserTypeRef) String() string {
 	return this.name
 }

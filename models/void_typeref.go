@@ -20,11 +20,6 @@ func (v *VoidTypeRef) IsVoid() bool {
 	return true
 }
 
-func (v *VoidTypeRef) Equals(other interface{}) bool {
-	_, ok := other.(*VoidTypeRef)
-	return ok
-}
-
 func (v *VoidTypeRef) String() string {
 	return "void"
 }

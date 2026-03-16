@@ -58,15 +58,6 @@ func (i *IntegerType) IsSameType(other IType) bool {
 	return i == other.GetIntegerType()
 }
 
-func (i *IntegerType) Equals(other interface{}) bool {
-	otherType, ok := other.(*IntegerType)
-	if !ok {
-		return false
-	}
-
-	return i.size == otherType.size && i.isSigned == otherType.isSigned && i.name == otherType.name
-}
-
 func (i *IntegerType) IsCompatible(other IType) bool {
 	if !other.IsInteger() {
 		return false

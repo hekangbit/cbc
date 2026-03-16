@@ -86,14 +86,6 @@ func (i *IntegerTypeRef) Name() string {
 	return i.name
 }
 
-func (i *IntegerTypeRef) Equals(other interface{}) bool {
-	otherRef, ok := other.(*IntegerTypeRef)
-	if !ok {
-		return false
-	}
-	return i.name == otherRef.name
-}
-
 func (i *IntegerTypeRef) String() string {
 	return i.name
 }

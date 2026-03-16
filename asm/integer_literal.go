@@ -63,13 +63,6 @@ func (this *IntegerLiteral) Cmp(other ILiteral) int {
 	}
 }
 
-func (this *IntegerLiteral) Equals(other ILiteral) bool {
-	if o, ok := other.(*IntegerLiteral); ok {
-		return this.value == o.value
-	}
-	return false
-}
-
 func (this *IntegerLiteral) String() string {
 	return this.ToSource()
 }

@@ -46,15 +46,6 @@ func (this *PointerType) ElemType() IType {
 	return this.elemType
 }
 
-func (this *PointerType) Equals(other interface{}) bool {
-	otherPtr, ok := other.(*PointerType)
-	if !ok {
-		return false
-	}
-	// compare elem type
-	return this.elemType.IsSameType(otherPtr.elemType)
-}
-
 func (this *PointerType) IsSameType(other IType) bool {
 	if !other.IsPointer() {
 		return false

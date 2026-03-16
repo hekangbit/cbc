@@ -36,11 +36,6 @@ func (v *VoidType) IsVoid() bool {
 	return true
 }
 
-func (v *VoidType) Equals(other interface{}) bool {
-	_, ok := other.(*VoidType)
-	return ok
-}
-
 func (v *VoidType) String() string {
 	return "void"
 }

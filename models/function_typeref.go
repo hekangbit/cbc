@@ -1,7 +1,6 @@
 package models
 
 import (
-	"reflect"
 	"strings"
 )
 
@@ -23,20 +22,6 @@ func NewFunctionTypeRef(retTypeRef ITypeRef, params *ParamTypeRefs) *FunctionTyp
 
 func (this *FunctionTypeRef) IsFunction() bool {
 	return true
-}
-
-// TODO:
-func (this *FunctionTypeRef) Equals(other interface{}) bool {
-	otherRef, ok := other.(*FunctionTypeRef)
-	if !ok {
-		return false
-	}
-	return this.Equals_(otherRef)
-}
-
-// TODO:
-func (this *FunctionTypeRef) Equals_(other *FunctionTypeRef) bool {
-	return reflect.DeepEqual(this.retTypeRef, other.retTypeRef) && this.params.Equals(other.params)
 }
 
 func (this *FunctionTypeRef) ReturnType() ITypeRef {

@@ -1,19 +1,12 @@
 package models
 
 import (
-	"cbc/utils"
 	"fmt"
 )
 
 type ITypeRef interface {
 	fmt.Stringer
 	Location() *Location
-}
-
-// TODO: check hash algorithm, this is not the real object ptr
-// make this as a global functino
-func ITypeRefHashCode(t ITypeRef) int32 {
-	return utils.HashCode(utils.ToString(t))
 }
 
 type BaseTypeRef struct {

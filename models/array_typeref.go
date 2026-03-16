@@ -43,14 +43,6 @@ func (this *ArrayTypeRef) isArray() bool {
 	return true
 }
 
-func (this *ArrayTypeRef) Equals(other interface{}) bool {
-	otherRef, ok := other.(*ArrayTypeRef)
-	if !ok {
-		return false
-	}
-	return this.length == otherRef.length
-}
-
 func (this *ArrayTypeRef) ElemType() ITypeRef {
 	return this.elemTypeRef
 }
