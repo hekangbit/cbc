@@ -1,17 +1,15 @@
 package models
 
-// cb typedef
 type UserType struct {
 	NamedType
 	real *ASTTypeNode
 }
 
-// NewUserType 创建 UserType 实例。
 func NewUserType(name string, real *ASTTypeNode, loc *Location) *UserType {
-	p := &UserType{
-		NamedType: NamedType{name: name, location: loc},
-		real:      real,
-	}
+	p := new(UserType)
+	p.location = loc
+	p.name = name
+	p.real = real
 	p._impl = p
 	return p
 }
