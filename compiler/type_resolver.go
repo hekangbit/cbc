@@ -67,6 +67,15 @@ func (this *TypeResolver) resolveCompositeType(def models.IASTAbstractCompositeT
 	return nil
 }
 
+func (this *TypeResolver) resolveFunctionHeader(f models.IFunction) {
+	this.bindType(f.TypeNode())
+	for _, param := range f.Parameters() {
+		// notice: array to pointer
+		t := this.typeTable.GetParamType(param.TypeNode().TypeRef())
+		param.TypeNode().SetType(t)
+	}
+}
+
 // --- Implement DeclarationVisitor interface---
 
 func (this *TypeResolver) VisitStructNode(structNode *models.ASTStructNode) any {
@@ -87,6 +96,12 @@ func (this *TypeResolver) VisitTypedefNode(typedefNode *models.ASTTypedefNode) a
 
 // --- Implement EntityVisitor interface---
 
+func (this *TypeResolver) VisitConstant(c *models.Constant) any {
+	this.bindType(c.TypeNode())
+	this.visitExpr(c.Value())
+	return nil
+}
+
 func (this *TypeResolver) VisitDefinedVariable(varNode *models.DefinedVariable) any {
 	this.bindType(varNode.TypeNode())
 	if varNode.HasInitializer() {
@@ -100,12 +115,6 @@ func (this *TypeResolver) VisitUndefinedVariable(varNode *models.UndefinedVariab
 	return nil
 }
 
-func (this *TypeResolver) VisitConstant(c *models.Constant) any {
-	this.bindType(c.TypeNode())
-	this.visitExpr(c.Value())
-	return nil
-}
-
 func (this *TypeResolver) VisitDefinedFunction(funcNode *models.DefinedFunction) any {
 	this.resolveFunctionHeader(funcNode)
 	this.visitStmt(funcNode.Body())
@@ -115,15 +124,6 @@ func (this *TypeResolver) VisitDefinedFunction(funcNode *models.DefinedFunction)
 func (this *TypeResolver) VisitUndefinedFunction(funcNode *models.UndefinedFunction) any {
 	this.resolveFunctionHeader(funcNode)
 	return nil
-}
-
-func (this *TypeResolver) resolveFunctionHeader(f models.IFunction) {
-	this.bindType(f.TypeNode())
-	for _, param := range f.Parameters() {
-		// notice: array to pointer
-		t := this.typeTable.GetParamType(param.TypeNode().TypeRef())
-		param.TypeNode().SetType(t)
-	}
 }
 
 // --- Implement ASTVisitor interface ---

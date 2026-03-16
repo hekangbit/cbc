@@ -104,9 +104,17 @@ func (this *Visitor) VisitForNode(n *models.ASTForNode) interface{} {
 	return nil
 }
 
-func (this *Visitor) VisitBreakNode(*models.ASTBreakNode) interface{}       { return nil }
-func (this *Visitor) VisitContinueNode(*models.ASTContinueNode) interface{} { return nil }
-func (this *Visitor) VisitGotoNode(*models.ASTGotoNode) interface{}         { return nil }
+func (this *Visitor) VisitBreakNode(*models.ASTBreakNode) interface{} {
+	return nil
+}
+
+func (this *Visitor) VisitContinueNode(*models.ASTContinueNode) interface{} {
+	return nil
+}
+
+func (this *Visitor) VisitGotoNode(*models.ASTGotoNode) interface{} {
+	return nil
+}
 
 func (this *Visitor) VisitLabelNode(n *models.ASTLabelNode) interface{} {
 	this.visitStmt(n.Stmt())
@@ -216,7 +224,18 @@ func (this *Visitor) VisitSizeofExprNode(node *models.ASTSizeofExprNode) interfa
 	return nil
 }
 
-func (this *Visitor) VisitSizeofTypeNode(*models.ASTSizeofTypeNode) interface{}         { return nil }
-func (this *Visitor) VisitVariableNode(*models.ASTVariableNode) interface{}             { return nil }
-func (this *Visitor) VisitIntegerLiteralNode(*models.ASTIntegerLiteralNode) interface{} { return nil }
-func (this *Visitor) VisitStringLiteralNode(*models.ASTStringLiteralNode) interface{}   { return nil }
+func (this *Visitor) VisitSizeofTypeNode(*models.ASTSizeofTypeNode) interface{} {
+	return nil
+}
+
+func (this *Visitor) VisitVariableNode(*models.ASTVariableNode) interface{} {
+	return nil
+}
+
+func (this *Visitor) VisitIntegerLiteralNode(*models.ASTIntegerLiteralNode) interface{} {
+	return nil
+}
+
+func (this *Visitor) VisitStringLiteralNode(*models.ASTStringLiteralNode) interface{} {
+	return nil
+}

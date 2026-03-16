@@ -26,10 +26,21 @@ func NewTypeTable(intSize, longSize, pointerSize int) *TypeTable {
 	}
 }
 
-func ILP32() *TypeTable { return newTable(1, 2, 4, 4, 4) }
-func ILP64() *TypeTable { return newTable(1, 2, 8, 8, 8) }
-func LP64() *TypeTable  { return newTable(1, 2, 4, 8, 8) }
-func LLP64() *TypeTable { return newTable(1, 2, 4, 4, 8) }
+func ILP32() *TypeTable {
+	return newTable(1, 2, 4, 4, 4)
+}
+
+func ILP64() *TypeTable {
+	return newTable(1, 2, 8, 8, 8)
+}
+
+func LP64() *TypeTable {
+	return newTable(1, 2, 4, 8, 8)
+}
+
+func LLP64() *TypeTable {
+	return newTable(1, 2, 4, 4, 8)
+}
 
 func newTable(charSize, shortSize, intSize, longSize, ptrSize int) *TypeTable {
 	tt := NewTypeTable(intSize, longSize, ptrSize)
@@ -97,22 +108,65 @@ func (tt *TypeTable) PointerTo(elemType IType) *PointerType {
 	return NewPointerType(int64(tt.pointerSize), elemType)
 }
 
-func (tt *TypeTable) voidType() *VoidType         { return (tt.Get(NewVoidTypeRef())).(*VoidType) }
-func (tt *TypeTable) signedChar() *IntegerType    { return (tt.Get(NewCharRef())).(*IntegerType) }
-func (tt *TypeTable) signedShort() *IntegerType   { return (tt.Get(NewShortRef())).(*IntegerType) }
-func (tt *TypeTable) signedInt() *IntegerType     { return (tt.Get(NewIntRef())).(*IntegerType) }
-func (tt *TypeTable) signedLong() *IntegerType    { return (tt.Get(NewLongRef())).(*IntegerType) }
-func (tt *TypeTable) unsignedChar() *IntegerType  { return (tt.Get(NewUCharRef())).(*IntegerType) }
-func (tt *TypeTable) unsignedShort() *IntegerType { return (tt.Get(NewUShortRef())).(*IntegerType) }
-func (tt *TypeTable) unsignedInt() *IntegerType   { return (tt.Get(NewUIntRef())).(*IntegerType) }
-func (tt *TypeTable) unsignedLong() *IntegerType  { return (tt.Get(NewULongRef())).(*IntegerType) }
+func (tt *TypeTable) voidType() *VoidType {
+	return (tt.Get(NewVoidTypeRef())).(*VoidType)
+}
 
-func (tt *TypeTable) IntSize() int                    { return tt.intSize }
-func (tt *TypeTable) LongSize() int                   { return tt.longSize }
-func (tt *TypeTable) PointerSize() int                { return tt.pointerSize }
-func (tt *TypeTable) MaxIntSize() int                 { return tt.pointerSize }
-func (tt *TypeTable) SignedStackType() *IntegerType   { return tt.signedLong() }
-func (tt *TypeTable) UnsignedStackType() *IntegerType { return tt.unsignedLong() }
+func (tt *TypeTable) signedChar() *IntegerType {
+	return (tt.Get(NewCharRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) signedShort() *IntegerType {
+	return (tt.Get(NewShortRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) signedInt() *IntegerType {
+	return (tt.Get(NewIntRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) signedLong() *IntegerType {
+	return (tt.Get(NewLongRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) unsignedChar() *IntegerType {
+	return (tt.Get(NewUCharRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) unsignedShort() *IntegerType {
+	return (tt.Get(NewUShortRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) unsignedInt() *IntegerType {
+	return (tt.Get(NewUIntRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) unsignedLong() *IntegerType {
+	return (tt.Get(NewULongRef())).(*IntegerType)
+}
+
+func (tt *TypeTable) IntSize() int {
+	return tt.intSize
+}
+
+func (tt *TypeTable) LongSize() int {
+	return tt.longSize
+}
+
+func (tt *TypeTable) PointerSize() int {
+	return tt.pointerSize
+}
+
+func (tt *TypeTable) MaxIntSize() int {
+	return tt.pointerSize
+}
+
+func (tt *TypeTable) SignedStackType() *IntegerType {
+	return tt.signedLong()
+}
+
+func (tt *TypeTable) UnsignedStackType() *IntegerType {
+	return tt.unsignedLong()
+}
 
 func (tt *TypeTable) PtrDiffType() IType {
 	return tt.Get(tt.PtrDiffTypeRef())
