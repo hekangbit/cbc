@@ -15,6 +15,6 @@ func NewASTBreakNode(loc *Location) *ASTBreakNode {
 func (this *ASTBreakNode) _Dump(d *Dumper) {
 }
 
-func (this *ASTBreakNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTBreakNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitBreakNode(this)
 }

@@ -103,7 +103,7 @@ func StringValue(image string) (string, error) {
 }
 
 // TODO: need check again
-func ToString(obj interface{}) string {
+func ToString(obj any) string {
 	if obj == nil {
 		return "nil"
 	}

@@ -44,6 +44,6 @@ func (this *ASTAddressNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("expr", this.expr)
 }
 
-func (this *ASTAddressNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTAddressNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitAddressNode(this)
 }

@@ -29,7 +29,7 @@ func (this *IRUni) Expr() IIRExpr {
 	return this.expr
 }
 
-func (this *IRUni) Accept(visitor IRVisitor) interface{} {
+func (this *IRUni) Accept(visitor IRVisitor) any {
 	return visitor.VisitUni(this)
 }
 

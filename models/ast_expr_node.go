@@ -12,7 +12,7 @@ type IASTExprNode interface {
 	IsLoadable() bool
 	IsCallable() bool
 	IsPointer() bool
-	Accept(visitor IASTVisitor) interface{}
+	Accept(visitor IASTVisitor) (any, error)
 }
 
 type ASTExprNode struct {

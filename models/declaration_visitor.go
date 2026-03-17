@@ -1,7 +1,7 @@
 package models
 
 type IDeclarationVisitor interface {
-	VisitStructNode(*ASTStructNode) any
-	VisitUnionNode(*ASTUnionNode) any
-	VisitTypedefNode(*ASTTypedefNode) any
+	VisitStructNode(*ASTStructNode) (any, error)
+	VisitUnionNode(*ASTUnionNode) (any, error)
+	VisitTypedefNode(*ASTTypedefNode) (any, error)
 }

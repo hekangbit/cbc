@@ -70,6 +70,6 @@ func (this *ASTArrayIdxRefNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("index", this.index)
 }
 
-func (this *ASTArrayIdxRefNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTArrayIdxRefNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitArrayIdxRefNode(this)
 }

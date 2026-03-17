@@ -26,7 +26,7 @@ func (this *ASTSwitchNode) Cases() []*ASTCaseNode {
 	return this.cases
 }
 
-func (this *ASTSwitchNode) Accept(visitor IASTVisitor) any {
+func (this *ASTSwitchNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitSwitchNode(this)
 }
 

@@ -32,6 +32,6 @@ func (this *UndefinedFunction) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("params", this.params)
 }
 
-func (this *UndefinedFunction) Accept(visitor IEntityVisitor) interface{} {
+func (this *UndefinedFunction) Accept(visitor IEntityVisitor) (any, error) {
 	return visitor.VisitUndefinedFunction(this)
 }

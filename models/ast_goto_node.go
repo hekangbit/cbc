@@ -20,7 +20,7 @@ func (this *ASTGotoNode) Target() string {
 	return this.target
 }
 
-func (this *ASTGotoNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTGotoNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitGotoNode(this)
 }
 

@@ -27,7 +27,7 @@ type IEntity interface {
 	Address() asm.IOperand
 	CheckAddress()
 	Location() *Location
-	Accept(IEntityVisitor) interface{}
+	Accept(IEntityVisitor) (any, error)
 	_Dump(*Dumper)
 }
 

@@ -68,6 +68,6 @@ func (this *ASTBinaryOpNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("right", this.right)
 }
 
-func (this *ASTBinaryOpNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTBinaryOpNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitBinaryOpNode(this)
 }

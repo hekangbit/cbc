@@ -2,40 +2,40 @@ package models
 
 type IASTVisitor interface {
 	// Statements
-	VisitBlockNode(*ASTBlockNode) any
-	VisitExprStmtNode(*ASTExprStmtNode) any
-	VisitIfNode(*ASTIfNode) any
-	VisitSwitchNode(*ASTSwitchNode) any
-	VisitCaseNode(*ASTCaseNode) any
-	VisitWhileNode(*ASTWhileNode) any
-	VisitDoWhileNode(*ASTDoWhileNode) any
-	VisitForNode(*ASTForNode) any
-	VisitBreakNode(*ASTBreakNode) any
-	VisitContinueNode(*ASTContinueNode) any
-	VisitGotoNode(*ASTGotoNode) any
-	VisitLabelNode(*ASTLabelNode) any
-	VisitReturnNode(*ASTReturnNode) any
+	VisitBlockNode(*ASTBlockNode) (any, error)
+	VisitExprStmtNode(*ASTExprStmtNode) (any, error)
+	VisitIfNode(*ASTIfNode) (any, error)
+	VisitSwitchNode(*ASTSwitchNode) (any, error)
+	VisitCaseNode(*ASTCaseNode) (any, error)
+	VisitWhileNode(*ASTWhileNode) (any, error)
+	VisitDoWhileNode(*ASTDoWhileNode) (any, error)
+	VisitForNode(*ASTForNode) (any, error)
+	VisitBreakNode(*ASTBreakNode) (any, error)
+	VisitContinueNode(*ASTContinueNode) (any, error)
+	VisitGotoNode(*ASTGotoNode) (any, error)
+	VisitLabelNode(*ASTLabelNode) (any, error)
+	VisitReturnNode(*ASTReturnNode) (any, error)
 
 	// Expressions
-	VisitAssignNode(*ASTAssignNode) any
-	VisitOpAssignNode(*ASTOpAssignNode) any
-	VisitCondExprNode(*ASTCondExprNode) any
-	VisitLogicalOrNode(*ASTLogicalOrNode) any
-	VisitLogicalAndNode(*ASTLogicalAndNode) any
-	VisitBinaryOpNode(*ASTBinaryOpNode) any
-	VisitUnaryOpNode(*ASTUnaryOpNode) any
-	VisitPrefixOpNode(*ASTPrefixOpNode) any
-	VisitSuffixOpNode(*ASTSuffixOpNode) any
-	VisitArrayIdxRefNode(*ASTArrayIdxRefNode) any
-	VisitMemberNode(*ASTMemberNode) any
-	VisitPtrMemberNode(*ASTPtrMemberNode) any
-	VisitFunctionCallNode(*ASTFunctionCallNode) any
-	VisitDereferenceNode(*ASTDereferenceNode) any
-	VisitAddressNode(*ASTAddressNode) any
-	VisitCastNode(*ASTCastNode) any
-	VisitSizeofExprNode(*ASTSizeofExprNode) any
-	VisitSizeofTypeNode(*ASTSizeofTypeNode) any
-	VisitVariableNode(*ASTVariableNode) any
-	VisitIntegerLiteralNode(*ASTIntegerLiteralNode) any
-	VisitStringLiteralNode(*ASTStringLiteralNode) any
+	VisitAssignNode(*ASTAssignNode) (any, error)
+	VisitOpAssignNode(*ASTOpAssignNode) (any, error)
+	VisitCondExprNode(*ASTCondExprNode) (any, error)
+	VisitLogicalOrNode(*ASTLogicalOrNode) (any, error)
+	VisitLogicalAndNode(*ASTLogicalAndNode) (any, error)
+	VisitBinaryOpNode(*ASTBinaryOpNode) (any, error)
+	VisitUnaryOpNode(*ASTUnaryOpNode) (any, error)
+	VisitPrefixOpNode(*ASTPrefixOpNode) (any, error)
+	VisitSuffixOpNode(*ASTSuffixOpNode) (any, error)
+	VisitArrayIdxRefNode(*ASTArrayIdxRefNode) (any, error)
+	VisitMemberNode(*ASTMemberNode) (any, error)
+	VisitPtrMemberNode(*ASTPtrMemberNode) (any, error)
+	VisitFunctionCallNode(*ASTFunctionCallNode) (any, error)
+	VisitDereferenceNode(*ASTDereferenceNode) (any, error)
+	VisitAddressNode(*ASTAddressNode) (any, error)
+	VisitCastNode(*ASTCastNode) (any, error)
+	VisitSizeofExprNode(*ASTSizeofExprNode) (any, error)
+	VisitSizeofTypeNode(*ASTSizeofTypeNode) (any, error)
+	VisitVariableNode(*ASTVariableNode) (any, error)
+	VisitIntegerLiteralNode(*ASTIntegerLiteralNode) (any, error)
+	VisitStringLiteralNode(*ASTStringLiteralNode) (any, error)
 }

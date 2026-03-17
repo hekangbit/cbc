@@ -25,6 +25,6 @@ func (this *ASTReturnNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("expr", this.expr)
 }
 
-func (this *ASTReturnNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTReturnNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitReturnNode(this)
 }

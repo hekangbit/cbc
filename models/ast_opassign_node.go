@@ -18,6 +18,6 @@ func (this *ASTOpAssignNode) Operator() string {
 	return this.operator
 }
 
-func (this *ASTOpAssignNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTOpAssignNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitOpAssignNode(this)
 }

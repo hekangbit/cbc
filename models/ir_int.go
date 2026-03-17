@@ -35,7 +35,7 @@ func (this *IRInt) Memref() asm.IMemoryReference {
 	panic("must not happen: IntValue#memref")
 }
 
-func (this *IRInt) Accept(visitor IRVisitor) interface{} {
+func (this *IRInt) Accept(visitor IRVisitor) any {
 	return visitor.VisitInt(this)
 }
 

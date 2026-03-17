@@ -39,6 +39,6 @@ func (this *ASTSizeofTypeNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("operand", this.operand)
 }
 
-func (this *ASTSizeofTypeNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTSizeofTypeNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitSizeofTypeNode(this)
 }

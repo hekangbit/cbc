@@ -38,7 +38,7 @@ func (this *IRAddr) GetEntityForce() IEntity {
 	return this.entity
 }
 
-func (this *IRAddr) Accept(visitor IRVisitor) interface{} {
+func (this *IRAddr) Accept(visitor IRVisitor) any {
 	return visitor.VisitAddr(this)
 }
 

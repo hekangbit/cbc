@@ -34,7 +34,7 @@ func (this *IRCJump) ElseLabel() *asm.Label {
 	return this.elseLabel
 }
 
-func (this *IRCJump) Accept(visitor IRVisitor) interface{} {
+func (this *IRCJump) Accept(visitor IRVisitor) any {
 	return visitor.VisitCJump(this)
 }
 

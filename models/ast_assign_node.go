@@ -13,6 +13,6 @@ func NewASTAssignNode(lhs IASTExprNode, rhs IASTExprNode) *ASTAssignNode {
 	return p
 }
 
-func (this *ASTAssignNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTAssignNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitAssignNode(this)
 }

@@ -2,7 +2,7 @@ package models
 
 type IASTStmtNode interface {
 	INode
-	Accept(visitor IASTVisitor) interface{}
+	Accept(visitor IASTVisitor) (any, error)
 }
 
 type ASTStmtNode struct {

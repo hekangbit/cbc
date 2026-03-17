@@ -53,7 +53,7 @@ func (this *IRCall) Function() IFunction {
 	return fn
 }
 
-func (this *IRCall) Accept(visitor IRVisitor) interface{} {
+func (this *IRCall) Accept(visitor IRVisitor) any {
 	return visitor.VisitCall(this)
 }
 

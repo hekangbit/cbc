@@ -45,7 +45,7 @@ func (this *IRStr) AsmValue() *asm.ImmediateValue {
 	return this.entry.Address()
 }
 
-func (this *IRStr) Accept(visitor IRVisitor) interface{} {
+func (this *IRStr) Accept(visitor IRVisitor) any {
 	return visitor.VisitStr(this)
 }
 

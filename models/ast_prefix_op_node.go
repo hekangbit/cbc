@@ -18,6 +18,6 @@ func NewASTPrefixOpNode(op string, expr IASTExprNode) *ASTPrefixOpNode {
 	return p
 }
 
-func (this *ASTPrefixOpNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTPrefixOpNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitPrefixOpNode(this)
 }

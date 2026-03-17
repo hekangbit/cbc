@@ -18,7 +18,7 @@ func (this *IRReturn) Expr() IIRExpr {
 	return this.expr
 }
 
-func (this *IRReturn) Accept(visitor IRVisitor) interface{} {
+func (this *IRReturn) Accept(visitor IRVisitor) any {
 	return visitor.VisitReturn(this)
 }
 

@@ -38,6 +38,6 @@ func (this *ASTIfNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("elseBody", this.elseBody)
 }
 
-func (this *ASTIfNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTIfNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitIfNode(this)
 }

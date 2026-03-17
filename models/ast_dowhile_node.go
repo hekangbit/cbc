@@ -27,6 +27,6 @@ func (this *ASTDoWhileNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("body", this.body)
 }
 
-func (this *ASTDoWhileNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTDoWhileNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitDoWhileNode(this)
 }

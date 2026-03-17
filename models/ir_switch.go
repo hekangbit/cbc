@@ -40,7 +40,7 @@ func (this *IRSwitch) EndLabel() *asm.Label {
 	return this.endLabel
 }
 
-func (this *IRSwitch) Accept(visitor IRVisitor) interface{} {
+func (this *IRSwitch) Accept(visitor IRVisitor) any {
 	return visitor.VisitSwitch(this)
 }
 

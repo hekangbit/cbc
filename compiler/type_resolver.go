@@ -78,88 +78,88 @@ func (this *TypeResolver) resolveFunctionHeader(f models.IFunction) {
 
 // --- Implement DeclarationVisitor interface---
 
-func (this *TypeResolver) VisitStructNode(structNode *models.ASTStructNode) any {
+func (this *TypeResolver) VisitStructNode(structNode *models.ASTStructNode) (any, error) {
 	this.resolveCompositeType(structNode)
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitUnionNode(unionNode *models.ASTUnionNode) any {
+func (this *TypeResolver) VisitUnionNode(unionNode *models.ASTUnionNode) (any, error) {
 	this.resolveCompositeType(unionNode)
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitTypedefNode(typedefNode *models.ASTTypedefNode) any {
+func (this *TypeResolver) VisitTypedefNode(typedefNode *models.ASTTypedefNode) (any, error) {
 	this.bindType(typedefNode.TypeNode())
 	this.bindType(typedefNode.RealTypeNode())
-	return nil
+	return nil, nil
 }
 
 // --- Implement EntityVisitor interface---
 
-func (this *TypeResolver) VisitConstant(c *models.Constant) any {
+func (this *TypeResolver) VisitConstant(c *models.Constant) (any, error) {
 	this.bindType(c.TypeNode())
 	this.visitExpr(c.Value())
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitDefinedVariable(varNode *models.DefinedVariable) any {
+func (this *TypeResolver) VisitDefinedVariable(varNode *models.DefinedVariable) (any, error) {
 	this.bindType(varNode.TypeNode())
 	if varNode.HasInitializer() {
 		this.visitExpr(varNode.Initializer())
 	}
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitUndefinedVariable(varNode *models.UndefinedVariable) any {
+func (this *TypeResolver) VisitUndefinedVariable(varNode *models.UndefinedVariable) (any, error) {
 	this.bindType(varNode.TypeNode())
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitDefinedFunction(funcNode *models.DefinedFunction) any {
+func (this *TypeResolver) VisitDefinedFunction(funcNode *models.DefinedFunction) (any, error) {
 	this.resolveFunctionHeader(funcNode)
 	this.visitStmt(funcNode.Body())
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitUndefinedFunction(funcNode *models.UndefinedFunction) any {
+func (this *TypeResolver) VisitUndefinedFunction(funcNode *models.UndefinedFunction) (any, error) {
 	this.resolveFunctionHeader(funcNode)
-	return nil
+	return nil, nil
 }
 
 // --- Implement ASTVisitor interface ---
 
-func (this *TypeResolver) VisitBlockNode(node *models.ASTBlockNode) any {
+func (this *TypeResolver) VisitBlockNode(node *models.ASTBlockNode) (any, error) {
 	for _, v := range node.Variables() {
 		v.Accept(this)
 	}
 	this.visitStmts(node.Stmts())
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitCastNode(node *models.ASTCastNode) any {
+func (this *TypeResolver) VisitCastNode(node *models.ASTCastNode) (any, error) {
 	this.bindType(node.TypeNode())
 	this.Visitor.VisitCastNode(node)
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitSizeofExprNode(node *models.ASTSizeofExprNode) any {
+func (this *TypeResolver) VisitSizeofExprNode(node *models.ASTSizeofExprNode) (any, error) {
 	this.bindType(node.TypeNode())
 	this.visitExpr(node.Expr())
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitSizeofTypeNode(node *models.ASTSizeofTypeNode) any {
+func (this *TypeResolver) VisitSizeofTypeNode(node *models.ASTSizeofTypeNode) (any, error) {
 	this.bindType(node.OperandTypeNode())
 	this.bindType(node.TypeNode())
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitIntegerLiteralNode(node *models.ASTIntegerLiteralNode) any {
+func (this *TypeResolver) VisitIntegerLiteralNode(node *models.ASTIntegerLiteralNode) (any, error) {
 	this.bindType(node.TypeNode())
-	return nil
+	return nil, nil
 }
 
-func (this *TypeResolver) VisitStringLiteralNode(node *models.ASTStringLiteralNode) any {
+func (this *TypeResolver) VisitStringLiteralNode(node *models.ASTStringLiteralNode) (any, error) {
 	this.bindType(node.TypeNode())
-	return nil
+	return nil, nil
 }

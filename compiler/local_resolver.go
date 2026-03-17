@@ -23,11 +23,11 @@ func NewLocalResolver(h *utils.ErrorHandler) *LocalResolver {
 }
 
 func (this *LocalResolver) ResolveStmt(n models.IASTStmtNode) (any, error) {
-	return n.Accept(this), nil
+	return n.Accept(this)
 }
 
 func (this *LocalResolver) ResolveExpr(n models.IASTExprNode) (any, error) {
-	return n.Accept(this), nil
+	return n.Accept(this)
 }
 
 func (this *LocalResolver) Resolve(astObj *models.AST) error {
@@ -112,7 +112,7 @@ func (this *LocalResolver) PopScope() *models.LocalScope {
 	return scope.(*models.LocalScope) // push pop pair, always return localScope, no need check cast
 }
 
-func (this *LocalResolver) VisitBlockNode(node *models.ASTBlockNode) any {
+func (this *LocalResolver) VisitBlockNode(node *models.ASTBlockNode) (any, error) {
 	vars := make([]models.IDefinedVariable, len(node.Variables()))
 	for i, v := range node.Variables() {
 		vars[i] = v
@@ -120,21 +120,21 @@ func (this *LocalResolver) VisitBlockNode(node *models.ASTBlockNode) any {
 	this.PushScope(vars)
 	this.Visitor.VisitBlockNode(node)
 	node.SetScope(this.PopScope())
-	return nil
+	return nil, nil
 }
 
-func (this *LocalResolver) VisitStringLiteralNode(node *models.ASTStringLiteralNode) any {
+func (this *LocalResolver) VisitStringLiteralNode(node *models.ASTStringLiteralNode) (any, error) {
 	node.SetEntry(this.constantTable.Intern(node.Value()))
-	return nil
+	return nil, nil
 }
 
-func (this *LocalResolver) VisitVariableNode(node *models.ASTVariableNode) any {
+func (this *LocalResolver) VisitVariableNode(node *models.ASTVariableNode) (any, error) {
 	ent, err := this.CurrentScope().Get(node.Name())
 	if err != nil {
 		this.errorHandler.ErrorWithLoc(node.Location(), err.Error())
-		return nil
+		return nil, nil
 	}
 	ent.Refered()
 	node.SetEntity(ent)
-	return nil
+	return nil, nil
 }

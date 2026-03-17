@@ -31,6 +31,6 @@ func (this *UndefinedVariable) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("typeNode", this.typeNode)
 }
 
-func (this *UndefinedVariable) Accept(visitor IEntityVisitor) interface{} {
+func (this *UndefinedVariable) Accept(visitor IEntityVisitor) (any, error) {
 	return visitor.VisitUndefinedVariable(this)
 }

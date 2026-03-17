@@ -65,6 +65,6 @@ func (this *ASTPtrMemberNode) _Dump(d *Dumper) {
 	d.PrintMemberStringNotResolved("member", this.member)
 }
 
-func (this *ASTPtrMemberNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTPtrMemberNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitPtrMemberNode(this)
 }

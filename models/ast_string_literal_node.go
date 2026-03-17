@@ -34,6 +34,6 @@ func (this *ASTStringLiteralNode) _Dump(d *Dumper) {
 	d.PrintMemberStringNotResolved("value", this.value)
 }
 
-func (this *ASTStringLiteralNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTStringLiteralNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitStringLiteralNode(this)
 }

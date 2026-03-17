@@ -50,6 +50,6 @@ func (this *ASTCondExprNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("elseExpr", this.elseExpr)
 }
 
-func (this *ASTCondExprNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTCondExprNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitCondExprNode(this)
 }

@@ -49,6 +49,6 @@ func (this *ASTUnaryOpNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("expr", this.expr)
 }
 
-func (this *ASTUnaryOpNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTUnaryOpNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitUnaryOpNode(this)
 }

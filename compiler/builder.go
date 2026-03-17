@@ -27,7 +27,7 @@ const (
 
 type TaggedValue struct {
 	kind int
-	data interface{}
+	data any
 }
 
 type ASTBuilder struct {

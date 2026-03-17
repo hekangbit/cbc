@@ -39,6 +39,6 @@ func (this *ASTSizeofExprNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("expr", this.expr)
 }
 
-func (this *ASTSizeofExprNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTSizeofExprNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitSizeofExprNode(this)
 }

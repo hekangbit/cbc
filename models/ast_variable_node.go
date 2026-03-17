@@ -86,6 +86,6 @@ func (this *ASTVariableNode) _Dump(d *Dumper) {
 	d.PrintMemberString("name", this.name, this.IsResolved())
 }
 
-func (this *ASTVariableNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTVariableNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitVariableNode(this)
 }

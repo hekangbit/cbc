@@ -71,9 +71,9 @@ func (this *IRGenerator) transformStmt(node models.IASTStmtNode) {
 
 func (this *IRGenerator) transformExpr(node models.IASTExprNode) models.IIRExpr {
 	this.exprNestLevel++
-	e := node.Accept(this).(models.IIRExpr)
+	expr, _ := node.Accept(this)
 	this.exprNestLevel--
-	return e
+	return expr.(models.IIRExpr)
 }
 
 func (g *IRGenerator) isStatement() bool {
@@ -141,7 +141,7 @@ func (g *IRGenerator) currentContinueTarget() (*asm.Label, error) {
 	return g.continueStack.Back().Value.(*asm.Label), nil
 }
 
-func (g *IRGenerator) VisitBlockNode(node *models.ASTBlockNode) any {
+func (g *IRGenerator) VisitBlockNode(node *models.ASTBlockNode) (any, error) {
 	g.scopeStack.PushBack(node.Scope())
 	for _, v := range node.Variables() {
 		if v.HasInitializer() {
@@ -156,18 +156,19 @@ func (g *IRGenerator) VisitBlockNode(node *models.ASTBlockNode) any {
 		g.transformStmt(s)
 	}
 	g.scopeStack.Remove(g.scopeStack.Back())
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitExprStmtNode(node *models.ASTExprStmtNode) any {
-	e := node.Expr().Accept(g)
-	if e != nil {
+// TODO
+func (g *IRGenerator) VisitExprStmtNode(node *models.ASTExprStmtNode) (any, error) {
+	_, err := node.Expr().Accept(g)
+	if err != nil {
 		g.errorHandler.WarnWithLoc(node.Location(), "useless expression")
 	}
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitIfNode(node *models.ASTIfNode) any {
+func (g *IRGenerator) VisitIfNode(node *models.ASTIfNode) (any, error) {
 	thenLabel := asm.NewLabelUnnamed()
 	elseLabel := asm.NewLabelUnnamed()
 	endLabel := asm.NewLabelUnnamed()
@@ -186,10 +187,10 @@ func (g *IRGenerator) VisitIfNode(node *models.ASTIfNode) any {
 		g.transformStmt(node.ElseBody())
 		g.label(endLabel)
 	}
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitSwitchNode(node *models.ASTSwitchNode) any {
+func (g *IRGenerator) VisitSwitchNode(node *models.ASTSwitchNode) (any, error) {
 	cases := make([]*models.IRCase, 0)
 	endLabel := asm.NewLabelUnnamed()
 	defaultLabel := endLabel
@@ -213,14 +214,14 @@ func (g *IRGenerator) VisitSwitchNode(node *models.ASTSwitchNode) any {
 	}
 	g.popBreak()
 	g.label(endLabel)
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitCaseNode(node *models.ASTCaseNode) any {
+func (g *IRGenerator) VisitCaseNode(node *models.ASTCaseNode) (any, error) {
 	panic("VisitCaseNode must not happen")
 }
 
-func (g *IRGenerator) VisitWhileNode(node *models.ASTWhileNode) any {
+func (g *IRGenerator) VisitWhileNode(node *models.ASTWhileNode) (any, error) {
 	begLabel := asm.NewLabelUnnamed()
 	bodyLabel := asm.NewLabelUnnamed()
 	endLabel := asm.NewLabelUnnamed()
@@ -235,10 +236,10 @@ func (g *IRGenerator) VisitWhileNode(node *models.ASTWhileNode) any {
 	g.popContinue()
 	g.jumpTo(begLabel)
 	g.label(endLabel)
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitDoWhileNode(node *models.ASTDoWhileNode) any {
+func (g *IRGenerator) VisitDoWhileNode(node *models.ASTDoWhileNode) (any, error) {
 	begLabel := asm.NewLabelUnnamed()
 	contLabel := asm.NewLabelUnnamed()
 	endLabel := asm.NewLabelUnnamed()
@@ -252,10 +253,10 @@ func (g *IRGenerator) VisitDoWhileNode(node *models.ASTDoWhileNode) any {
 	g.label(contLabel)
 	g.cjump(node.Location(), g.transformExpr(node.Cond()), begLabel, endLabel)
 	g.label(endLabel)
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitForNode(node *models.ASTForNode) any {
+func (g *IRGenerator) VisitForNode(node *models.ASTForNode) (any, error) {
 	begLabel := asm.NewLabelUnnamed()
 	bodyLabel := asm.NewLabelUnnamed()
 	contLabel := asm.NewLabelUnnamed()
@@ -277,55 +278,55 @@ func (g *IRGenerator) VisitForNode(node *models.ASTForNode) any {
 	}
 	g.jumpTo(begLabel)
 	g.label(endLabel)
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitBreakNode(node *models.ASTBreakNode) any {
+func (g *IRGenerator) VisitBreakNode(node *models.ASTBreakNode) (any, error) {
 	label, err := g.currentBreakTarget()
 	if err != nil {
 		g.error(node, err.Error())
 	}
 	g.jump(node.Location(), label)
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitContinueNode(node *models.ASTContinueNode) any {
+func (g *IRGenerator) VisitContinueNode(node *models.ASTContinueNode) (any, error) {
 	label, err := g.currentContinueTarget()
 	if err != nil {
 		g.error(node, err.Error())
 	}
 	g.jump(node.Location(), label)
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitLabelNode(node *models.ASTLabelNode) any {
+func (g *IRGenerator) VisitLabelNode(node *models.ASTLabelNode) (any, error) {
 	label, err := g.defineLabel(node.Name(), node.Location())
 	if err != nil {
 		g.error(node, err.Error())
-		return nil
+		return nil, nil
 	}
 	g.stmts = append(g.stmts, models.NewIRLabelStmt(node.Location(), label))
 	if node.Stmt() != nil {
 		g.transformStmt(node.Stmt())
 	}
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitGotoNode(node *models.ASTGotoNode) any {
+func (g *IRGenerator) VisitGotoNode(node *models.ASTGotoNode) (any, error) {
 	g.jump(node.Location(), g.referLabel(node.Target()))
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitReturnNode(node *models.ASTReturnNode) any {
+func (g *IRGenerator) VisitReturnNode(node *models.ASTReturnNode) (any, error) {
 	var expr models.IIRExpr
 	if node.Expr() != nil {
 		expr = g.transformExpr(node.Expr())
 	}
 	g.stmts = append(g.stmts, models.NewIRReturn(node.Location(), expr))
-	return nil
+	return nil, nil
 }
 
-func (g *IRGenerator) VisitCondExprNode(node *models.ASTCondExprNode) any {
+func (g *IRGenerator) VisitCondExprNode(node *models.ASTCondExprNode) (any, error) {
 	thenLabel := asm.NewLabelUnnamed()
 	elseLabel := asm.NewLabelUnnamed()
 	endLabel := asm.NewLabelUnnamed()
@@ -341,12 +342,12 @@ func (g *IRGenerator) VisitCondExprNode(node *models.ASTCondExprNode) any {
 	g.jumpTo(endLabel)
 	g.label(endLabel)
 	if g.isStatement() {
-		return nil
+		return nil, nil
 	}
-	return g.ref(v)
+	return g.ref(v), nil
 }
 
-func (g *IRGenerator) VisitLogicalAndNode(node *models.ASTLogicalAndNode) any {
+func (g *IRGenerator) VisitLogicalAndNode(node *models.ASTLogicalAndNode) (any, error) {
 	rightLabel := asm.NewLabelUnnamed()
 	endLabel := asm.NewLabelUnnamed()
 	v := g.tmpVar(node.Type())
@@ -357,12 +358,12 @@ func (g *IRGenerator) VisitLogicalAndNode(node *models.ASTLogicalAndNode) any {
 	g.assign(node.Right().Location(), g.ref(v), g.transformExpr(node.Right()))
 	g.label(endLabel)
 	if g.isStatement() {
-		return nil
+		return nil, nil
 	}
-	return g.ref(v)
+	return g.ref(v), nil
 }
 
-func (g *IRGenerator) VisitLogicalOrNode(node *models.ASTLogicalOrNode) any {
+func (g *IRGenerator) VisitLogicalOrNode(node *models.ASTLogicalOrNode) (any, error) {
 	rightLabel := asm.NewLabelUnnamed()
 	endLabel := asm.NewLabelUnnamed()
 	v := g.tmpVar(node.Type())
@@ -373,42 +374,42 @@ func (g *IRGenerator) VisitLogicalOrNode(node *models.ASTLogicalOrNode) any {
 	g.assign(node.Right().Location(), g.ref(v), g.transformExpr(node.Right()))
 	g.label(endLabel)
 	if g.isStatement() {
-		return nil
+		return nil, nil
 	}
-	return g.ref(v)
+	return g.ref(v), nil
 }
 
-func (g *IRGenerator) VisitAssignNode(node *models.ASTAssignNode) any {
+func (g *IRGenerator) VisitAssignNode(node *models.ASTAssignNode) (any, error) {
 	lloc := node.LHS().Location()
 	rloc := node.RHS().Location()
 	if g.isStatement() {
 		rhs := g.transformExpr(node.RHS())
 		g.assign(lloc, g.transformExpr(node.LHS()), rhs)
-		return nil
+		return nil, nil
 	} else {
 		tmp := g.tmpVar(node.RHS().Type())
 		g.assign(rloc, g.ref(tmp), g.transformExpr(node.RHS()))
 		g.assign(lloc, g.transformExpr(node.LHS()), g.ref(tmp))
-		return g.ref(tmp)
+		return g.ref(tmp), nil
 	}
 }
 
-func (g *IRGenerator) VisitOpAssignNode(node *models.ASTOpAssignNode) any {
+func (g *IRGenerator) VisitOpAssignNode(node *models.ASTOpAssignNode) (any, error) {
 	rhs := g.transformExpr(node.RHS())
 	lhs := g.transformExpr(node.LHS())
 	t := node.LHS().Type()
 	op := models.InternBinary(node.Operator(), t.IsSigned())
-	return g.transformOpAssign(node.Location(), op, t, lhs, rhs)
+	return g.transformOpAssign(node.Location(), op, t, lhs, rhs), nil
 }
 
-func (g *IRGenerator) VisitPrefixOpNode(node *models.ASTPrefixOpNode) any {
+func (g *IRGenerator) VisitPrefixOpNode(node *models.ASTPrefixOpNode) (any, error) {
 	t := node.Expr().Type()
 	return g.transformOpAssign(node.Location(),
 		g.binOp(node.Operator()), t,
-		g.transformExpr(node.Expr()), g.imm(t, 1))
+		g.transformExpr(node.Expr()), g.imm(t, 1)), nil
 }
 
-func (g *IRGenerator) VisitSuffixOpNode(node *models.ASTSuffixOpNode) any {
+func (g *IRGenerator) VisitSuffixOpNode(node *models.ASTSuffixOpNode) (any, error) {
 	expr := g.transformExpr(node.Expr())
 	t := node.Expr().Type()
 	op := g.binOp(node.Operator())
@@ -416,19 +417,19 @@ func (g *IRGenerator) VisitSuffixOpNode(node *models.ASTSuffixOpNode) any {
 
 	if g.isStatement() {
 		g.transformOpAssign(loc, op, t, expr, g.imm(t, 1))
-		return nil
+		return nil, nil
 	} else if expr.IsVar() {
 		v := g.tmpVar(t)
 		g.assign(loc, g.ref(v), expr)
 		g.assign(loc, expr, g.bin(op, t, g.ref(v), g.imm(t, 1)))
-		return g.ref(v)
+		return g.ref(v), nil
 	} else {
 		a := g.tmpVar(g.pointerTo(t))
 		v := g.tmpVar(t)
 		g.assign(loc, g.ref(a), g.addressOf(expr))
 		g.assign(loc, g.ref(v), g.memOfEntity(a))
 		g.assign(loc, g.memOfEntity(a), g.bin(op, t, g.memOfEntity(a), g.imm(t, 1)))
-		return g.ref(v)
+		return g.ref(v), nil
 	}
 }
 
@@ -459,7 +460,7 @@ func (g *IRGenerator) bin(op models.Op, leftType models.IType, left, right model
 	}
 }
 
-func (g *IRGenerator) VisitFunctionCallNode(node *models.ASTFunctionCallNode) any {
+func (g *IRGenerator) VisitFunctionCallNode(node *models.ASTFunctionCallNode) (any, error) {
 	args := make([]models.IIRExpr, 0, len(node.Args()))
 	for _, arg := range node.Args() {
 		args = append(args, g.transformExpr(arg))
@@ -467,15 +468,15 @@ func (g *IRGenerator) VisitFunctionCallNode(node *models.ASTFunctionCallNode) an
 	call := models.NewIRCall(g.asmType(node.Type()), g.transformExpr(node.Expr()), args)
 	if g.isStatement() {
 		g.stmts = append(g.stmts, models.NewIRExprStmt(node.Location(), call))
-		return nil
+		return nil, nil
 	} else {
 		tmp := g.tmpVar(node.Type())
 		g.assign(node.Location(), g.ref(tmp), call)
-		return g.ref(tmp)
+		return g.ref(tmp), nil
 	}
 }
 
-func (g *IRGenerator) VisitBinaryOpNode(node *models.ASTBinaryOpNode) any {
+func (g *IRGenerator) VisitBinaryOpNode(node *models.ASTBinaryOpNode) (any, error) {
 	right := g.transformExpr(node.Right())
 	left := g.transformExpr(node.Left())
 	op := models.InternBinary(node.Operator(), node.Type().IsSigned())
@@ -483,33 +484,35 @@ func (g *IRGenerator) VisitBinaryOpNode(node *models.ASTBinaryOpNode) any {
 	r := node.Right().Type()
 	l := node.Left().Type()
 
+	var irBin *models.IRBin
 	if g.isPointerDiff(op, l, r) {
 		tmp := models.NewIRBin(g.asmType(t), op, left, right)
-		return models.NewIRBin(g.asmType(t), models.OpSDIV, tmp, g.ptrBaseSize(l))
+		irBin = models.NewIRBin(g.asmType(t), models.OpSDIV, tmp, g.ptrBaseSize(l))
 	} else if g.isPointerArithmetic(op, l) {
-		return models.NewIRBin(g.asmType(t), op, left, models.NewIRBin(g.asmType(r), models.OpMUL, right, g.ptrBaseSize(l)))
+		irBin = models.NewIRBin(g.asmType(t), op, left, models.NewIRBin(g.asmType(r), models.OpMUL, right, g.ptrBaseSize(l)))
 	} else if g.isPointerArithmetic(op, r) {
-		return models.NewIRBin(g.asmType(t), op, models.NewIRBin(g.asmType(l), models.OpMUL, left, g.ptrBaseSize(r)), right)
+		irBin = models.NewIRBin(g.asmType(t), op, models.NewIRBin(g.asmType(l), models.OpMUL, left, g.ptrBaseSize(r)), right)
 	} else {
-		return models.NewIRBin(g.asmType(t), op, left, right)
+		irBin = models.NewIRBin(g.asmType(t), op, left, right)
 	}
+	return irBin, nil
 }
 
-func (g *IRGenerator) VisitUnaryOpNode(node *models.ASTUnaryOpNode) any {
+func (g *IRGenerator) VisitUnaryOpNode(node *models.ASTUnaryOpNode) (any, error) {
 	if node.Operator() == "+" {
-		return g.transformExpr(node.Expr())
+		return g.transformExpr(node.Expr()), nil
 	} else {
 		return models.NewIRUni(g.asmType(node.Type()),
 			models.InternUnary(node.Operator()),
-			g.transformExpr(node.Expr()))
+			g.transformExpr(node.Expr())), nil
 	}
 }
 
-func (g *IRGenerator) VisitArrayIdxRefNode(node *models.ASTArrayIdxRefNode) any {
+func (g *IRGenerator) VisitArrayIdxRefNode(node *models.ASTArrayIdxRefNode) (any, error) {
 	expr := g.transformExpr(node.BaseExpr())
 	offset := models.NewIRBin(g.ptrdiff_t(), models.OpMUL, g.size(node.ElementSize()), g.transformIndex(node))
 	addr := models.NewIRBin(g.ptr_t(), models.OpADD, expr, offset)
-	return g.memOfExpr(addr, node.Type())
+	return g.memOfExpr(addr, node.Type()), nil
 }
 
 func (g *IRGenerator) transformIndex(node *models.ASTArrayIdxRefNode) models.IIRExpr {
@@ -523,88 +526,88 @@ func (g *IRGenerator) transformIndex(node *models.ASTArrayIdxRefNode) models.IIR
 }
 
 // TODO: Offset return error when member not exist, need catch
-func (g *IRGenerator) VisitMemberNode(node *models.ASTMemberNode) any {
+func (g *IRGenerator) VisitMemberNode(node *models.ASTMemberNode) (any, error) {
 	expr := g.addressOf(g.transformExpr(node.Expr()))
 	offset := g.ptrdiff(node.Offset())
 	addr := models.NewIRBin(g.ptr_t(), models.OpADD, expr, offset)
 	if node.IsLoadable() {
-		return g.memOfExpr(addr, node.Type())
+		return g.memOfExpr(addr, node.Type()), nil
 	} else {
-		return addr
+		return addr, nil
 	}
 }
 
 // TODO: Offset return error when member not exist, need catch
-func (g *IRGenerator) VisitPtrMemberNode(node *models.ASTPtrMemberNode) any {
+func (g *IRGenerator) VisitPtrMemberNode(node *models.ASTPtrMemberNode) (any, error) {
 	expr := g.transformExpr(node.Expr())
 	offset := g.ptrdiff(node.Offset())
 	addr := models.NewIRBin(g.ptr_t(), models.OpADD, expr, offset)
 	if node.IsLoadable() {
-		return g.memOfExpr(addr, node.Type())
+		return g.memOfExpr(addr, node.Type()), nil
 	} else {
-		return addr
+		return addr, nil
 	}
 }
 
-func (g *IRGenerator) VisitDereferenceNode(node *models.ASTDereferenceNode) any {
+func (g *IRGenerator) VisitDereferenceNode(node *models.ASTDereferenceNode) (any, error) {
 	addr := g.transformExpr(node.Expr())
 	if node.IsLoadable() {
-		return g.memOfExpr(addr, node.Type())
+		return g.memOfExpr(addr, node.Type()), nil
 	} else {
-		return addr
+		return addr, nil
 	}
 }
 
-func (g *IRGenerator) VisitAddressNode(node *models.ASTAddressNode) any {
+func (g *IRGenerator) VisitAddressNode(node *models.ASTAddressNode) (any, error) {
 	e := g.transformExpr(node.Expr())
 	if node.Expr().IsLoadable() {
-		return g.addressOf(e)
+		return g.addressOf(e), nil
 	} else {
-		return e
+		return e, nil
 	}
 }
 
-func (g *IRGenerator) VisitCastNode(node *models.ASTCastNode) any {
+func (g *IRGenerator) VisitCastNode(node *models.ASTCastNode) (any, error) {
 	if node.IsEffectiveCast() {
 		op := models.OpUCAST
 		if node.Expr().Type().IsSigned() {
 			op = models.OpSCAST
 		}
-		return models.NewIRUni(g.asmType(node.Type()), op, g.transformExpr(node.Expr()))
+		return models.NewIRUni(g.asmType(node.Type()), op, g.transformExpr(node.Expr())), nil
 	} else if g.isStatement() {
 		g.transformStmt(node.Expr())
-		return nil
+		return nil, nil
 	} else {
-		return g.transformExpr(node.Expr())
+		return g.transformExpr(node.Expr()), nil
 	}
 }
 
-func (g *IRGenerator) VisitSizeofExprNode(node *models.ASTSizeofExprNode) any {
-	return models.NewIRInt(g.size_t(), node.Expr().AllocSize())
+func (g *IRGenerator) VisitSizeofExprNode(node *models.ASTSizeofExprNode) (any, error) {
+	return models.NewIRInt(g.size_t(), node.Expr().AllocSize()), nil
 }
 
-func (g *IRGenerator) VisitSizeofTypeNode(node *models.ASTSizeofTypeNode) any {
-	return models.NewIRInt(g.size_t(), node.Operand().AllocSize())
+func (g *IRGenerator) VisitSizeofTypeNode(node *models.ASTSizeofTypeNode) (any, error) {
+	return models.NewIRInt(g.size_t(), node.Operand().AllocSize()), nil
 }
 
-func (g *IRGenerator) VisitVariableNode(node *models.ASTVariableNode) any {
+func (g *IRGenerator) VisitVariableNode(node *models.ASTVariableNode) (any, error) {
 	if node.Entity().IsConstant() {
-		return g.transformExpr(node.Entity().Value())
+		return g.transformExpr(node.Entity().Value()), nil
 	}
 	varVar := g.ref(node.Entity())
 	if node.IsLoadable() {
-		return varVar
+		return varVar, nil
 	} else {
-		return g.addressOf(varVar)
+		return g.addressOf(varVar), nil
 	}
 }
 
-func (g *IRGenerator) VisitIntegerLiteralNode(node *models.ASTIntegerLiteralNode) any {
-	return models.NewIRInt(g.asmType(node.Type()), node.Value())
+func (g *IRGenerator) VisitIntegerLiteralNode(node *models.ASTIntegerLiteralNode) (any, error) {
+	return models.NewIRInt(g.asmType(node.Type()), node.Value()), nil
 }
 
-func (g *IRGenerator) VisitStringLiteralNode(node *models.ASTStringLiteralNode) any {
-	return models.NewIRStr(g.asmType(node.Type()), node.Entry())
+func (g *IRGenerator) VisitStringLiteralNode(node *models.ASTStringLiteralNode) (any, error) {
+	return models.NewIRStr(g.asmType(node.Type()), node.Entry()), nil
 }
 
 func (g *IRGenerator) isPointerDiff(op models.Op, l, r models.IType) bool {

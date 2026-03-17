@@ -25,6 +25,6 @@ func (this *ASTUnionNode) DefiningType() IType {
 	return NewUnionType(this.Name(), this.Members(), this.Location())
 }
 
-func (this *ASTUnionNode) Accept(visitor IDeclarationVisitor) any {
+func (this *ASTUnionNode) Accept(visitor IDeclarationVisitor) (any, error) {
 	return visitor.VisitUnionNode(this)
 }

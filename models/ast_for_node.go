@@ -54,7 +54,7 @@ func (this *ASTForNode) Body() IASTStmtNode {
 	return this.body
 }
 
-func (this *ASTForNode) Accept(visitor IASTVisitor) any {
+func (this *ASTForNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitForNode(this)
 }
 

@@ -42,6 +42,6 @@ func (this *Constant) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("value", this.value)
 }
 
-func (this *Constant) Accept(visitor IEntityVisitor) interface{} {
+func (this *Constant) Accept(visitor IEntityVisitor) (any, error) {
 	return visitor.VisitConstant(this)
 }

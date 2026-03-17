@@ -60,6 +60,6 @@ func (this *DefinedFunction) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("body", this.body)
 }
 
-func (this *DefinedFunction) Accept(visitor IEntityVisitor) interface{} {
+func (this *DefinedFunction) Accept(visitor IEntityVisitor) (any, error) {
 	return visitor.VisitDefinedFunction(this)
 }

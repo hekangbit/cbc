@@ -32,6 +32,6 @@ func (this *ASTIntegerLiteralNode) _Dump(d *Dumper) {
 	}
 }
 
-func (this *ASTIntegerLiteralNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTIntegerLiteralNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitIntegerLiteralNode(this)
 }

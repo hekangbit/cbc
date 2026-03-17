@@ -38,7 +38,7 @@ func (this *ASTCaseNode) Label() *asm.Label {
 	return this.label
 }
 
-func (this *ASTCaseNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTCaseNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitCaseNode(this)
 }
 

@@ -25,6 +25,6 @@ func (this *ASTStructNode) DefiningType() IType {
 	return NewStructType(this.Name(), this.Members(), this.Location())
 }
 
-func (this *ASTStructNode) Accept(visitor IDeclarationVisitor) any {
+func (this *ASTStructNode) Accept(visitor IDeclarationVisitor) (any, error) {
 	return visitor.VisitStructNode(this)
 }

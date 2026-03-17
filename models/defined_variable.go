@@ -93,6 +93,6 @@ func (this *DefinedVariable) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("initializer", this.initializer)
 }
 
-func (this *DefinedVariable) Accept(visitor IEntityVisitor) interface{} {
+func (this *DefinedVariable) Accept(visitor IEntityVisitor) (any, error) {
 	return visitor.VisitDefinedVariable(this)
 }

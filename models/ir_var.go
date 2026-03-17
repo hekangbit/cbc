@@ -44,7 +44,7 @@ func (this *IRVar) GetEntityForce() IEntity {
 	return this.ent
 }
 
-func (this *IRVar) Accept(visitor IRVisitor) interface{} {
+func (this *IRVar) Accept(visitor IRVisitor) any {
 	return visitor.VisitVar(this)
 }
 

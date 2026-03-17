@@ -15,6 +15,6 @@ func NewASTContinueNode(loc *Location) *ASTContinueNode {
 func (this *ASTContinueNode) _Dump(d *Dumper) {
 }
 
-func (this *ASTContinueNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTContinueNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitContinueNode(this)
 }

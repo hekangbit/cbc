@@ -13,6 +13,6 @@ func NewASTLogicalAndNode(left IASTExprNode, right IASTExprNode) *ASTLogicalAndN
 	return p
 }
 
-func (this *ASTLogicalAndNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTLogicalAndNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitLogicalAndNode(this)
 }

@@ -22,12 +22,12 @@ func NewDumper(s io.Writer) *Dumper {
 	}
 }
 
-func (this *Dumper) PrintClass(obj interface{}, loc *Location) {
+func (this *Dumper) PrintClass(obj any, loc *Location) {
 	this.printIndent()
 	fmt.Fprintf(this.stream, "<<%T>> (%v)\n", obj, loc)
 }
 
-func (this *Dumper) PrintClassNoLoc(obj interface{}) {
+func (this *Dumper) PrintClassNoLoc(obj any) {
 	this.printIndent()
 	fmt.Fprintf(this.stream, "<<%T>>\n", obj)
 }

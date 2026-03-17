@@ -43,6 +43,6 @@ func (this *ASTTypedefNode) _Dump(d *Dumper) {
 	d.PrintMemberDumpable("real typeNode", this.real)
 }
 
-func (this *ASTTypedefNode) Accept(visitor IDeclarationVisitor) any {
+func (this *ASTTypedefNode) Accept(visitor IDeclarationVisitor) (any, error) {
 	return visitor.VisitTypedefNode(this)
 }

@@ -65,6 +65,6 @@ func (this *ASTFunctionCallNode) _Dump(d *Dumper) {
 	d.PrintNodeList("args", dumpables)
 }
 
-func (this *ASTFunctionCallNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTFunctionCallNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitFunctionCallNode(this)
 }

@@ -52,6 +52,6 @@ func (this *ASTBlockNode) _Dump(d *Dumper) {
 	d.PrintNodeList("stmts", istmts)
 }
 
-func (this *ASTBlockNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTBlockNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitBlockNode(this)
 }

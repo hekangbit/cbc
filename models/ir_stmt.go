@@ -3,7 +3,7 @@ package models
 type IIRStmt interface {
 	Dumpable
 	Location() *Location
-	Accept(visitor IRVisitor) interface{}
+	Accept(visitor IRVisitor) any
 	_Dump(d *Dumper)
 }
 

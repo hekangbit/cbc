@@ -18,6 +18,6 @@ func NewASTSuffixOpNode(op string, expr IASTExprNode) *ASTSuffixOpNode {
 	return p
 }
 
-func (this *ASTSuffixOpNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTSuffixOpNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitSuffixOpNode(this)
 }

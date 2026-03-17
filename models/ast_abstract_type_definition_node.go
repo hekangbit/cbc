@@ -7,7 +7,7 @@ type IASTAbstractTypeDefinitionNode interface {
 	TypeRef() ITypeRef
 	Type() IType
 	DefiningType() IType
-	Accept(visitor IDeclarationVisitor) any
+	Accept(visitor IDeclarationVisitor) (any, error)
 }
 
 type ASTAbstractTypeDefinitionNode struct {

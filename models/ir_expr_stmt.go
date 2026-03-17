@@ -20,7 +20,7 @@ func (this *IRExprStmt) Expr() IIRExpr {
 	return this.expr
 }
 
-func (this *IRExprStmt) Accept(visitor IRVisitor) interface{} {
+func (this *IRExprStmt) Accept(visitor IRVisitor) any {
 	return visitor.VisitExprStmt(this)
 }
 

@@ -26,7 +26,7 @@ func (this *ASTLabelNode) Stmt() IASTStmtNode {
 	return this.stmt
 }
 
-func (this *ASTLabelNode) Accept(visitor IASTVisitor) interface{} {
+func (this *ASTLabelNode) Accept(visitor IASTVisitor) (any, error) {
 	return visitor.VisitLabelNode(this)
 }
 

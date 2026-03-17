@@ -23,7 +23,7 @@ func (this *IRLabelStmt) Label() *asm.Label {
 	return this.label
 }
 
-func (this *IRLabelStmt) Accept(visitor IRVisitor) interface{} {
+func (this *IRLabelStmt) Accept(visitor IRVisitor) any {
 	return visitor.VisitLabelStmt(this)
 }
 
