@@ -14,13 +14,6 @@ func NewASTDereferenceNode(expr IASTExprNode) *ASTDereferenceNode {
 	return p
 }
 
-func (this *ASTDereferenceNode) Type() IType {
-	if this.ty != nil {
-		return this.ty
-	}
-	return this.OrigType()
-}
-
 func (this *ASTDereferenceNode) OrigType() IType {
 	return this.expr.Type().ElemType()
 }
@@ -31,11 +24,6 @@ func (this *ASTDereferenceNode) AllocSize() int64 {
 
 func (this *ASTDereferenceNode) IsAssignable() bool {
 	return this.IsLoadable()
-}
-
-func (this *ASTDereferenceNode) IsLoadable() bool {
-	t := this.OrigType()
-	return !t.IsArray() && !t.IsFunction()
 }
 
 func (this *ASTDereferenceNode) Expr() IASTExprNode {

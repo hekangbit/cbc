@@ -9,7 +9,7 @@ type IASTExprNode interface {
 	IsParameter() bool
 	IsLvalue() bool
 	IsAssignable() bool
-	IsLoadable() bool // TODO: make this method as global function
+	IsLoadable() bool
 	IsCallable() bool
 	IsPointer() bool
 	Accept(visitor IASTVisitor) interface{}
