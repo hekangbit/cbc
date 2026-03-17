@@ -26,7 +26,7 @@ func (this *IRMem) AddressNode(typ asm.Type) IIRExpr {
 	return this.expr
 }
 
-func (this *IRMem) Accept(visitor IRVisitor) interface{} {
+func (this *IRMem) Accept(visitor IRVisitor) any {
 	return visitor.VisitMem(this)
 }
 
