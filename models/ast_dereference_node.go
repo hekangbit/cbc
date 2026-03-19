@@ -22,10 +22,6 @@ func (this *ASTDereferenceNode) AllocSize() int64 {
 	return this.OrigType().AllocSize()
 }
 
-func (this *ASTDereferenceNode) IsAssignable() bool {
-	return this.IsLoadable()
-}
-
 func (this *ASTDereferenceNode) Expr() IASTExprNode {
 	return this.expr
 }

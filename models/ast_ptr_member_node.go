@@ -1,6 +1,5 @@
 package models
 
-// TODO: finish this node
 type ASTPtrMemberNode struct {
 	ASTLHSNode
 	expr   IASTExprNode
@@ -20,14 +19,20 @@ func NewASTPtrMemberNode(expr IASTExprNode, member string) *ASTPtrMemberNode {
 }
 
 // TODO: cast may need return error
-// catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
+//
+//	catch (ClassCastException err) {
+//		throw new SemanticError(err.getMessage());
+//	}
 func (this *ASTPtrMemberNode) DereferedCompositeType() ICompositeType {
 	pt := this.expr.Type().GetPointerType()
 	return pt.ElemType().GetCompositeType()
 }
 
 // TODO: check
-// catch (ClassCastException err) {	throw new SemanticError(err.getMessage());
+//
+//	catch (ClassCastException err) {
+//		throw new SemanticError(err.getMessage());
+//	}
 func (this *ASTPtrMemberNode) DereferedType() IType {
 	pt := this.expr.Type().GetPointerType()
 	return pt.ElemType()

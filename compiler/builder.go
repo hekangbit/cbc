@@ -559,7 +559,7 @@ func (this *ASTBuilder) VisitExpr1(ctx *parser.Expr1Context) interface{} {
 }
 
 func (this *ASTBuilder) VisitTermCast(ctx *parser.TermCastContext) interface{} {
-	return nil
+	return ctx.CastExpr().Accept(this)
 }
 
 func (this *ASTBuilder) VisitTermUnary(ctx *parser.TermUnaryContext) interface{} {
@@ -567,7 +567,9 @@ func (this *ASTBuilder) VisitTermUnary(ctx *parser.TermUnaryContext) interface{}
 }
 
 func (this *ASTBuilder) VisitCastExpr(ctx *parser.CastExprContext) interface{} {
-	return nil
+	tyNode := ctx.CbType().Accept(this).(*models.ASTTypeNode)
+	expr := ctx.Term().Accept(this).(models.IASTExprNode)
+	return models.NewASTCastNodeWithTypeNode(tyNode, expr)
 }
 
 func (this *ASTBuilder) VisitUnaryPrefixIncrement(ctx *parser.UnaryPrefixIncrementContext) interface{} {

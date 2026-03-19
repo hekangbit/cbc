@@ -158,6 +158,11 @@ func SemanticAnalyzeCheckPhase(astNode *models.AST, typeTable *models.TypeTable,
 	if err != nil {
 		return err
 	}
+	dereferenceChecker := NewDereferenceChecker(typeTable, errorHandler)
+	err = dereferenceChecker.Check(astNode)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

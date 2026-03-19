@@ -8,7 +8,7 @@ type IASTLHSNode interface {
 type ASTLHSNode struct {
 	ASTExprNode
 	ty     IType
-	origTy IType
+	origTy IType // TODO: seem can remove this field
 }
 
 func (this *ASTLHSNode) Type() IType {
@@ -28,6 +28,10 @@ func (this *ASTLHSNode) SetType(t IType) {
 
 func (this *ASTLHSNode) IsLvalue() bool {
 	return true
+}
+
+func (this *ASTLHSNode) IsAssignable() bool {
+	return this._impl.IsLoadable()
 }
 
 func (this *ASTLHSNode) IsLoadable() bool {

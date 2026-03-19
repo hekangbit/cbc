@@ -39,7 +39,7 @@ func (this *PointerType) IsSigned() bool {
 }
 
 func (this *PointerType) IsCallable() bool {
-	return false
+	return this.elemType.IsFunction()
 }
 
 func (this *PointerType) ElemType() IType {
